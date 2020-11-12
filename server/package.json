@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "This folder contains all the code and defintions for the GraphQL API.",
   "main": "src/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": [],
   "author": "",
   "license": "MIT",
