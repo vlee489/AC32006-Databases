@@ -10,6 +10,24 @@ class Products extends Model{
     static get idColumn() {
         return 'ProductID';
     }
+
+    // used for input validation.
+    static get jsonSchema() {
+        return {
+          type: 'object',
+    
+          properties: {
+            ProductID: { type: 'integer' },
+            Name: { type: 'string', minLength: 1, maxLength: 255 },
+            Catergory: {type: 'integer'},
+            Price: {type: 'number'},
+            Description: { type: 'string', minLength: 1, maxLength: 2000 },
+            Weight: { type: 'number' },
+            Colour: { type: 'string', minLength: 0, maxLength: 45 },
+            Dimensions: { type: 'string', minLength: 0, maxLength: 12 },
+          }
+        };
+    }
 }
 
 module.exports = {
