@@ -1,0 +1,12 @@
+version: '2'
+services:
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: testing
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: main
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
