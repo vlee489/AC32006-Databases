@@ -1,7 +1,7 @@
 import Head from 'next/head'
-import styles from '../styles/Login.module.css'
+import styles from '../styles/Browse.module.css'
 
-export default function Login() {
+export default function Browse() {
   return (
     <div className={styles.container}>
       <Head>
