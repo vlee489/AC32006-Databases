@@ -21,13 +21,12 @@ const typeDefs = gql`
       Dimensions: String
   }
 
-  type Query{
+  extend type Query{
     getProducts(ProductID: ID, Catergory: Int): [Product]
   }
 `;
 
-// Resolvers define the technique for fetching the types defined in the
-// schema. This resolver retrieves books from the "books" array above.
+// Resolvers define the technique for fetching the types defined in the Schema above
 const resolvers = {
   Query: {
     getProducts: (parent, arg, ctx, info) => {
