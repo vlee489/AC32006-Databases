@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import styles from '../styles/Catalogue.module.css'
+import styles from '../styles/Catalogue.module.scss'
 
 export default function Catalogue() {
   return (

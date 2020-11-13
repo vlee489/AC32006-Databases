@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import styles from '../styles/Basket.module.css'
+import styles from '../styles/Basket.module.scss'
 
 export default function Basket() {
   return (

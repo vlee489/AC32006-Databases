@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import styles from '../styles/Checkout.module.css'
+import styles from '../styles/Checkout.module.scss'
 
 export default function Checkout() {
   return (

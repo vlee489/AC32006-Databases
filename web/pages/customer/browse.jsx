@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import styles from '../styles/Browse.module.css'
+import styles from '../styles/Browse.module.scss'
 
 export default function Browse() {
   return (
