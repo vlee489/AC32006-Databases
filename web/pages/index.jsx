@@ -1,15 +1,17 @@
-import Head from 'next/head'
-import styles from '../styles/Browse.module.scss'
+import Head from 'next/head';
+import Navigation from '../components/navigation';
+import styles from '../styles/index.module.scss';
 
 export default function Browse() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
+        <title>Generic Flatpack Furniture</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className={styles.main}>
+        <Navigation />
       </main>
     </div>
   )
