@@ -8,6 +8,7 @@ export default function Browse() {
       <Head>
         <title>Generic Flatpack Furniture</title>
         <link rel="icon" href="/favicon.ico" />
+        
       </Head>
 
       <main className={styles.main}>

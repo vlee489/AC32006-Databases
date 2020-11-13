@@ -15,7 +15,7 @@ export default function Login() {
 
       <main>
         <Container className={styles.container}>
-          <div className="d-flex align-items-center justify-content-center">
+          <div className="d-flex justify-content-center">
             <Card className={styles.loginCard}>
               <Card.Body>
                 <Card.Title className="text-center">Login</Card.Title>
