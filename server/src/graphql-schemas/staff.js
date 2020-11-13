@@ -8,6 +8,7 @@ const { Staff } = require('../models/staff')
 
 // Querry must extend as it's adding on to the main one
 const typeDefs = gql`
+  "Represents a member of staff"
   type Staff{
       StaffID: ID
       FirstName: String
@@ -21,7 +22,8 @@ const typeDefs = gql`
   }
 
   extend type Query{
-    getStaff(StaffID: Int): [Staff]
+    "Get List of Staff"
+    getStaff(StaffID: Int, Position: Int): [Staff]
   }
 `;
 

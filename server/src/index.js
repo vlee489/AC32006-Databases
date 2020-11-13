@@ -2,8 +2,7 @@
 const { ApolloServer } = require('apollo-server');
 const schema = require('./schema');
 
-// The ApoclloServer constructor requires two parameters: your schema
-// definition and your set of resolvers.
+// The Apollo Server constructor, takes in Schema from Schema Builder and other prams
 const server = new ApolloServer({
   introspection: true,
   playground: true,

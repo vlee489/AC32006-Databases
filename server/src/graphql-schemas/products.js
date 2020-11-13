@@ -10,6 +10,7 @@ const { Products } = require('../models/products')
 // that together define the "shape" of queries that are executed against
 // your data.
 const typeDefs = gql`
+  "Represents A product's details"
   type Product{
       ProductID: ID
       Name: String
@@ -22,6 +23,7 @@ const typeDefs = gql`
   }
 
   extend type Query{
+    "Get a list of products"
     getProducts(ProductID: ID, Catergory: Int): [Product]
   }
 `;
