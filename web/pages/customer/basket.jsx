@@ -1,5 +1,6 @@
 import Head from 'next/head'
-import styles from '../styles/Basket.module.css'
+import styles from '../../styles/customer/Basket.module.scss'
+import Navigation from '../../components/navigation'
 
 export default function Basket() {
   return (
@@ -10,6 +11,7 @@ export default function Basket() {
       </Head>
 
       <main className={styles.main}>
+        <Navigation />
       </main>
     </div>
   )

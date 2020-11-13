@@ -1,5 +1,6 @@
 import Head from 'next/head'
-import styles from '../styles/Catalogue.module.css'
+import styles from '../../styles/customer/Catalogue.module.scss'
+import Navigation from '../../components/navigation'
 
 export default function Catalogue() {
   return (
@@ -10,6 +11,7 @@ export default function Catalogue() {
       </Head>
 
       <main className={styles.main}>
+        <Navigation />
       </main>
     </div>
   )

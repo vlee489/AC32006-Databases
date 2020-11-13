@@ -1,5 +1,6 @@
 import Head from 'next/head'
-import styles from '../styles/Product.module.css'
+import styles from '../../styles/customer/Product.module.scss'
+import Navigation from '../../components/navigation'
 
 export default function Product() {
   return (
@@ -10,6 +11,7 @@ export default function Product() {
       </Head>
 
       <main className={styles.main}>
+        <Navigation />
       </main>
     </div>
   )
