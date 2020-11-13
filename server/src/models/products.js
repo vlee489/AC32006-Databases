@@ -1,5 +1,7 @@
 // https://vincit.github.io/objection.js/guide/models.html
 const { Model } = require('objection');
+const { Inventory } = require('./inventory');
+const { ProductMaterials } = require('./productMaterials');
 
 class Products extends Model{
     // States table name
@@ -27,6 +29,25 @@ class Products extends Model{
             Dimensions: { type: 'string', minLength: 0, maxLength: 12 },
           }
         };
+    }
+
+    static relationMappings = {
+      materials: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: ProductMaterials,
+        join:{
+          from: 'ProductMaterials.ProductID',
+          to: 'Products.ProductID'
+        }
+      },
+      inventory: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: Inventory,
+        join:{
+          from: 'Inventory.ProductID',
+          to: 'Products.ProductID'
+        }
+      }
     }
 }
 

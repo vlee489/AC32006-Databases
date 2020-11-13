@@ -14,7 +14,7 @@ const typeDefs = gql`
   type Product{
       ProductID: ID
       Name: String
-      Catergory: Int
+      Category: Int
       Price: Float
       Description: String
       Weight: Float
@@ -24,7 +24,7 @@ const typeDefs = gql`
 
   extend type Query{
     "Get a list of products"
-    getProducts(ProductID: ID, Catergory: Int): [Product]
+    getProducts(ProductID: ID, Category: Int): [Product]
   }
 `;
 
@@ -38,8 +38,8 @@ const resolvers = {
         dbQuery = dbQuery.where('ProductID', arg.ProductID);
       }
 
-      if ('Catergory' in arg){
-        dbQuery = dbQuery.where('Catergory', arg.Catergory);
+      if ('Category' in arg){
+        dbQuery = dbQuery.where('Category', arg.Category);
       }
 
       return dbQuery;

@@ -10,6 +10,17 @@ class Inventory extends Model{
     static get idColumn() {
         return 'InventoryID';
     }
+
+    static relationMappings = {
+        materials: {
+          relation: Model.HasManyRelation,
+          modelClass: Products,
+          join:{
+            from: 'Products.ProductID',
+            to: 'Inventory.ProductID'
+          }
+        }
+      }
 }
 
 module.exports = {

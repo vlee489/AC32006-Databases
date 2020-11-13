@@ -7,6 +7,7 @@ const server = new ApolloServer({
   introspection: true,
   playground: true,
   schema: schema,
+  tracing: true, // Disable in Production
 });
 
 // The `listen` method launches a web server.
