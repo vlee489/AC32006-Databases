@@ -7,14 +7,13 @@ class ProductMaterials extends Model{
     static get tableName() {
         return 'ProductMaterials';
     }
-    
     // Set id column
     static get idColumn() {
         return 'ProductMaterialID';
     }
 
     static relationMappings = {
-        products: {
+        materials: {
           relation: Model.HasManyRelation,
           modelClass: Products,
           join:{

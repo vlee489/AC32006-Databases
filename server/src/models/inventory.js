@@ -6,14 +6,13 @@ class Inventory extends Model{
     static get tableName() {
         return 'Inventory';
     }
-    
     // Set id column
     static get idColumn() {
         return 'InventoryID';
     }
 
     static relationMappings = {
-        products: {
+        materials: {
           relation: Model.HasManyRelation,
           modelClass: Products,
           join:{
