@@ -6,10 +6,22 @@ class OrderProducts extends Model{
     static get tableName() {
         return 'OrderProducts';
     }
+
     // Set id column
     static get idColumn() {
         return 'OrderProductsID';
     }
+
+    static relationMappings = {
+        products: {
+          relation: Model.HasManyRelation,
+          modelClass: Products,
+          join:{
+            from: 'Products.ProductID',
+            to: 'OrderProductss.ProductID'
+          }
+        }
+      }
 }
 
 module.exports = {

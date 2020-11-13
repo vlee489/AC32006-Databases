@@ -1,6 +1,7 @@
 // https://vincit.github.io/objection.js/guide/models.html
 const { Model } = require('objection');
 const { Inventory } = require('./inventory');
+const { OrderProducts } = require('./orderProducts');
 const { ProductMaterials } = require('./productMaterials');
 
 class Products extends Model{
@@ -45,6 +46,14 @@ class Products extends Model{
         modelClass: Inventory,
         join:{
           from: 'Inventory.ProductID',
+          to: 'Products.ProductID'
+        }
+      },
+      orders: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: OrderProducts,
+        join:{
+          from: 'OrderProducts.ProductID',
           to: 'Products.ProductID'
         }
       }
