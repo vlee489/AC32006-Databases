@@ -1,3 +1,5 @@
+// Stored Database details
+// TODO: Move to .env file for production
 module.exports = {
     development: {
       client: 'mysql2',
