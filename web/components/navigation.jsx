@@ -17,9 +17,6 @@ const Navigation = props => {
                         <Link href={routes.index} passHref>
                             <Nav.Link>Home</Nav.Link>
                         </Link>
-                        <Link href={routes.login} passHref>
-                            <Nav.Link>Login</Nav.Link>
-                        </Link>
                         <NavDropdown title="Customer" id="customerDropdown">
                             <Link href={routes.basket} passHref>
                                 <NavDropdown.Item>Basket</NavDropdown.Item>
@@ -35,14 +32,14 @@ const Navigation = props => {
                             </Link>
                         </NavDropdown>
                         <NavDropdown title="Staff" id="staffDropdown">
+                            <Link href={routes.login} passHref>
+                                <NavDropdown.Item>Login</NavDropdown.Item>
+                            </Link>
                             <Link href={routes.admin} passHref>
                                 <NavDropdown.Item>Admin</NavDropdown.Item>
                             </Link>
                             <Link href={routes.inventory} passHref>
                                 <NavDropdown.Item>Inventory</NavDropdown.Item>
-                            </Link>
-                            <Link href={routes.login} passHref>
-                                <NavDropdown.Item>Login</NavDropdown.Item>
                             </Link>
                             <Link href={routes.shift} passHref>
                                 <NavDropdown.Item>Shift</NavDropdown.Item>
