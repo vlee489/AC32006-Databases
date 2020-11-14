@@ -15,30 +15,28 @@ export default function Login() {
 
       <main>
         <Container className={styles.container}>
-          <div className="d-flex justify-content-center">
-            <Card className={styles.loginCard}>
-              <Card.Body>
-                <Card.Title className="text-center">Login</Card.Title>
-                <Form>
-                  <Form.Group controlId="formBasicEmail">
-                    <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" placeholder="Enter email" />
-                    <Form.Text className="text-muted">
-                      We'll never share your email with anyone else.
-                  </Form.Text>
-                  </Form.Group>
-                  <Form.Group controlId="formBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" />
-                  </Form.Group>
-                  <Form.Group controlId="formBasicCheckbox">
-                    <Form.Check type="checkbox" label="Stay signed in" />
-                  </Form.Group>
-                </Form>
-                <Button variant="primary">Sign in</Button>
-              </Card.Body>
-            </Card>
-          </div>
+          <Card className={styles.loginCard}>
+            <Card.Body>
+              <Card.Title className="text-center">Login</Card.Title>
+              <Form>
+                <Form.Group controlId="formBasicEmail">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="Enter email" />
+                  <Form.Text className="text-muted">
+                    We'll never share your email with anyone else.
+                </Form.Text>
+                </Form.Group>
+                <Form.Group controlId="formBasicPassword">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control type="password" placeholder="Password" />
+                </Form.Group>
+                <Form.Group controlId="formBasicCheckbox">
+                  <Form.Check type="checkbox" label="Stay signed in" />
+                </Form.Group>
+              </Form>
+              <Button variant="primary">Sign in</Button>
+            </Card.Body>
+          </Card>
         </Container>
       </main>
     </div>
