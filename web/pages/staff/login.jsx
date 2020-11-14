@@ -1,7 +1,7 @@
 import Head from 'next/head'
-import { Button, Container, Card, Row, Col, Form } from "react-bootstrap";
+import { Button, Container, Card, Form } from "react-bootstrap";
 import Navigation from '../../components/navigation';
-import styles from '../../styles/staff/Login.module.scss'
+import styles from '../../styles/staff/Login.module.scss';
 
 export default function Login() {
   return (
