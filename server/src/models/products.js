@@ -3,6 +3,7 @@ const { Model } = require('objection');
 const { Inventory } = require('./inventory');
 const { OrderProducts } = require('./orderProducts');
 const { ProductMaterials } = require('./productMaterials');
+const { WarehouseProducts } = require('./warehouseProducts');
 
 class Products extends Model{
     // States table name
@@ -54,6 +55,14 @@ class Products extends Model{
         modelClass: OrderProducts,
         join:{
           from: 'OrderProducts.ProductID',
+          to: 'Products.ProductID'
+        }
+      },
+      warehouse: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: WarehouseProducts,
+        join:{
+          from: 'WarehouseProducts.ProductID',
           to: 'Products.ProductID'
         }
       }

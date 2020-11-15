@@ -18,7 +18,7 @@ class OrderProducts extends Model{
           modelClass: Products,
           join:{
             from: 'Products.ProductID',
-            to: 'OrderProductss.ProductID'
+            to: 'OrderProducts.ProductID'
           }
         }
       }
