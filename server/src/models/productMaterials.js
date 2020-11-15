@@ -12,16 +12,6 @@ class ProductMaterials extends Model{
         return 'ProductMaterialID';
     }
 
-    static relationMappings = {
-        materials: {
-          relation: Model.HasManyRelation,
-          modelClass: Products,
-          join:{
-            from: 'Products.ProductID',
-            to: 'ProductMaterials.ProductID'
-          }
-        }
-      }
 }
 
 module.exports = {

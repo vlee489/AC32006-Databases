@@ -31,24 +31,6 @@ class Products extends Model{
         };
     }
 
-    static relationMappings = {
-      materials: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: ProductMaterials,
-        join:{
-          from: 'ProductMaterials.ProductID',
-          to: 'Products.ProductID'
-        }
-      },
-      inventory: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: Inventory,
-        join:{
-          from: 'Inventory.ProductID',
-          to: 'Products.ProductID'
-        }
-      }
-    }
 }
 
 module.exports = {
