@@ -1,6 +1,5 @@
 // https://vincit.github.io/objection.js/guide/models.html
 const { Model } = require('objection');
-const { Products } = require('./products');
 
 class ProductMaterials extends Model{
     // States table name
@@ -11,7 +10,18 @@ class ProductMaterials extends Model{
     static get idColumn() {
         return 'ProductMaterialID';
     }
-
+    static get relationMappings() {
+        return{
+            product: {
+                relation: Model.BelongsToOneRelation, // Each entry has a relation to one entry in the other table
+                modelClass: Products, // Class that has the model we're refering to
+                join: {
+                  from: 'ProductMaterials.ProductID',
+                  to: 'Products.ProductID'
+                }
+              }
+            }
+        }
 }
 
 module.exports = {
