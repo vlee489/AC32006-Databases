@@ -30,6 +30,14 @@ class Orders extends Model{
               from: 'Orders.WarehouseID',
               to: 'Warehouse.WarehouseID'
             }
+          },
+          branch: {
+            relation: Model.BelongsToOneRelation, // Each product can be in many relations
+            modelClass: Branch,  // Class that has the model we're refering to
+            join: {
+              from: 'Orders.BranchID',
+              to: 'Branch.BranchID'
+            }
           }
         }
     }
