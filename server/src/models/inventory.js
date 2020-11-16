@@ -11,7 +11,18 @@ class Inventory extends Model{
         return 'InventoryID';
     }
 
-
+    static get relationMappings() {
+        return{
+            product: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Products,
+                join: {
+                  from: 'Inventory.ProductID',
+                  to: 'Products.ProductID'
+                }
+              }
+            }
+        }
 }
 
 module.exports = {

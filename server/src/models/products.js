@@ -30,7 +30,9 @@ class Products extends Model{
     }
 
     static get relationMappings() {
-      const { ProductMaterials } = require('./productMaterials'); // We import here to avoid doing a circular import in Node V14
+      // We import here to avoid doing a circular import in Node V14
+      const { ProductMaterials } = require('./productMaterials');
+      const { Inventory } = require('./inventory');
       return{
         productMaterials: {
           relation: Model.HasManyRelation, // Each product can be in many relations
@@ -38,6 +40,14 @@ class Products extends Model{
           join: {
             from: 'Products.ProductID',
             to: 'ProductMaterials.ProductID'
+            }
+        },
+        inventory: {
+          relation: Model.HasManyRelation, // Each product can be in many relations
+          modelClass: Inventory,  // Class that has the model we're refering to
+          join: {
+            from: 'Products.ProductID',
+            to: 'Inventory.ProductID'
             }
         }
       }
