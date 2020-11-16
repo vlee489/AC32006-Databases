@@ -1,5 +1,6 @@
 // https://vincit.github.io/objection.js/guide/models.html
 const { Model } = require('objection');
+const warehouseProducts = require('./warehouseProducts');
 
 class Products extends Model{
     // States table name
@@ -31,9 +32,11 @@ class Products extends Model{
 
     static get relationMappings() {
       // We import here to avoid doing a circular import in Node V14
+      // These are for the class/ORM that a relation of Products
       const { ProductMaterials } = require('./productMaterials');
       const { Inventory } = require('./inventory');
       const { OrderProducts } = require('./orderProducts');
+      const { WarehouseProducts } = require('./warehouseProducts');
       return{
         productMaterials: {
           relation: Model.HasManyRelation, // Each product can be in many relations
@@ -57,6 +60,14 @@ class Products extends Model{
           join: {
             from: 'Products.ProductID',
             to: 'OrderProducts.ProductID'
+            }
+        },
+        warehouseProducts: {
+          relation: Model.HasManyRelation, // Each product can be in many relations
+          modelClass: WarehouseProducts,  // Class that has the model we're refering to
+          join: {
+            from: 'Products.ProductID',
+            to: 'WarehouseProducts'
             }
         }
       }
