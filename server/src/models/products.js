@@ -67,7 +67,7 @@ class Products extends Model {
         modelClass: WarehouseProducts,  // Class that has the model we're refering to
         join: {
           from: 'Products.ProductID',
-          to: 'WarehouseProducts'
+          to: 'WarehouseProducts.ProductID'
         }
       }
     }
