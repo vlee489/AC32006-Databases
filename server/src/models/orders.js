@@ -23,6 +23,14 @@ class Orders extends Model{
               to: 'OrderProducts.OrderID'
               }
           },
+          warehouse: {
+            relation: Model.BelongsToOneRelation,
+            modelClass: Warehouse,
+            join: {
+              from: 'Orders.WarehouseID',
+              to: 'Warehouse.WarehouseID'
+            }
+          }
         }
     }
 }
