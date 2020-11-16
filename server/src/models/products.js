@@ -33,6 +33,7 @@ class Products extends Model{
       // We import here to avoid doing a circular import in Node V14
       const { ProductMaterials } = require('./productMaterials');
       const { Inventory } = require('./inventory');
+      const { OrderProducts } = require('./orderProducts');
       return{
         productMaterials: {
           relation: Model.HasManyRelation, // Each product can be in many relations
@@ -48,6 +49,14 @@ class Products extends Model{
           join: {
             from: 'Products.ProductID',
             to: 'Inventory.ProductID'
+            }
+        },
+        orderProducts: {
+          relation: Model.HasManyRelation, // Each product can be in many relations
+          modelClass: OrderProducts,  // Class that has the model we're refering to
+          join: {
+            from: 'Products.ProductID',
+            to: 'OrderProducts.ProductID'
             }
         }
       }

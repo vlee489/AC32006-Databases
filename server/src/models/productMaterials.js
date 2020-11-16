@@ -6,10 +6,12 @@ class ProductMaterials extends Model{
     static get tableName() {
         return 'ProductMaterials';
     }
+    
     // Set id column
     static get idColumn() {
         return 'ProductMaterialID';
     }
+
     static get relationMappings() {
         return{
             product: {
