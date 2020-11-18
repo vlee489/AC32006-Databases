@@ -25,6 +25,8 @@ const typeDefs = gql`
   extend type Query{
     "Get List of Staff"
     getStaff(StaffID: Int, Position: Int): [Staff]
+    "Get the current used logged in use Token"
+    loginStaff: Staff
   }
 
   extend type Mutation{
@@ -57,11 +59,22 @@ const resolvers = {
         )
       }
     },
+    loginStaff: async (parent, arg, ctx, info) => {
+      if (ctx.auth) {
+        dbQuery = await Staff.query().findOne({'StaffID': ctx.user.ID });
+
+        return await dbQuery;
+      } else {
+        throw new ForbiddenError(
+          'Authentication token is invalid, please log in'
+        )
+      }
+    }
   },
 
   Mutation: {
     addStaff: async (parent, arg, ctx, info) => {
-      if (ctx.auth == false || ctx.Position > 2) {
+      if (ctx.auth == false || ctx.user.Position > 2) {
         throw new ForbiddenError(
           'Authentication token is invalid, please log in'
         )
