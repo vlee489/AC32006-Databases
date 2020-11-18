@@ -1,47 +1,57 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
-// import { ApolloClient, InMemoryCache, useQuery } from '@apollo/client';
+
 import { Container, Row, Col, Card, FormControl, InputGroup, Button } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
-// import { GET_PRODUCT } from '../../api/products';
+
+import { useQuery } from '@apollo/client';
+import withGraphql from "../../libraries/apollo";
+import { GET_PRODUCT } from '../../api/products';
+
 import styles from '../../styles/customer/Catalogue.module.scss';
 
-export default function Catalogue() {
+const Catalogue = () => {
   const [searchText, setSearchText] = useState("");
   const [products, setProducts] = useState([]);
 
-  /*const cache = new InMemoryCache();
-
-  const client = new ApolloClient({
-    uri: 'http://168.119.243.209:4000/graphql',
-    cache
-  });
-
-  const { loading, error, data } = useQuery(GET_PRODUCT);*/
+  const { loading, error, data } = useQuery(GET_PRODUCT);
 
   useEffect(() => {
-    const genericProduct = {
+    const testProducts = [];
+
+    const testProduct = {
       name: "Shelf",
-      image: "",
+      image: "https://picsum.photos/360/200",
       price: "10",
       dimensions: "200x30x3cm"
     }
 
-    setProducts(prevProducts => [...prevProducts, genericProduct]);
+    for (let i = 0; i < 10; i++) {
+      testProducts.push(testProduct);
+    }
+
+    setProducts(prevProducts => [...prevProducts, ...testProducts]);
   }, [])
 
   const Product = ({ name, image, price, dimensions }) => (
     <Col>
-      <Card style={{ width: '18rem' }}>
+      <Card className={`${styles.product} my-4`}>
         <Card.Img variant="top" src={image} />
         <Card.Body>
           <Card.Title>{name}</Card.Title>
-          <Card.Text>{price}</Card.Text>
+          <Card.Text>{`£${price}`}</Card.Text>
           <Card.Text>{dimensions}</Card.Text>
         </Card.Body>
       </Card>
     </Col>
   )
+
+  const ProductsGroup = () => {
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>{`${error}`}</p>;
+    if (data) return data.map((p, i) => <Product key={i} name={p.name} image={p.image} price={p.price} dimensions={p.dimensions} />)
+    return products.map((p, i) => <Product key={i} name={p.name} image={p.image} price={p.price} dimensions={p.dimensions} />);
+  }
 
   return (
     <div className={styles.container}>
@@ -69,12 +79,12 @@ export default function Catalogue() {
             </Col>
           </Row>
           <Row>
-            {
-              products.map((p, i) => <Product key={i} name={p.name} image={p.image} price={p.price} dimensions={p.dimensions} />)
-            }
+            <ProductsGroup />
           </Row>
         </Container>
       </main>
     </div>
   )
 }
+
+export default withGraphql({ ssr: true })(Catalogue);
