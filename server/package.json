@@ -1,5 +1,5 @@
 {
-  "name": "GFFC Server",
+  "name": "server",
   "version": "1.0.0",
   "description": "GFFC Backend Server",
   "main": "src/index.js",
