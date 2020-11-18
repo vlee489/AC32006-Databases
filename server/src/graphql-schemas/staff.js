@@ -46,9 +46,9 @@ const typeDefs = gql`
 // Resolvers define the technique for fetching the types defined in the Schema above
 const resolvers = {
   Query: {
-    getStaff: (parent, arg, ctx, info) => {
+    getStaff: async (parent, arg, ctx, info) => {
       if (ctx.auth) {
-        dbQuery = Staff.query();
+        dbQuery = await Staff.query();
 
         return dbQuery;
       } else {
@@ -58,8 +58,8 @@ const resolvers = {
       }
     },
   },
-  Mutation: {
 
+  Mutation: {
     addStaff: async (parent, arg, ctx, info) => {
       if (ctx.auth == false || ctx.Position > 2) {
         throw new ForbiddenError(
@@ -85,7 +85,7 @@ const resolvers = {
         )
         return newStaff
       }
-    }
+    },
 
   },
 };
