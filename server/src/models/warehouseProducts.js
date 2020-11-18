@@ -6,10 +6,24 @@ class WarehouseProducts extends Model{
     static get tableName() {
         return 'WarehouseProducts';
     }
+
     // Set id column
     static get idColumn() {
         return 'WarehouseProductID';
     }
+
+    static get relationMappings() {
+        return{
+            product: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Products,
+                join: {
+                  from: 'WarehouseProducts.ProductID',
+                  to: 'Products.ProductID'
+                }
+              }
+            }
+        }
 }
 
 module.exports = {

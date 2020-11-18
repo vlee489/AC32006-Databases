@@ -2,7 +2,7 @@
 https://www.apollographql.com/blog/modularizing-your-graphql-schema-code-d7f71d5ed5f2/
 Schema Builder
 */
-const { makeExecutableSchema, gql } = require("apollo-server");
+const { makeExecutableSchema, gql } = require("apollo-server-express");
 const { merge } = require("lodash");
 
 // Seperate Schema Files

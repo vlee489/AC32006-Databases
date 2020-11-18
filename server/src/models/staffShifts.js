@@ -1,32 +1,32 @@
 // https://vincit.github.io/objection.js/guide/models.html
 const { Model } = require('objection');
 
-class Staff extends Model{
+class StaffShifts extends Model{
     // States table name
     static get tableName() {
-        return 'Staff';
+        return 'StaffShifts';
     }
 
     // Set id column
     static get idColumn() {
-        return 'StaffID';
+        return ['ShiftID', 'StaffID'];
     }
 
     static get relationMappings() {
-        const { BranchStaff } = require('./branchStaff');
         return {
-            branchStaff: {
-            relation: Model.HasManyRelation,
-            modelClass: BranchStaff,
+          shifts: {
+            relation: Model.BelongsToOneRelation,
+            modelClass: Shifts,
             join: {
-              from: 'Staff.StaffID',
-              to: 'BranchStaff.StaffID'
+              from: 'StaffShifts.ShiftID',
+              to: 'Shifts.ShiftID'
             }
           }
         }
       }
+
 }
 
 module.exports = {
-    Staff
+    StaffShifts
   };

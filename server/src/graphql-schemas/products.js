@@ -1,7 +1,7 @@
 /*
 Defines all the Scheme for Product related GraphQL functions
 */
-const { gql } = require('apollo-server');
+const { gql } = require('apollo-server-express');
 const { Model } = require('objection');
 const db  = require('../db')
 const { Products } = require('../models/products')
@@ -14,7 +14,7 @@ const typeDefs = gql`
   type Product{
       ProductID: ID
       Name: String
-      Catergory: Int
+      Category: Int
       Price: Float
       Description: String
       Weight: Float
@@ -24,25 +24,25 @@ const typeDefs = gql`
 
   extend type Query{
     "Get a list of products"
-    getProducts(ProductID: ID, Catergory: Int): [Product]
+    getProducts(ProductID: ID, Category: Int): [Product]
   }
 `;
 
 // Resolvers define the technique for fetching the types defined in the Schema above
 const resolvers = {
   Query: {
-    getProducts: (parent, arg, ctx, info) => {
+    getProducts: async (parent, arg, ctx, info) => {
       dbQuery = Products.query();
 
       if ('ProductID' in arg){
         dbQuery = dbQuery.where('ProductID', arg.ProductID);
       }
 
-      if ('Catergory' in arg){
-        dbQuery = dbQuery.where('Catergory', arg.Catergory);
+      if ('Category' in arg){
+        dbQuery = dbQuery.where('Category', arg.Category);
       }
 
-      return dbQuery;
+      return await dbQuery;
     },
   },
 };
