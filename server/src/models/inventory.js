@@ -20,7 +20,17 @@ class Inventory extends Model{
                   from: 'Inventory.ProductID',
                   to: 'Products.ProductID'
                 }
-              }
+              },
+
+              branch:{
+                relation: Model.BelongsToOneRelation,
+                modelClass: Branch,
+                join:{
+                  from: 'Inventory.BranchID',
+                  to: 'Branch.BranchID'
+                }
+              },
+              
             }
         }
 }

@@ -20,7 +20,16 @@ class Shift extends Model{
             join: {
               from: 'Shifts.ShiftID',
               to: 'StaffShifts.ShiftID'
-            }
+            },
+            branch: {
+              relation: Model.BelongsToOneRelation,
+              modelClass: Branch,
+              join: {
+                  from: 'Shifts.BranchID',
+                  to: 'Branch.BranchID'
+              }
+          }
+        }
           }
         }
       }

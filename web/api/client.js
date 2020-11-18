@@ -7,6 +7,8 @@ export const login = async (data) => {
   return response.data;
 }
 
+// export const getProduct = 
+
 // export const login = async (email, password) => {
 //   axios.post('http://168.119.243.209:4000/login', {
 //     email: email,
