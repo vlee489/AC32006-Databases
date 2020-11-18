@@ -31,7 +31,7 @@ const typeDefs = gql`
 // Resolvers define the technique for fetching the types defined in the Schema above
 const resolvers = {
   Query: {
-    getProducts: (parent, arg, ctx, info) => {
+    getProducts: async (parent, arg, ctx, info) => {
       dbQuery = Products.query();
 
       if ('ProductID' in arg){
@@ -42,7 +42,7 @@ const resolvers = {
         dbQuery = dbQuery.where('Category', arg.Category);
       }
 
-      return dbQuery;
+      return await dbQuery;
     },
   },
 };
