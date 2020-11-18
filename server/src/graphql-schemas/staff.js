@@ -1,7 +1,7 @@
 /*
 Defines all the Scheme for staff related GraphQL functions
 */
-const { gql } = require('apollo-server');
+const { gql, AuthenticationError, ForbiddenError } = require('apollo-server-express');
 const { Model } = require('objection');
 const db  = require('../db')
 const { Staff } = require('../models/staff')
@@ -31,9 +31,15 @@ const typeDefs = gql`
 const resolvers = {
     Query: {
       getStaff: (parent, arg, ctx, info) => {
-        dbQuery = Staff.query();
+        if (ctx.auth){
+          dbQuery = Staff.query();
   
-        return dbQuery;
+          return dbQuery;
+        }else{
+          throw new ForbiddenError(
+            'Authentication token is invalid, please log in'
+        )
+        }
       },
     },
   };

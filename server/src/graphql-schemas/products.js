@@ -1,7 +1,7 @@
 /*
 Defines all the Scheme for Product related GraphQL functions
 */
-const { gql } = require('apollo-server');
+const { gql } = require('apollo-server-express');
 const { Model } = require('objection');
 const db  = require('../db')
 const { Products } = require('../models/products')
