@@ -30,7 +30,7 @@ const Catalogue = () => {
       testProducts.push(testProduct);
     }
 
-    setProducts(prevProducts => [...prevProducts, ...testProducts]);
+    setProducts(testProducts);
   }, [])
 
   const Product = ({ name, image, price, dimensions }) => (
