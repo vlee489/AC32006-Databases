@@ -2,6 +2,7 @@
 Runs all the code for the API
 */
 const express = require('express')
+const cors = require('cors')
 const bodyParser = require('body-parser')
 
 const { ApolloServer, AuthenticationError } = require('apollo-server-express');
@@ -19,6 +20,8 @@ const SESSION_SECRECT = 'wOdLXkh*WNINd#k2qA8j%tF%mED8c1ho';
 // Express App
 const app = express();
 app.use(bodyParser.json())
+app.use(cors())
+
 
 const context = ({ req }) => {
   /*
