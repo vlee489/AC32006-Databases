@@ -48,7 +48,7 @@ const resolvers = {
   Query: {
     getStaff: async (parent, arg, ctx, info) => {
       if (ctx.auth) {
-        dbQuery = Staff.query();
+        dbQuery = await Staff.query();
 
         return await dbQuery;
       } else {
