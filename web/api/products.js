@@ -1,4 +1,6 @@
-export const GET_PRODUCT = gpl`
+import { gql } from '@apollo/client';
+
+export const GET_PRODUCT = gql`
   query {
     getProduct {
       ProductID
