@@ -17,20 +17,18 @@ const Navigation = props => {
                         <Link href={routes.index} passHref>
                             <Nav.Link>Home</Nav.Link>
                         </Link>
-                        <NavDropdown title="Customer" id="customerDropdown">
-                            <Link href={routes.basket} passHref>
-                                <NavDropdown.Item>Basket</NavDropdown.Item>
-                            </Link>
-                            <Link href={routes.catalogue} passHref>
-                                <NavDropdown.Item>Catalogue</NavDropdown.Item>
-                            </Link>
-                            <Link href={routes.checkout} passHref>
-                                <NavDropdown.Item>Checkout</NavDropdown.Item>
-                            </Link>
-                            <Link href={routes.product} passHref>
-                                <NavDropdown.Item>Product</NavDropdown.Item>
-                            </Link>
-                        </NavDropdown>
+                        <Link href={routes.basket} passHref>
+                            <Nav.Link>Basket</Nav.Link>
+                        </Link>
+                        <Link href={routes.catalogue} passHref>
+                            <Nav.Link>Catalogue</Nav.Link>
+                        </Link>
+                        <Link href={routes.checkout} passHref>
+                            <Nav.Link>Checkout</Nav.Link>
+                        </Link>
+                        <Link href={routes.product} passHref>
+                            <Nav.Link>Product</Nav.Link>
+                        </Link>
                         <NavDropdown title="Staff" id="staffDropdown">
                             <Link href={routes.login} passHref>
                                 <NavDropdown.Item>Login</NavDropdown.Item>
