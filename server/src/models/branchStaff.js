@@ -1,5 +1,6 @@
 // https://vincit.github.io/objection.js/guide/models.html
 const { Model } = require('objection');
+const bcrypt = require('bcrypt');
 
 class BranchStaff extends Model{
     // States table name
@@ -29,5 +30,5 @@ class BranchStaff extends Model{
 }
 
 module.exports = {
-    StaffShifts
+    BranchStaff
   };
