@@ -6,7 +6,7 @@ import Navigation from '../../components/navigation';
 
 import { useQuery } from '@apollo/client';
 import withGraphql from "../../libraries/apollo";
-import { GET_PRODUCT } from '../../api/products';
+import { GET_PRODUCT } from '../../queries/products';
 
 import styles from '../../styles/customer/Catalogue.module.scss';
 
