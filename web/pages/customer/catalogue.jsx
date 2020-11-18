@@ -20,23 +20,29 @@ export default function Catalogue() {
   const { loading, error, data } = useQuery(GET_PRODUCT);*/
 
   useEffect(() => {
-    const genericProduct = {
+    const testProducts = [];
+
+    const testProduct = {
       name: "Shelf",
-      image: "",
+      image: "https://picsum.photos/360/200",
       price: "10",
       dimensions: "200x30x3cm"
     }
 
-    setProducts(prevProducts => [...prevProducts, genericProduct]);
+    for (let i = 0; i < 10; i++) {
+      testProducts.push(testProduct);
+    }
+
+    setProducts(prevProducts => [...prevProducts, ...testProducts]);
   }, [])
 
   const Product = ({ name, image, price, dimensions }) => (
     <Col>
-      <Card style={{ width: '18rem' }}>
+      <Card className={`${styles.product} my-4`}>
         <Card.Img variant="top" src={image} />
         <Card.Body>
           <Card.Title>{name}</Card.Title>
-          <Card.Text>{price}</Card.Text>
+          <Card.Text>{`£${price}`}</Card.Text>
           <Card.Text>{dimensions}</Card.Text>
         </Card.Body>
       </Card>
