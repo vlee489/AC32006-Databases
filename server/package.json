@@ -1,20 +1,23 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "This folder contains all the code and defintions for the GraphQL API.",
+  "description": "GFFC Backend Server",
   "main": "src/index.js",
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "apollo-server": "^2.19.0",
-    "bcryptjs": "^2.4.3",
-    "graphql": "^15.4.0",
-    "graphql-subscriptions": "^1.1.0",
+    "apollo-server-express": "^2.19.0",
+    "bcrypt": "^5.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "cors": "^2.8.5",
+    "express-session": "^1.17.1",
     "knex": "^0.21.12",
+    "lodash": "^4.17.20",
     "mysql2": "^2.2.5",
-    "objection": "^2.2.3",
-    "lodash": "^4.17.20"
+    "objection": "^2.2.3"
   },
   "devDependencies": {
     "sequelize-cli": "^6.2.0"
