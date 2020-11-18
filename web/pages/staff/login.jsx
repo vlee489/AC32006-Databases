@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import { Button, Container, Card, Form } from "react-bootstrap";
 import Navigation from '../../components/navigation';
-import { login } from '../../api/client';
+import login from '../../libraries/login';
 import routes from '../../routes';
 import styles from '../../styles/staff/Login.module.scss';
 

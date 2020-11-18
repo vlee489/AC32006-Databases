@@ -7,14 +7,4 @@ const graphqlClient = new ApolloClient({
     cache: new InMemoryCache()
 });
 
-export const withGraphql = withApollo(graphqlClient);
-
-const loginClient = new ApolloClient({
-    ssrMode: typeof window === "undefined",
-    uri: "http://168.119.243.209:4000/login",
-    cache: new InMemoryCache()
-});
-
-export const withLogin = withApollo(loginClient);
-
-export default withGraphql;
+export default withApollo(graphqlClient);
