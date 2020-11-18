@@ -25,22 +25,22 @@ const typeDefs = gql`
   extend type Query{
     "Get List of Staff"
     getStaff(StaffID: Int, Position: Int): [Staff]
-    "Get the current used logged in use Token"
+    "Get the current used logged in using current Token"
     loginStaff: Staff
   }
 
   extend type Mutation{
     "Add a new staff member"
     addStaff(
-      FirstName: String
-      LastName: String
-      PhoneNumber: String
-      NINumber: String
-      Address: String
-      Wage: Float
-      Position: Int
-      Email: String
-      Password: String
+      FirstName: String!
+      LastName: String!
+      PhoneNumber: String!
+      NINumber: String!
+      Address: String!
+      Wage: Float!
+      Position: Int!
+      Email: String!
+      Password: String!
     ): Staff
   }
 `;
