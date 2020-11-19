@@ -10,6 +10,19 @@ class MaterialsCatalogue extends Model{
     static get idColumn() {
         return 'MaterialsCatalogueID';
     }
+    static get relationMappings() {
+        return {
+          // This is a one to one relationship \/
+          storage: {
+            relation: Model.BelongsToOneRelation,
+            modelClass: Storage,
+            join: {
+              from: 'MaterialsCatalogue.MaterialID',
+              to: 'Storage.MaterialID'
+            }
+          },
+        }
+      }
 }
 
 module.exports = {

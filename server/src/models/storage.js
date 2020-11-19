@@ -12,6 +12,7 @@ class Storage extends Model{
     }
     static get relationMappings() {
         const { ProductMaterials } = require('./productMaterials');
+        const { MaterialsCatalogue } = require('./materialsCatalogue');
         return {
           productMaterials: {
             relation: Model.HasManyRelation,
@@ -19,6 +20,15 @@ class Storage extends Model{
             join: {
               from: 'Storage.StorageID',
               to: 'ProductMaterials.StorageID'
+            }
+          },
+          // This is a one to one relationship \/
+          materialsCatalogue: {
+            relation: Model.BelongsToOneRelation,
+            modelClass: MaterialsCatalogue,
+            join: {
+              from: 'Storage.MaterialID',
+              to: 'MaterialsCatalogue.MaterialID'
             }
           },
         }
