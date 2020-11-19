@@ -29,7 +29,7 @@ class Shifts extends Model{
               from: 'Shifts.ShiftID',
               to: 'Branch.BranchID'
             }
-          }
+          },
         }
       }
 
