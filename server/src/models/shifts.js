@@ -26,7 +26,7 @@ class Shifts extends Model{
             relation: Model.BelongsToOneRelation,
             modelClass: Branch,
             join: {
-              from: 'Shifts.ShiftID',
+              from: 'Shifts.BranchID',
               to: 'Branch.BranchID'
             }
           },
