@@ -21,7 +21,15 @@ class ProductMaterials extends Model {
           from: 'ProductMaterials.ProductID',
           to: 'Products.ProductID'
         }
-      }
+      },
+      storage: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: Storage,
+        join: {
+          from: 'ProductMaterials.StorageID',
+          to: 'Storage.StorageID'
+        }
+      },
     }
   }
 }

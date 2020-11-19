@@ -10,6 +10,19 @@ class Storage extends Model{
     static get idColumn() {
         return 'StorageID';
     }
+    static get relationMappings() {
+        const { ProductMaterials } = require('./productMaterials');
+        return {
+          productMaterials: {
+            relation: Model.HasManyRelation,
+            modelClass: ProductMaterials,
+            join: {
+              from: 'Storage.StorageID',
+              to: 'ProductMaterials.StorageID'
+            }
+          },
+        }
+      }
 }
 
 module.exports = {
