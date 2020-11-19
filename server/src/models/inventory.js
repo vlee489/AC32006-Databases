@@ -12,6 +12,7 @@ class Inventory extends Model{
     }
 
     static get relationMappings() {
+      const { ProductPurchases } = require('./productPurchases');
         return{
             product: {
                 relation: Model.BelongsToOneRelation,
@@ -30,9 +31,17 @@ class Inventory extends Model{
                   to: 'Branch.BranchID'
                 }
               },
-              
-            }
+
+              productPurchases: {
+                relation: Model.HasManyRelation,
+                modelClass: ProductPurchases,
+                join: {
+                    from: 'Inventory.InventoryID',
+                    to: 'ProductPurchases.InventoryID'
+                }
+              },
         }
+    }
 }
 
 module.exports = {
