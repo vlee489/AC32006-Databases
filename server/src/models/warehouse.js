@@ -14,6 +14,7 @@ class Warehouse extends Model {
         // We import here to avoid doing a circular import in Node V14
         // These are for the class/ORM that a relation of Products
         const { Orders } = require('./orders');
+        const { WarehouseProducts } = require('./warehouseProducts');
         return {
             Order: {
                 relation: Model.HasManyRelation, // Each product can be in many relations
@@ -21,6 +22,14 @@ class Warehouse extends Model {
                 join: {
                     from: 'Warehouse.WarehouseID',
                     to: 'Orders.WarehouseID'
+                }
+            },
+            warehouseProducts: {
+                relation: Model.HasManyRelation,
+                modelClass: WarehouseProducts,
+                join: {
+                    from: 'Warehouse.WarehouseID',
+                    to: 'WarehouseProducts.WarehouseID'
                 }
             },
         }
