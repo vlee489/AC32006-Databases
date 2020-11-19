@@ -21,6 +21,14 @@ class Shifts extends Model{
               from: 'Shifts.ShiftID',
               to: 'StaffShifts.ShiftID'
             }
+          },
+          branch: {
+            relation: Model.BelongsToOneRelation,
+            modelClass: Branch,
+            join: {
+              from: 'Shifts.ShiftID',
+              to: 'Branch.BranchID'
+            }
           }
         }
       }

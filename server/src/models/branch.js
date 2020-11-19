@@ -15,7 +15,7 @@ class Branch extends Model{
         // These are for the class/ORM that a relation of Products
         const { Orders } = require('./orders');
         const { Inventory } = require('./inventory');
-        const {Shifts} = require('./shifts');
+        const { Shifts } = require('./shifts');
         return {
           orders: {
             relation: Model.HasManyRelation, // Each product can be in many relations
