@@ -1,7 +1,7 @@
 // https://vincit.github.io/objection.js/guide/models.html
 const { Model } = require('objection');
 
-class Shift extends Model{
+class Shifts extends Model{
     // States table name
     static get tableName() {
         return 'Shift';
@@ -20,22 +20,21 @@ class Shift extends Model{
             join: {
               from: 'Shifts.ShiftID',
               to: 'StaffShifts.ShiftID'
-            },
-            branch: {
-              relation: Model.BelongsToOneRelation,
-              modelClass: Branch,
-              join: {
-                  from: 'Shifts.BranchID',
-                  to: 'Branch.BranchID'
-              }
-          }
-        }
-          }
+            }
+          },
+          branch: {
+            relation: Model.BelongsToOneRelation,
+            modelClass: Branch,
+            join: {
+              from: 'Shifts.ShiftID',
+              to: 'Branch.BranchID'
+            }
+          },
         }
       }
 
 }
 
 module.exports = {
-    Shift
+    Shifts
   };
