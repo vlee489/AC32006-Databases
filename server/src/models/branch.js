@@ -42,6 +42,14 @@ class Branch extends Model {
           to: 'Shifts.BranchID'
         }
       },
+      branchStaff: {
+        relation: Model.HasManyRelation,
+        modelClass: BranchStaff,
+        join: {
+          from: 'Branch.BranchID',
+          to: 'BranchStaff.BranchID'
+        }
+      }
     }
   }
 }
