@@ -86,4 +86,4 @@ const Catalogue = () => {
 	)
 }
 
-export default withApollo({ ssr: true })(Catalogue);
+export default withApollo({ ssr: false })(Catalogue);
