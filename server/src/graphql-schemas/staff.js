@@ -61,7 +61,7 @@ const resolvers = {
     },
     loginStaff: async (parent, arg, ctx, info) => {
       if (ctx.auth) {
-        dbQuery = await Staff.query().findOne({'StaffID': ctx.user.ID });
+        dbQuery = await Staff.query().findOne({ 'StaffID': ctx.user.ID });
 
         return await dbQuery;
       } else {
@@ -80,7 +80,7 @@ const resolvers = {
         )
       }
       const hashPass = await bcrypt.hash(arg.Password, 12)
-      if(hashPass){
+      if (hashPass) {
         console.log(hashPass)
 
         const newStaff = await Staff.query().insertAndFetch(

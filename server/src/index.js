@@ -33,14 +33,14 @@ const context = ({ req }) => {
   const splitToken = token.split(' ')[1]
   try {
     var decoded = jwt.verify(token, SESSION_SECRECT);
-    if(decoded){
-      return{
+    if (decoded) {
+      return {
         auth: true,
         user: decoded
       }
     }
-  } catch(err) {
-    return{
+  } catch (err) {
+    return {
       auth: false,
     }
   }
@@ -61,7 +61,7 @@ server.applyMiddleware({ app });
 // Login page
 app.post('/login', async (req, res) => {
   // Check if body has email and password
-  if(('email' in req.body) && ('password' in req.body)){
+  if (('email' in req.body) && ('password' in req.body)) {
     const { email, password } = req.body
     // Find entry of staff with said email
     const loginEntry = await Staff.query().findOne({ 'Email': email })
@@ -96,7 +96,7 @@ app.post('/login', async (req, res) => {
         message: `Incorrect credentials`,
       })
     }
-  }else{
+  } else {
     res.status(404).send({
       success: false,
       message: 'No / Incomplete Credentials Provided',

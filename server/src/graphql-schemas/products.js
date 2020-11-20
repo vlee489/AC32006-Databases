@@ -3,7 +3,7 @@ Defines all the Scheme for Product related GraphQL functions
 */
 const { gql } = require('apollo-server-express');
 const { Model } = require('objection');
-const db  = require('../db')
+const db = require('../db')
 const { Products } = require('../models/products')
 
 // A schema is a collection of type definitions (hence "typeDefs")
@@ -34,11 +34,11 @@ const resolvers = {
     getProducts: async (parent, arg, ctx, info) => {
       dbQuery = Products.query();
 
-      if ('ProductID' in arg){
+      if ('ProductID' in arg) {
         dbQuery = dbQuery.where('ProductID', arg.ProductID);
       }
 
-      if ('Category' in arg){
+      if ('Category' in arg) {
         dbQuery = dbQuery.where('Category', arg.Category);
       }
 
@@ -48,6 +48,6 @@ const resolvers = {
 };
 
 module.exports = {
-    Products: typeDefs,
-    ProductResolvers: resolvers,
+  Products: typeDefs,
+  ProductResolvers: resolvers,
 }

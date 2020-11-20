@@ -1,14 +1,15 @@
-import React, { useState } from 'react'; 
+import React, { useState } from 'react';
 import Head from 'next/head';
 import { Button, Container, Card, Form } from "react-bootstrap";
 import Navigation from '../../components/navigation';
-import { login } from '../../api/client';
+import login from '../../libraries/login';
 import routes from '../../routes';
 import styles from '../../styles/staff/Login.module.scss';
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userToken, setUserToken] = useState(null);
   const [errors, setErrors] = useState([]);
 
   const sendCredentials = async () => {
@@ -16,13 +17,20 @@ export default function Login() {
       email,
       password
     }
+
     const response = await login(data);
+
     if (response.success) {
-      console.log(`Success: ${response}`);
+      setUserToken(response);
     }
     else {
       setErrors(response.error);
     }
+  }
+
+  const LoginFooter = () => {
+    if (errors) return <p>{errors}</p>
+    return <p>Success</p>
   }
 
   return (
@@ -53,7 +61,7 @@ export default function Login() {
                 </Form.Group>
               </Form>
               <Button variant="primary" onClick={sendCredentials}>Sign in</Button>
-              <p className={styles.error}>{errors}</p>
+              <LoginFooter />
             </Card.Body>
           </Card>
         </Container>
