@@ -5,7 +5,7 @@ import { Container, Row, Col, Card, FormControl, InputGroup, Button, FormGroup }
 import Navigation from '../../components/navigation';
 
 import { useQuery } from '@apollo/client';
-import withGraphql from "../../libraries/apollo";
+import withApollo from "../../libraries/apollo";
 import GET_PRODUCTS from '../../queries/products';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -86,4 +86,4 @@ const Catalogue = () => {
 	)
 }
 
-export default withGraphql({ ssr: true })(Catalogue);
+export default withApollo({ ssr: true })(Catalogue);
