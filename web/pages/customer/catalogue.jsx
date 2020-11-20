@@ -6,32 +6,14 @@ import Navigation from '../../components/navigation';
 
 import { useQuery } from '@apollo/client';
 import withGraphql from "../../libraries/apollo";
-import { GET_PRODUCT } from '../../queries/products';
+import GET_PRODUCTS from '../../queries/products';
 
 import styles from '../../styles/customer/Catalogue.module.scss';
 
 const Catalogue = () => {
   const [searchText, setSearchText] = useState("");
-  const [products, setProducts] = useState([]);
 
-  const { loading, error, data } = useQuery(GET_PRODUCT);
-
-  useEffect(() => {
-    const testProducts = [];
-
-    const testProduct = {
-      name: "Shelf",
-      image: "https://picsum.photos/360/200",
-      price: "10",
-      dimensions: "200x30x3cm"
-    }
-
-    for (let i = 0; i < 10; i++) {
-      testProducts.push(testProduct);
-    }
-
-    setProducts(testProducts);
-  }, [])
+  const { loading, error, data } = useQuery(GET_PRODUCTS);
 
   const Product = ({ name, image, price, dimensions }) => (
     <Col>
@@ -49,8 +31,8 @@ const Catalogue = () => {
   const ProductsGroup = () => {
     if (loading) return <p>Loading...</p>;
     if (error) return <p>{`${error}`}</p>;
-    if (data) return data.map((p, i) => <Product key={i} name={p.name} image={p.image} price={p.price} dimensions={p.dimensions} />)
-    return products.map((p, i) => <Product key={i} name={p.name} image={p.image} price={p.price} dimensions={p.dimensions} />);
+    if (data) return data.getProducts.map((p, i) => <Product key={i} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />)
+    return <p>{`${data}`}</p>;
   }
 
   return (
