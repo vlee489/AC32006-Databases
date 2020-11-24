@@ -3,6 +3,7 @@ import Head from 'next/head';
 
 import { Container, Row, Col, Card, FormControl, InputGroup, Spinner } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
+import Spinner from '../../components/spinner';
 
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
@@ -31,13 +32,7 @@ const Catalogue = () => {
 	)
 
 	const ProductsGroup = () => {
-		if (loading) return (
-			<div className="d-flex align-self-center justify-content-center">
-				<Spinner animation="border" className="align-items-center" role="status" variant="primary">
-					<span className="sr-only">Loading...</span>
-				</Spinner>
-			</div>
-		)
+		if (loading) return <Spinner />;
 		if (error) return <p>{`${error}`}</p>;
 		if (data) {
 			const products = data.getProducts;
