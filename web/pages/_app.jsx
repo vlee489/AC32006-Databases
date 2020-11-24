@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import BasketContext from '../libraries/basket';
-import UserContext from '../libraries/user';
+import BasketContext from '../contexts/basket';
+import UserContext from '../contexts/user';
 
 import '../styles/globals.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';

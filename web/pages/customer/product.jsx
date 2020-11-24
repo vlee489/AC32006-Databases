@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 import { useMediaQuery } from 'react-responsive';
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
-import BasketContext from '../../libraries/basket';
+import BasketContext from '../../contexts/basket';
 import { Breadcrumb, Card, Container, Button, Col, Row } from 'react-bootstrap';
 
 import Navigation from '../../components/navigation';

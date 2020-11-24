@@ -3,8 +3,8 @@ import React, { useContext } from 'react';
 import Link from 'next/link';
 import routes from '../routes';
 
-import BasketContext from '../libraries/basket';
-import UserContext from '../libraries/user';
+import BasketContext from '../contexts/basket';
+import UserContext from '../contexts/user';
 
 import { Button, Form, FormControl, Nav, Navbar, NavDropdown, Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

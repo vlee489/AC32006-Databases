@@ -6,7 +6,7 @@ import styles from '../../styles/customer/Basket.module.scss';
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 
-import BasketContext from '../../libraries/basket';
+import BasketContext from '../../contexts/basket';
 
 export default function Basket() {
   const { basket, setBasket } = useContext(BasketContext);
