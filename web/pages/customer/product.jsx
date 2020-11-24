@@ -91,7 +91,7 @@ const Product = () => {
 							<Breadcrumb>
 								<Link href={routes.catalogue} passHref>
 									<Breadcrumb.Item>
-										{categories[product.Category]}
+										{categories[product.Category].Name}
 									</Breadcrumb.Item>
 								</Link>
 							</Breadcrumb>
