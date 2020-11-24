@@ -20,7 +20,7 @@ const Catalogue = () => {
 	const Product = ({ name, image, price, dimensions }) => (
 		<Col>
 			<Card className={`${styles.product} my-4`}>
-				<Card.Img variant="top" src={image} />
+				<Card.Img variant="top" width="100%" src="https://picsum.photos/360/200" />
 				<Card.Body>
 					<Card.Title>{name}</Card.Title>
 					<Card.Text>{`£${price}`}</Card.Text>

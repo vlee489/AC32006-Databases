@@ -1,8 +1,54 @@
-import { Button, Form, FormControl, Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import { Button, Form, FormControl, Nav, Navbar, NavDropdown, Row, Col } from 'react-bootstrap';
 import Link from 'next/link';
 import routes from '../routes';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons';
+
+import styles from "../styles/navigation.module.scss";
+
 const Navigation = props => {
+    const product = {
+        ProductID: 0,
+        Name: "Shelf",
+        Category: "Shelves",
+        Price: 5,
+        Dimensions: "2x2cm",
+        Quantity: 1
+      }
+
+    let basketProducts = [];
+
+    basketProducts.push(product);
+
+    const BasketDropdowns = () => {
+        return (
+            // basketProducts.map((p, i) => {
+                <Link href="" passHref>
+                    <NavDropdown.Item className="product-item">
+                        <Row>
+                            <Col>
+                                <img />
+                            </Col>
+                            <Col>
+                                Product
+                            </Col>
+                            <Col>
+                                Price
+                            </Col>
+                            <Col>
+                                Quantity
+                            </Col>
+                            <Col>
+                                <button>X</button>
+                            </Col>
+                        </Row>
+                    </NavDropdown.Item>
+                </Link>
+            // })
+        )
+    }
+
     return (
         <>
             <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -17,7 +63,7 @@ const Navigation = props => {
                         <Link href={routes.index} passHref>
                             <Nav.Link>Home</Nav.Link>
                         </Link>
-                        
+
                         <Link href={routes.catalogue} passHref>
                             <Nav.Link>Catalogue</Nav.Link>
                         </Link>
@@ -42,10 +88,11 @@ const Navigation = props => {
                             </Link>
                         </NavDropdown>
                     </Nav>
-                    <Nav className="">
-                        <Link href={routes.basket} className="float-right" passHref>
-                            <Nav.Link>Basket</Nav.Link>
-                        </Link>
+                    <Nav className="nav-basket">
+                        <NavDropdown alignRight className={styles.basketDropdown} title={<FontAwesomeIcon className="form-control-feedback" icon={faShoppingBasket} />} id="basket">
+                            <BasketDropdowns />
+                            <NavDropdown.Item>Checkout</NavDropdown.Item>
+                        </NavDropdown>
                     </Nav>
                     {/* <Form inline>
                         <FormControl type="text" placeholder="Search" className="mr-sm-2" />
