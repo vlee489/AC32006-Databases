@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 
-import { Container, Row, Col, Card, FormControl, InputGroup, Button, FormGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, FormControl, InputGroup } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
+import Spinner from '../../components/spinner';
 
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
@@ -20,7 +21,7 @@ const Catalogue = () => {
 	const Product = ({ name, image, price, dimensions }) => (
 		<Col>
 			<Card className={`${styles.product} my-4`}>
-				<Card.Img variant="top" src={image} />
+				<Card.Img variant="top" width="100%" src="https://picsum.photos/360/200" />
 				<Card.Body>
 					<Card.Title>{name}</Card.Title>
 					<Card.Text>{`£${price}`}</Card.Text>
@@ -31,7 +32,7 @@ const Catalogue = () => {
 	)
 
 	const ProductsGroup = () => {
-		if (loading) return <p>Loading...</p>;
+		if (loading) return <Spinner />;
 		if (error) return <p>{`${error}`}</p>;
 		if (data) {
 			const products = data.getProducts;
@@ -42,9 +43,11 @@ const Catalogue = () => {
 				}
 			);
 			return (
-				filteredProducts.map(
-					(p, i) => <Product key={i} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
-				)
+				<Row>
+					{filteredProducts.map(
+						(p, i) => <Product key={i} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
+					)}
+				</Row>
 			)
 		}
 		return <p>{`${data}`}</p>;
@@ -78,7 +81,9 @@ const Catalogue = () => {
 						</Col>
 					</Row>
 					<Row>
-						<ProductsGroup />
+						<Col>
+							<ProductsGroup />
+						</Col>
 					</Row>
 				</Container>
 			</main>
