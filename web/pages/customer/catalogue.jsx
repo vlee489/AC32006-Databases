@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 
-import { Container, Row, Col, Card, FormControl, InputGroup, Button, FormGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, FormControl, InputGroup, Spinner } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
 
 import { useQuery } from '@apollo/client';
@@ -31,7 +31,13 @@ const Catalogue = () => {
 	)
 
 	const ProductsGroup = () => {
-		if (loading) return <p>Loading...</p>;
+		if (loading) return (
+			<div className="d-flex align-self-center justify-content-center">
+				<Spinner animation="border" className="align-items-center" role="status" variant="primary">
+					<span className="sr-only">Loading...</span>
+				</Spinner>
+			</div>
+		)
 		if (error) return <p>{`${error}`}</p>;
 		if (data) {
 			const products = data.getProducts;
@@ -42,9 +48,11 @@ const Catalogue = () => {
 				}
 			);
 			return (
-				filteredProducts.map(
-					(p, i) => <Product key={i} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
-				)
+				<Row>
+					{filteredProducts.map(
+						(p, i) => <Product key={i} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
+					)}
+				</Row>
 			)
 		}
 		return <p>{`${data}`}</p>;
@@ -78,7 +86,9 @@ const Catalogue = () => {
 						</Col>
 					</Row>
 					<Row>
-						<ProductsGroup />
+						<Col>
+							<ProductsGroup />
+						</Col>
 					</Row>
 				</Container>
 			</main>
