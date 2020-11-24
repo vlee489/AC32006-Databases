@@ -17,9 +17,7 @@ const Navigation = props => {
                         <Link href={routes.index} passHref>
                             <Nav.Link>Home</Nav.Link>
                         </Link>
-                        <Link href={routes.basket} passHref>
-                            <Nav.Link>Basket</Nav.Link>
-                        </Link>
+                        
                         <Link href={routes.catalogue} passHref>
                             <Nav.Link>Catalogue</Nav.Link>
                         </Link>
@@ -44,10 +42,15 @@ const Navigation = props => {
                             </Link>
                         </NavDropdown>
                     </Nav>
-                    <Form inline>
+                    <Nav className="">
+                        <Link href={routes.basket} className="float-right" passHref>
+                            <Nav.Link>Basket</Nav.Link>
+                        </Link>
+                    </Nav>
+                    {/* <Form inline>
                         <FormControl type="text" placeholder="Search" className="mr-sm-2" />
                         <Button variant="outline-info">Search</Button>
-                    </Form>
+                    </Form> */}
                 </Navbar.Collapse>
             </Navbar>
         </>
