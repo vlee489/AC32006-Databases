@@ -1,53 +1,60 @@
-import { Button, Form, FormControl, Nav, Navbar, NavDropdown, Row, Col } from 'react-bootstrap';
+import React, { useContext } from 'react';
+
 import Link from 'next/link';
 import routes from '../routes';
 
+import BasketContext from '../libraries/basket';
+import UserContext from '../libraries/user';
+
+import { Button, Form, FormControl, Nav, Navbar, NavDropdown, Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons';
-
 import styles from "../styles/navigation.module.scss";
 
 const Navigation = props => {
-    const product = {
-        ProductID: 0,
-        Name: "Shelf",
-        Category: "Shelves",
-        Price: 5,
-        Dimensions: "2x2cm",
-        Quantity: 1
-      }
+    const { basket, setBasket } = useContext(BasketContext);
+    const { userToken, setUserToken } = useContext(UserContext);
 
-    let basketProducts = [];
+    // const product = {
+    //     ProductID: 0,
+    //     Name: "Shelf",
+    //     Category: "Shelves",
+    //     Price: 5,
+    //     Dimensions: "2x2cm",
+    //     Quantity: 1
+    //   }
 
-    basketProducts.push(product);
+    // let basketProducts = [];
 
-    const BasketDropdowns = () => {
-        return (
-            // basketProducts.map((p, i) => {
-                <Link href="" passHref>
-                    <NavDropdown.Item className="product-item">
-                        <Row>
-                            <Col>
-                                <img />
-                            </Col>
-                            <Col>
-                                Product
-                            </Col>
-                            <Col>
-                                Price
-                            </Col>
-                            <Col>
-                                Quantity
-                            </Col>
-                            <Col>
-                                <button>X</button>
-                            </Col>
-                        </Row>
-                    </NavDropdown.Item>
-                </Link>
-            // })
-        )
-    }
+    // basketProducts.push(product);
+
+    // const BasketDropdowns = () => {
+    //     return (
+    //         // basketProducts.map((p, i) => {
+    //             <Link href="" passHref>
+    //                 <NavDropdown.Item className="product-item">
+    //                     <Row>
+    //                         <Col>
+    //                             <img />
+    //                         </Col>
+    //                         <Col>
+    //                             Product
+    //                         </Col>
+    //                         <Col>
+    //                             Price
+    //                         </Col>
+    //                         <Col>
+    //                             Quantity
+    //                         </Col>
+    //                         <Col>
+    //                             <button>X</button>
+    //                         </Col>
+    //                     </Row>
+    //                 </NavDropdown.Item>
+    //             </Link>
+    //         // })
+    //     )
+    // }
 
     return (
         <>
@@ -90,7 +97,7 @@ const Navigation = props => {
                     </Nav>
                     <Nav className="nav-basket">
                         <NavDropdown alignRight className={styles.basketDropdown} title={<FontAwesomeIcon className="form-control-feedback" icon={faShoppingBasket} />} id="basket">
-                            <BasketDropdowns />
+                            {/* <BasketDropdowns /> */}
                             <NavDropdown.Item>Checkout</NavDropdown.Item>
                         </NavDropdown>
                     </Nav>

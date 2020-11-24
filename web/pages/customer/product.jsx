@@ -1,10 +1,11 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Cookies from 'js-cookie';
 import { useMediaQuery } from 'react-responsive';
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
+import BasketContext from '../../libraries/basket';
 import { Breadcrumb, Card, Container, Button, Col, Row } from 'react-bootstrap';
 
 import Navigation from '../../components/navigation';
@@ -15,21 +16,8 @@ import routes from '../../routes';
 import styles from '../../styles/customer/Product.module.scss';
 
 const Product = () => {
-	const [basket, setBasket] = useState(Cookies.get('basket'));
 	const { loading, error, data } = useQuery(GET_PRODUCT("1"));
-
-	// const [product, setProduct] = useState({});
-
-	// useEffect(() => {
-	//   setProduct({
-	//     ProductID: 0,
-	//     Name: "Shelf",
-	//     Category: "Shelves",
-	//     Price: 5,
-	//     Dimensions: "2x2cm",
-	//     Quantity: 1
-	//   });
-	// }, []);
+	const { basket, setBasket } = useContext(BasketContext);
 
 	const addToBasket = product => {
 
@@ -116,6 +104,7 @@ const Product = () => {
 			<main className={styles.main}>
 				<Navigation />
 				<ProductGroup />
+				<p>{basket}</p>
 			</main>
 		</div>
 	)
