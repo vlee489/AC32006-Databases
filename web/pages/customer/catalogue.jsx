@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 
-import { Container, Row, Col, Card, FormControl, InputGroup, Spinner } from 'react-bootstrap';
+import { Container, Row, Col, Card, FormControl, InputGroup } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
 import Spinner from '../../components/spinner';
 
