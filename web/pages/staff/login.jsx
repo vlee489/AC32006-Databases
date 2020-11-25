@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { Button, Container, Card, Form } from "react-bootstrap";
 import Navigation from '../../components/navigation';
 import login from '../../libraries/login';
-import UserContext from '../../libraries/user';
+import UserContext from '../../contexts/user';
 import routes from '../../routes';
 import styles from '../../styles/staff/Login.module.scss';
 

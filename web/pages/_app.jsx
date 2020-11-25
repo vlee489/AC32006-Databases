@@ -1,15 +1,18 @@
-import React, { useMemo, useState } from 'react';
-import BasketContext from '../libraries/basket';
-import UserContext from '../libraries/user';
+import React, { useMemo, useState, useReducer } from 'react';
+
+import BasketContext from '../contexts/basket';
+import UserContext from '../contexts/user';
+
+import { basketInit, basketReducer } from "../libraries/basket";
 
 import '../styles/globals.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const MyApp = ({ Component, pageProps }) => {
-	const [basket, setBasket] = useState("hello from context");
-	const [userToken, setUserToken] = useState(null);
+	const [basket, dispatch] = useReducer(basketReducer, basketInit);
+	const basketProvider = useMemo(() => ({ basket, dispatch }), [basket, dispatch]);
 
-	const basketProvider = useMemo(() => ({ basket, setBasket }), [basket, setBasket]);
+	const [userToken, setUserToken] = useState(null);	
 	const userProvider = useMemo(() => ({ userToken, setUserToken }), [userToken, setUserToken]);
 
 	return (

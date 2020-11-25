@@ -1,37 +1,69 @@
-// import React, { createContext } from 'react';
-// import Cookies from 'js-cookie';
+import basketActions from "../basketActions";
 
-import React, { createContext } from "react";
+export const basketInit = { items: [], totalCost: 0 };
 
-/* This code is adapted from here: 
-    https://github.com/AlexSegen/react-shopping-cart/blob/master/src/contexts/CartContext.js
-*/
+export const basketReducer = (state, action) => {
+    switch (action.type) {
+        case basketActions.addProduct:
+            return addProduct(state, action);
 
-export const BasketContext = createContext(null);
+        case basketActions.removeProduct:
+            return removeProduct(state, action);
 
-// export const storage = () => {
-//     const store = Cookies.get('basket');
-//     if (!store) return [];
-//     return store;
-// }
+        case basketActions.removeAllProduct:
+            return removeAllProduct(state, action);
 
-// export const setStorage = storage => localStorage.setItem('basket', JSON.stringify(storage));
+        case basketActions.clearBasket:
+            return basketInit();
 
-// export const BasketProvider = ({ children }) => (
-//     <BasketContext.Provider>
-//         { children }
-//     </BasketContext.Provider>
-// );
+        default:
+            const msg = `Basket Action ${action.type} is not a thing
+            Look at the basketActions.js file to choose a correct action`;
+            console.error(msg);
+            return state;
+    }
+}
 
-// export default BasketProvider;
+const addProduct = (state, action) => {
+    if (!action.product) return state;
 
-// const reducer = (prevState, action) => {
+    const currentProduct = state.items.find(item => item.ProductID === action.product.ProductID);
 
-// }
+    if (currentProduct) currentProduct.Quantity = currentProduct.Quantity + action.product.Quantity;
+    else state.items.push(action.product);
 
-// const Basket = () => {
-//     const [basket, dispatch] = useReducer(reducer, 0);
-//     return null;
-// }
+    return state;
+}
 
-export default BasketContext;
+const removeProduct = (state, action) => {
+    let productId = null;
+
+    if (action.productId) productId = action.productId;
+    else if (action.product && action.product.ProductID) productId = action.product.ProductID;
+    else return state;
+
+    const currentProduct = state.items.find(item => item.ProductID === action.product.ProductID);
+
+    if (currentProduct) {
+        currentProduct.Quantity = currentProduct.Quantity - 1;
+
+        if (currentProduct.Quantity <= 0) {
+            const pIndex = state.items.findIndex(item => item.ProductID === action.product.ProductID);
+            delete state.item[pIndex];
+        }
+    }
+
+    return state;
+}
+
+const removeAllProduct = (state, action) => {
+    let productId = null;
+
+    if (action.productId) productId = action.productId;
+    else if (action.product && action.product.ProductID) productId = action.product.ProductID;
+    else return state;
+
+    const pIndex = state.items.findIndex(item => item.ProductID === action.product.ProductID);
+    if (pIndex) delete state.item[pIndex];
+    return state;
+}

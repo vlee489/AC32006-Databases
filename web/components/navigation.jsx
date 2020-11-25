@@ -3,8 +3,8 @@ import React, { useContext } from 'react';
 import Link from 'next/link';
 import routes from '../routes';
 
-import BasketContext from '../libraries/basket';
-import UserContext from '../libraries/user';
+import BasketContext from '../contexts/basket';
+import UserContext from '../contexts/user';
 
 import { Button, Form, FormControl, Nav, Navbar, NavDropdown, Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,7 +12,7 @@ import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons';
 import styles from "../styles/navigation.module.scss";
 
 const Navigation = props => {
-    const { basket, setBasket } = useContext(BasketContext);
+    const { basket, dispatch } = useContext(BasketContext);
     const { userToken, setUserToken } = useContext(UserContext);
 
     // const product = {
