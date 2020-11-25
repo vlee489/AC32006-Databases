@@ -12,7 +12,7 @@ import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons';
 import styles from "../styles/navigation.module.scss";
 
 const Navigation = props => {
-    const { basket, setBasket } = useContext(BasketContext);
+    const { basket, dispatch } = useContext(BasketContext);
     const { userToken, setUserToken } = useContext(UserContext);
 
     // const product = {

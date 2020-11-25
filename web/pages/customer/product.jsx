@@ -1,23 +1,24 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
-import { useMediaQuery } from 'react-responsive';
+
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import BasketContext from '../../contexts/basket';
-import { Breadcrumb, Card, Container, Button, Col, Row } from 'react-bootstrap';
+import GET_PRODUCT from '../../queries/product';
 
+import { Breadcrumb, Card, Container, Button, Col, Row } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
 import Spinner from '../../components/spinner';
-import GET_PRODUCT from '../../queries/product';
+import { useMediaQuery } from 'react-responsive';
+import styles from '../../styles/customer/Product.module.scss';
+
 import categories from '../../categories';
 import routes from '../../routes';
-import styles from '../../styles/customer/Product.module.scss';
 
 const Product = () => {
 	const { loading, error, data } = useQuery(GET_PRODUCT("1"));
-	const { basket, setBasket } = useContext(BasketContext);
+	const { basket, dispatch } = useContext(BasketContext);
 
 	const addToBasket = product => {
 
