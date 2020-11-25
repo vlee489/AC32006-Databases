@@ -13,6 +13,7 @@ import Spinner from '../../components/spinner';
 import { useMediaQuery } from 'react-responsive';
 import styles from '../../styles/customer/Product.module.scss';
 
+import basketActions from '../../basketActions';
 import categories from '../../categories';
 import routes from '../../routes';
 
@@ -21,7 +22,7 @@ const Product = () => {
 	const { basket, dispatch } = useContext(BasketContext);
 
 	const addToBasket = product => {
-
+		dispatch({ type: basketActions.addToBasket, product: product });
 	}
 
 	const SplitProductInfo = ({ product }) => (
@@ -105,7 +106,7 @@ const Product = () => {
 			<main className={styles.main}>
 				<Navigation />
 				<ProductGroup />
-				<p>{basket}</p>
+				<pre>{JSON.stringify(basket, null, 2)}</pre>;
 			</main>
 		</div>
 	)

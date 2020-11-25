@@ -1,6 +1,6 @@
 import basketActions from "../basketActions";
 
-export const basketInit = () => ({ items: [], totalCost: 0 });
+export const basketInit = { items: [], totalCost: 0 };
 
 export const basketReducer = (state, action) => {
     switch (action.type) {
