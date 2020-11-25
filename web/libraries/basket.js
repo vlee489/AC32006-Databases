@@ -30,7 +30,7 @@ const addProduct = (state, action) => {
     const currentProduct = state.items.find(item => item.ProductID === action.product.ProductID);
 
     if (currentProduct) currentProduct.Quantity = currentProduct.Quantity + action.product.Quantity;
-    else state.items.append(action.product);
+    else state.items.push(action.product);
 
     return state;
 }

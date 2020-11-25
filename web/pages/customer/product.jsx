@@ -22,7 +22,7 @@ const Product = () => {
 	const { basket, dispatch } = useContext(BasketContext);
 
 	const addToBasket = product => {
-		dispatch({ type: basketActions.addToBasket, product: product });
+		dispatch({ type: basketActions.addProduct, product: product });
 	}
 
 	const SplitProductInfo = ({ product }) => (
