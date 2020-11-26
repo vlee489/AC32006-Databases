@@ -140,11 +140,10 @@ const Product = () => {
 			<main className={styles.main}>
 				<Navigation />
 				<ProductGroup />
-				<p>{productId}</p>
 				<pre>{JSON.stringify(basket, null, 2)}</pre>;
 			</main>
 		</div>
 	)
 }
 
-export default withApollo({ ssr: true })(Product);
+export default withApollo({ ssr: false })(Product);
