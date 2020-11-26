@@ -30,26 +30,26 @@ const addProduct = (state, action) => {
         console.error("You need to pass a product to add");
         return state;
     }
+
+    // Deep copies new product and the basket's current items
     const newProduct = JSON.parse(JSON.stringify(action.product));
     const newItems = JSON.parse(JSON.stringify(state.items));
 
     const currentProduct = newItems.find(item => item.ProductID === action.product.ProductID);
 
-    if (currentProduct) {
-        let quantity = 1;
-        if (action.product.Quantity) quantity = action.product.quantity;
-        currentProduct.Quantity += quantity;
-    }
-    else {
-        newProduct.Quantity = 1;
+    let quantity = 1;
+    if (action.product.Quantity) quantity = action.product.quantity;
+
+    if (!currentProduct) {
+        newProduct.Quantity = quantity;
         newItems.push(newProduct);
     }
+    else currentProduct.Quantity += quantity;
 
-    const newState = {
+    return {
         items: newItems,
-        totalCost: calcCost(newItems)
+        totalCost: calcCosts(newItems)
     }
-    return newState;
 }
 
 const removeProduct = (state, action) => {
@@ -58,6 +58,7 @@ const removeProduct = (state, action) => {
         return state;
     }
 
+    // Deep copies new product and the basket's current items
     const newItems = JSON.parse(JSON.stringify(state.items));
     const currentProduct = newItems.find(item => item.ProductID === action.product.ProductID);
 
@@ -66,19 +67,17 @@ const removeProduct = (state, action) => {
         return state;
     }
 
-    currentProduct.Quantity = currentProduct.Quantity - 1;
+    currentProduct.Quantity--;
 
     if (currentProduct.Quantity <= 0) {
         const pIndex = newItems.findIndex(item => item.ProductID === action.product.ProductID);
         newItems.splice(pIndex, 1);
     }
 
-    const newState = {
+    return {
         items: newItems,
-        totalCost: 0
+        totalCost: calcCosts(newItems)
     }
-    
-    return newState;
 }
 
 const removeAllProduct = (state, action) => {
@@ -87,6 +86,7 @@ const removeAllProduct = (state, action) => {
         return state;
     }
 
+    // Deep copies new product and the basket's current items
     const newItems = JSON.parse(JSON.stringify(state.items));
     const currentProduct = newItems.find(item => item.ProductID === action.product.ProductID);
 
@@ -98,15 +98,13 @@ const removeAllProduct = (state, action) => {
     const pIndex = newItems.findIndex(item => item.ProductID === action.product.ProductID);
     newItems.splice(pIndex, 1);
 
-    const newState = {
+    return {
         items: newItems,
-        totalCost: 0
+        totalCost: calcCosts(newItems)
     }
-
-    return newState;
 }
 
-const calcCost = (items) => {
+const calcCosts = (items) => {
     let totalCost = 0;
 
     items.map(item => {
