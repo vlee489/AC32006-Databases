@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 
 import { Container, Row, Col, Card, FormControl, InputGroup } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
@@ -8,6 +9,8 @@ import Spinner from '../../components/spinner';
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import GET_PRODUCTS from '../../queries/products';
+
+import routes from '../../routes';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -18,16 +21,18 @@ const Catalogue = () => {
 
 	const { loading, error, data } = useQuery(GET_PRODUCTS);
 
-	const Product = ({ name, image, price, dimensions }) => (
+	const Product = ({ productId, name, image, price, dimensions }) => (
 		<Col>
-			<Card className={`${styles.product} my-4`}>
-				<Card.Img variant="top" width="100%" src="https://picsum.photos/360/200" />
-				<Card.Body>
-					<Card.Title>{name}</Card.Title>
-					<Card.Text>{`£${price}`}</Card.Text>
-					<Card.Text>{dimensions}</Card.Text>
-				</Card.Body>
-			</Card>
+			<Link href={`${routes.product}/${encodeURIComponent(productId)}`}>
+				<Card className={`${styles.product} my-4`}>
+					<Card.Img variant="top" width="100%" src="https://picsum.photos/360/200" />
+					<Card.Body>
+						<Card.Title>{name}</Card.Title>
+						<Card.Text>{`£${price}`}</Card.Text>
+						<Card.Text>{dimensions}</Card.Text>
+					</Card.Body>
+				</Card>
+			</Link>
 		</Col>
 	)
 
@@ -45,7 +50,7 @@ const Catalogue = () => {
 			return (
 				<Row>
 					{filteredProducts.map(
-						(p, i) => <Product key={i} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
+						(p, i) => <Product key={i} productId={p.ProductID} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
 					)}
 				</Row>
 			)

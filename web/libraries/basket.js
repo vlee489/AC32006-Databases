@@ -1,5 +1,4 @@
 import basketActions from "../basketActions";
-import product from "../pages/customer/product";
 
 export const basketInit = { items: [], totalCost: 0 };
 
