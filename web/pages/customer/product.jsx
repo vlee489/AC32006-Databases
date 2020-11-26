@@ -21,8 +21,41 @@ const Product = () => {
 	const { loading, error, data } = useQuery(GET_PRODUCT("1"));
 	const { basket, dispatch } = useContext(BasketContext);
 
-	const addToBasket = product => {
-		dispatch({ type: basketActions.addProduct, product: product });
+	const addToBasket = product => { 
+		dispatch({ type: basketActions.addProduct, product: product }); 
+	}
+
+	const removeOneFromBasket = product => { 
+		dispatch({ type: basketActions.removeProduct, product: product });
+	}
+
+	const getProductFromBasket = product => ( 
+		basket.items.find(item => item.ProductID === product.ProductID) 
+	)
+
+	const isInBasket = product => { 
+		debugger;
+		if (getProductFromBasket(product)) return true; 
+		return false; 
+	}
+
+	const BasketModifier = ({ product }) => {
+		if (!isInBasket(product)) return <Button variant="primary" onClick={() => addToBasket(product)}>Add to basket</Button>
+		return (
+			<div>
+				<Row>
+					<Col>
+						<Button variant="primary" onClick={() => addToBasket(product)}>+</Button>
+					</Col>
+					<Col>
+						<p>{getProductFromBasket(product).Quantity}</p>
+					</Col>
+					<Col>
+						<Button variant="primary" onClick={() => removeOneFromBasket(product)}>-</Button>
+					</Col>
+				</Row>
+			</div>
+		)
 	}
 
 	const SplitProductInfo = ({ product }) => (
@@ -38,7 +71,7 @@ const Product = () => {
 						<Card.Title>{product.Name}</Card.Title>
 						<Card.Text>{`£${product.Price}`}</Card.Text>
 						<Card.Text>{product.Dimensions}</Card.Text>
-						<Button variant="primary" onClick={() => addToBasket(product)}>Add to basket</Button>
+						<BasketModifier product={product} />
 					</Card.Body>
 				</Card>
 			</Col>
@@ -54,7 +87,7 @@ const Product = () => {
 						<Card.Title>{product.Name}</Card.Title>
 						<Card.Text>{`£${product.Price}`}</Card.Text>
 						<Card.Text>{product.Dimensions}</Card.Text>
-						<Button variant="primary" onClick={() => addToBasket(product)}>Add to basket</Button>
+						<BasketModifier product={product} />
 					</Card.Body>
 				</Card>
 			</Col>

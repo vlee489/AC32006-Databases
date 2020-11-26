@@ -1,4 +1,5 @@
 import basketActions from "../basketActions";
+import product from "../pages/customer/product";
 
 export const basketInit = { items: [], totalCost: 0 };
 
@@ -26,13 +27,26 @@ export const basketReducer = (state, action) => {
 
 const addProduct = (state, action) => {
     if (!action.product) return state;
+    const newProduct = JSON.parse(JSON.stringify(action.product));
+    const newItems = JSON.parse(JSON.stringify(state.items));
 
-    const currentProduct = state.items.find(item => item.ProductID === action.product.ProductID);
+    const currentProduct = newItems.find(item => item.ProductID === action.product.ProductID);
+    
+    if (currentProduct) {
+        let quantity = 1;
+        if (action.product.Quantity) quantity = action.product.quantity;
+        currentProduct.Quantity += quantity;
+    }
+    else {
+        newProduct.Quantity = 1;
+        newItems.push(newProduct);
+    }
 
-    if (currentProduct) currentProduct.Quantity = currentProduct.Quantity + action.product.Quantity;
-    else state.items.push(action.product);
-
-    return state;
+    const newState = {
+        items: newItems,
+        totalCost: 0
+    }
+    return newState;
 }
 
 const removeProduct = (state, action) => {
@@ -66,4 +80,13 @@ const removeAllProduct = (state, action) => {
     const pIndex = state.items.findIndex(item => item.ProductID === action.product.ProductID);
     if (pIndex) delete state.item[pIndex];
     return state;
+}
+
+const calcCost = (items) => {
+    let totalCost = 0;
+    items.map(product => {
+        product.SubTotal = product.Quantity * product.Cost;
+        totalCost += product.SubTotal;
+    })
+    return totalCost;
 }

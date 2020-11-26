@@ -1,12 +1,12 @@
 export default {
     /* 
-        Adds or increments a product stored or added to the basket
+        Adds a product to the basket or increments the product stored
         This can be used to add more than one quantity of a product
     */
     addProduct: "ADD",
     /* 
-        Removes one of the chosen item 
-        Will remove the item if the quantity falls at or below 0
+        Removes one quantity from the chosen item 
+        Will remove the item if the quantity falls to at or below 0
     */
     removeProduct: "REMOVE",
     // Removes all quantities of the chosen item
