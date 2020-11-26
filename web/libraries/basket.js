@@ -26,67 +26,91 @@ export const basketReducer = (state, action) => {
 }
 
 const addProduct = (state, action) => {
-    if (!action.product) return state;
+    if (!action.product) {
+        console.error("You need to pass a product to add");
+        return state;
+    }
+
+    // Deep copies new product and the basket's current items
     const newProduct = JSON.parse(JSON.stringify(action.product));
     const newItems = JSON.parse(JSON.stringify(state.items));
 
     const currentProduct = newItems.find(item => item.ProductID === action.product.ProductID);
-    
-    if (currentProduct) {
-        let quantity = 1;
-        if (action.product.Quantity) quantity = action.product.quantity;
-        currentProduct.Quantity += quantity;
-    }
-    else {
-        newProduct.Quantity = 1;
+
+    let quantity = 1;
+    if (action.product.Quantity) quantity = action.product.quantity;
+
+    if (!currentProduct) {
+        newProduct.Quantity = quantity;
         newItems.push(newProduct);
     }
+    else currentProduct.Quantity += quantity;
 
-    const newState = {
+    return {
         items: newItems,
-        totalCost: 0
+        totalCost: calcCosts(newItems)
     }
-    return newState;
 }
 
 const removeProduct = (state, action) => {
-    if (!action.product || !action.product.ProductID) return state;
+    if (!action.product || !action.product.ProductID) {
+        console.error("You need to pass a product to remove with a valid ProductID");
+        return state;
+    }
+
+    // Deep copies new product and the basket's current items
     const newItems = JSON.parse(JSON.stringify(state.items));
-    
     const currentProduct = newItems.find(item => item.ProductID === action.product.ProductID);
 
-    if (currentProduct) {
-        currentProduct.Quantity = currentProduct.Quantity - 1;
-        if (currentProduct.Quantity <= 0) {
-            const pIndex = newItems.findIndex(item => item.ProductID === action.product.ProductID);
-            newItems.splice(pIndex, 1);
-        }
+    if (!currentProduct) {
+        console.log("Product passed in as parameter was not found in the basket");
+        return state;
     }
 
-    const newState = {
-        items: newItems,
-        totalCost: 0
+    currentProduct.Quantity--;
+
+    if (currentProduct.Quantity <= 0) {
+        const pIndex = newItems.findIndex(item => item.ProductID === action.product.ProductID);
+        newItems.splice(pIndex, 1);
     }
-    return newState;
+
+    return {
+        items: newItems,
+        totalCost: calcCosts(newItems)
+    }
 }
 
 const removeAllProduct = (state, action) => {
-    let productId = null;
+    if (!action.product || !action.product.ProductID) {
+        console.error("You need to pass a product to remove with a valid ProductID");
+        return state;
+    }
 
-    if (action.productId) productId = action.productId;
-    else if (action.product && action.product.ProductID) productId = action.product.ProductID;
-    else return state;
+    // Deep copies new product and the basket's current items
+    const newItems = JSON.parse(JSON.stringify(state.items));
+    const currentProduct = newItems.find(item => item.ProductID === action.product.ProductID);
 
-    const pIndex = state.items.findIndex(item => item.ProductID === action.product.ProductID);
-    if (pIndex) delete state.item[pIndex];
-    return state;
+    if (!currentProduct) {
+        console.log("Product passed in as parameter was not found in the basket");
+        return state;
+    }
+
+    const pIndex = newItems.findIndex(item => item.ProductID === action.product.ProductID);
+    newItems.splice(pIndex, 1);
+
+    return {
+        items: newItems,
+        totalCost: calcCosts(newItems)
+    }
 }
 
-const calcCost = (items) => {
+const calcCosts = (items) => {
     let totalCost = 0;
-    items.map(product => {
-        product.SubTotal = product.Quantity * product.Cost;
-        totalCost += product.SubTotal;
+
+    items.map(item => {
+        item.SubTotal = item.Quantity * item.Price;
+        totalCost += item.SubTotal;
     })
+
     return totalCost;
 }
