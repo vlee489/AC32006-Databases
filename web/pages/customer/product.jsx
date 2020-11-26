@@ -34,7 +34,6 @@ const Product = () => {
 	)
 
 	const isInBasket = product => { 
-		debugger;
 		if (getProductFromBasket(product)) return true; 
 		return false; 
 	}
@@ -97,7 +96,6 @@ const Product = () => {
 	const ProductInfo = ({ product }) => {
 		if (loading) return <Spinner />;
 		if (error) return <p>{error}</p>;
-		if (data) console.log(data);
 		return useMediaQuery({ query: '(min-width: 900px)' }) ? <SplitProductInfo product={product} /> : <UnifiedProductInfo product={product} />;
 	}
 

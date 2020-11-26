@@ -50,24 +50,24 @@ const addProduct = (state, action) => {
 }
 
 const removeProduct = (state, action) => {
-    let productId = null;
-
-    if (action.productId) productId = action.productId;
-    else if (action.product && action.product.ProductID) productId = action.product.ProductID;
-    else return state;
-
-    const currentProduct = state.items.find(item => item.ProductID === action.product.ProductID);
+    if (!action.product || !action.product.ProductID) return state;
+    const newItems = JSON.parse(JSON.stringify(state.items));
+    
+    const currentProduct = newItems.find(item => item.ProductID === action.product.ProductID);
 
     if (currentProduct) {
         currentProduct.Quantity = currentProduct.Quantity - 1;
-
         if (currentProduct.Quantity <= 0) {
-            const pIndex = state.items.findIndex(item => item.ProductID === action.product.ProductID);
-            delete state.item[pIndex];
+            const pIndex = newItems.findIndex(item => item.ProductID === action.product.ProductID);
+            newItems.splice(pIndex, 1);
         }
     }
 
-    return state;
+    const newState = {
+        items: newItems,
+        totalCost: 0
+    }
+    return newState;
 }
 
 const removeAllProduct = (state, action) => {
