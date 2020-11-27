@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import { Card, Row, Col } from 'react-bootstrap';
+import { Card, Row, Col, Container } from 'react-bootstrap';
 
 import { useQuery } from '@apollo/client';
 import withApollo from "../libraries/apollo";
@@ -8,7 +8,6 @@ import withApollo from "../libraries/apollo";
 import categories from '../categories';
 import Navigation from '../components/navigation';
 import styles from '../styles/index.module.scss';
-import { Container } from 'next/app';
 
 // 1 - Shelves
 // 2 - Plants
