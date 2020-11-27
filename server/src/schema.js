@@ -9,6 +9,7 @@ const { merge } = require("lodash");
 const { Products, ProductResolvers } = require('./graphql-schemas/products')
 const { Staff, StaffResolvers } = require('./graphql-schemas/staff');
 const { Shifts, ShiftResolvers } = require('./graphql-schemas/shifts');
+const { Warehouse, WarehouseResolvers } = require('./graphql-schemas/warehouse');
 
 // These empty Query an Mutations give a base to build off of for extending
 const Query = gql`
@@ -32,13 +33,15 @@ const schema = makeExecutableSchema({
     Mutation,
     Products,
     Staff,
-    Shifts
+    Shifts,
+    Warehouse
   ],
   resolvers: merge(
     resolvers,
     ProductResolvers,
     StaffResolvers,
-    ShiftResolvers
+    ShiftResolvers,
+    WarehouseResolvers,
   ),
 });
 
