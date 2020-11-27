@@ -8,6 +8,7 @@ const { merge } = require("lodash");
 // Seperate Schema Files
 const { Products, ProductResolvers } = require('./graphql-schemas/products')
 const { Staff, StaffResolvers } = require('./graphql-schemas/staff');
+const { Branches, BranchResolvers } = require('./graphql-schemas/branch')
 const { Shifts, ShiftResolvers } = require('./graphql-schemas/shifts');
 const { Warehouse, WarehouseResolvers } = require('./graphql-schemas/warehouse');
 
@@ -35,6 +36,7 @@ const schema = makeExecutableSchema({
     Staff,
     Shifts,
     Warehouse
+    Branches,
   ],
   resolvers: merge(
     resolvers,
@@ -42,6 +44,7 @@ const schema = makeExecutableSchema({
     StaffResolvers,
     ShiftResolvers,
     WarehouseResolvers,
+    BranchResolvers,
   ),
 });
 
