@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Image from 'next/image';
 import { Card, Row, Col } from 'react-bootstrap';
 
 import { useQuery } from '@apollo/client';
@@ -23,7 +24,7 @@ const Browse = () => {
   const CategoryCard = ({categoryName, categoryImage}) => (
       <Col>
         <Card className={styles.category}>
-          <Card.Img variant="top" src={categoryImage}></Card.Img>
+          <Card.Img layout="fill" src={categoryImage}/>
           <Card.Body>
             <Card.Title href="" className="text-center">{categoryName}</Card.Title>
           </Card.Body>
@@ -35,7 +36,7 @@ const Browse = () => {
     let cats = []  
     for (const cat in categories) {
         cats.push(
-          <CategoryCard categoryName={categories[cat].image, categories[cat].name}/>
+          <CategoryCard categoryName={categories[cat].name} categoryImage={categories[cat].image}/>
         )
       }
     return cats
