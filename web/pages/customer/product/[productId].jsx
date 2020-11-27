@@ -1,24 +1,27 @@
 import React, { useContext } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { useQuery } from '@apollo/client';
-import withApollo from "../../libraries/apollo";
-import BasketContext from '../../contexts/basket';
-import GET_PRODUCT from '../../queries/product';
+import withApollo from "../../../libraries/apollo";
+import BasketContext from '../../../contexts/basket';
+import GET_PRODUCT from '../../../queries/product';
 
 import { Breadcrumb, Card, Container, Button, Col, Row } from 'react-bootstrap';
-import Navigation from '../../components/navigation';
-import Spinner from '../../components/spinner';
+import Navigation from '../../../components/navigation';
+import Spinner from '../../../components/spinner';
 import { useMediaQuery } from 'react-responsive';
-import styles from '../../styles/customer/Product.module.scss';
+import styles from '../../../styles/customer/Product.module.scss';
 
-import basketActions from '../../basketActions';
-import categories from '../../categories';
-import routes from '../../routes';
+import basketActions from '../../../basketActions';
+import categories from '../../../categories';
+import routes from '../../../routes';
 
 const Product = () => {
-	const { loading, error, data } = useQuery(GET_PRODUCT("1"));
+	const router = useRouter();
+	const { productId } = router.query;
+	const { loading, error, data } = useQuery(GET_PRODUCT(productId));
 	const { basket, dispatch } = useContext(BasketContext);
 
 	const addToBasket = product => { 

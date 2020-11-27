@@ -77,9 +77,6 @@ const Navigation = props => {
                         <Link href={routes.checkout} passHref>
                             <Nav.Link>Checkout</Nav.Link>
                         </Link>
-                        <Link href={routes.product} passHref>
-                            <Nav.Link>Product</Nav.Link>
-                        </Link>
                         <NavDropdown title="Staff" id="staffDropdown">
                             <Link href={routes.login} passHref>
                                 <NavDropdown.Item>Login</NavDropdown.Item>
@@ -98,7 +95,12 @@ const Navigation = props => {
                     <Nav className="nav-basket">
                         <NavDropdown alignRight className={styles.basketDropdown} title={<FontAwesomeIcon className="form-control-feedback" icon={faShoppingBasket} />} id="basket">
                             {/* <BasketDropdowns /> */}
-                            <NavDropdown.Item>Checkout</NavDropdown.Item>
+                            <Link href={routes.basket} passHref>
+                                <NavDropdown.Item>Basket</NavDropdown.Item>
+                            </Link>
+                            <Link href={routes.checkout} passHref>
+                                <NavDropdown.Item>Checkout</NavDropdown.Item>
+                            </Link>
                         </NavDropdown>
                     </Nav>
                     {/* <Form inline>
