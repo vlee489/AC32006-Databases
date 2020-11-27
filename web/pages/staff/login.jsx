@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Head from 'next/head';
 import { Button, Container, Card, Form } from "react-bootstrap";
 import Navigation from '../../components/navigation';
 import login from '../../libraries/login';
+import UserContext from '../../contexts/user';
 import routes from '../../routes';
 import styles from '../../styles/staff/Login.module.scss';
 
-export default function Login() {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userToken, setUserToken] = useState(null);
+  const {userToken, setUserToken} = useContext(UserContext);
   const [errors, setErrors] = useState([]);
 
   const sendCredentials = async () => {
@@ -17,6 +18,8 @@ export default function Login() {
       email,
       password
     }
+
+    setErrors([]);
 
     const response = await login(data);
 
@@ -29,8 +32,8 @@ export default function Login() {
   }
 
   const LoginFooter = () => {
-    if (errors) return <p>{errors}</p>
-    return <p>Success</p>
+    if (errors.length > 0) return <p>{errors}</p>;
+    return <pre>{JSON.stringify(userToken, null, 2)}</pre>;
   }
 
   return (
@@ -69,3 +72,5 @@ export default function Login() {
     </div>
   )
 }
+
+export default Login;

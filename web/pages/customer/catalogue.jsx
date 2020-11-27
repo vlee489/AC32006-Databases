@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 
-import { Container, Row, Col, Card, FormControl, InputGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, FormControl, InputGroup, Nav } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
 import Spinner from '../../components/spinner';
 
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import GET_PRODUCTS from '../../queries/products';
+
+import categories from '../../categories';
+import priceRanges from '../../priceRanges';
+import routes from '../../routes';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -18,16 +23,52 @@ const Catalogue = () => {
 
 	const { loading, error, data } = useQuery(GET_PRODUCTS);
 
-	const Product = ({ name, image, price, dimensions }) => (
+	const CategoryGroup = () => {
+		let jsx = [];
+		let i = 0;
+
+		for (const category in categories) {
+			if (categories.hasOwnProperty(category)) {
+				jsx.push(<Form.Check key={i} type="checkbox" label={categories[category].name} />);
+				i++;
+			}
+		}
+
+		return jsx;
+	}
+
+	const PriceGroup = () => (
+		priceRanges.map((range, i) => {
+			<Form.Check key={i} type="checkbox" label={priceRanges[range].upper} />
+		})
+	)
+
+	const Sidebar = () => (
+		<Nav defaultActiveKey="/home" className="flex-column">
+			<Form>
+				<Form.Label>Categories:</Form.Label>
+				<Form.Group controlId="categoriesCheckbox">
+					<CategoryGroup />
+				</Form.Group>
+				<Form.Group controlId="categoriesCheckbox">
+					{/* <PriceGroup /> */}
+				</Form.Group>
+			</Form>
+		</Nav>
+	)
+
+	const Product = ({ productId, name, image, price, dimensions }) => (
 		<Col>
-			<Card className={`${styles.product} my-4`}>
-				<Card.Img variant="top" width="100%" src="https://picsum.photos/360/200" />
-				<Card.Body>
-					<Card.Title>{name}</Card.Title>
-					<Card.Text>{`£${price}`}</Card.Text>
-					<Card.Text>{dimensions}</Card.Text>
-				</Card.Body>
-			</Card>
+			<Link href={`${routes.product}/${encodeURIComponent(productId)}`}>
+				<Card className={`${styles.product} my-4`}>
+					<Card.Img variant="top" width="100%" src="https://picsum.photos/360/200" />
+					<Card.Body>
+						<Card.Title>{name}</Card.Title>
+						<Card.Text>{`£${price}`}</Card.Text>
+						<Card.Text>{dimensions}</Card.Text>
+					</Card.Body>
+				</Card>
+			</Link>
 		</Col>
 	)
 
@@ -45,7 +86,7 @@ const Catalogue = () => {
 			return (
 				<Row>
 					{filteredProducts.map(
-						(p, i) => <Product key={i} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
+						(p, i) => <Product key={i} productId={p.ProductID} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
 					)}
 				</Row>
 			)
@@ -62,6 +103,7 @@ const Catalogue = () => {
 
 			<main className={styles.main}>
 				<Navigation />
+				<Sidebar />
 				<Container>
 					<Row>
 						<Col>

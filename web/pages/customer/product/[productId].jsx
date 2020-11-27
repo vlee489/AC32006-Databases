@@ -1,38 +1,63 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
-import { useMediaQuery } from 'react-responsive';
-import { useQuery } from '@apollo/client';
-import withApollo from "../../libraries/apollo";
-import { Breadcrumb, Card, Container, Button, Col, Row } from 'react-bootstrap';
+import { useRouter } from 'next/router';
 
-import Navigation from '../../components/navigation';
-import Spinner from '../../components/spinner';
-import GET_PRODUCT from '../../queries/product';
-import categories from '../../categories';
-import routes from '../../routes';
-import styles from '../../styles/customer/Product.module.scss';
+import { useQuery } from '@apollo/client';
+import withApollo from "../../../libraries/apollo";
+import BasketContext from '../../../contexts/basket';
+import GET_PRODUCT from '../../../queries/product';
+
+import { Breadcrumb, Card, Container, Button, Col, Row } from 'react-bootstrap';
+import Navigation from '../../../components/navigation';
+import Spinner from '../../../components/spinner';
+import { useMediaQuery } from 'react-responsive';
+import styles from '../../../styles/customer/Product.module.scss';
+
+import basketActions from '../../../basketActions';
+import categories from '../../../categories';
+import routes from '../../../routes';
 
 const Product = () => {
-	const [basket, setBasket] = useState(Cookies.get('basket'));
-	const { loading, error, data } = useQuery(GET_PRODUCT("1"));
+	const router = useRouter();
+	const { productId } = router.query;
+	const { loading, error, data } = useQuery(GET_PRODUCT(productId));
+	const { basket, dispatch } = useContext(BasketContext);
 
-	// const [product, setProduct] = useState({});
+	const addToBasket = product => { 
+		dispatch({ type: basketActions.addProduct, product: product }); 
+	}
 
-	// useEffect(() => {
-	//   setProduct({
-	//     ProductID: 0,
-	//     Name: "Shelf",
-	//     Category: "Shelves",
-	//     Price: 5,
-	//     Dimensions: "2x2cm",
-	//     Quantity: 1
-	//   });
-	// }, []);
+	const removeOneFromBasket = product => { 
+		dispatch({ type: basketActions.removeProduct, product: product });
+	}
 
-	const addToBasket = product => {
+	const getProductFromBasket = product => ( 
+		basket.items.find(item => item.ProductID === product.ProductID) 
+	)
 
+	const isInBasket = product => { 
+		if (getProductFromBasket(product)) return true; 
+		return false; 
+	}
+
+	const BasketModifier = ({ product }) => {
+		if (!isInBasket(product)) return <Button variant="primary" onClick={() => addToBasket(product)}>Add to basket</Button>
+		return (
+			<div>
+				<Row>
+					<Col>
+						<Button variant="primary" onClick={() => addToBasket(product)}>+</Button>
+					</Col>
+					<Col>
+						<p>{getProductFromBasket(product).Quantity}</p>
+					</Col>
+					<Col>
+						<Button variant="primary" onClick={() => removeOneFromBasket(product)}>-</Button>
+					</Col>
+				</Row>
+			</div>
+		)
 	}
 
 	const SplitProductInfo = ({ product }) => (
@@ -48,7 +73,7 @@ const Product = () => {
 						<Card.Title>{product.Name}</Card.Title>
 						<Card.Text>{`£${product.Price}`}</Card.Text>
 						<Card.Text>{product.Dimensions}</Card.Text>
-						<Button variant="primary" onClick={() => addToBasket(product)}>Add to basket</Button>
+						<BasketModifier product={product} />
 					</Card.Body>
 				</Card>
 			</Col>
@@ -64,7 +89,7 @@ const Product = () => {
 						<Card.Title>{product.Name}</Card.Title>
 						<Card.Text>{`£${product.Price}`}</Card.Text>
 						<Card.Text>{product.Dimensions}</Card.Text>
-						<Button variant="primary" onClick={() => addToBasket(product)}>Add to basket</Button>
+						<BasketModifier product={product} />
 					</Card.Body>
 				</Card>
 			</Col>
@@ -74,7 +99,6 @@ const Product = () => {
 	const ProductInfo = ({ product }) => {
 		if (loading) return <Spinner />;
 		if (error) return <p>{error}</p>;
-		if (data) console.log(data);
 		return useMediaQuery({ query: '(min-width: 900px)' }) ? <SplitProductInfo product={product} /> : <UnifiedProductInfo product={product} />;
 	}
 
@@ -116,6 +140,7 @@ const Product = () => {
 			<main className={styles.main}>
 				<Navigation />
 				<ProductGroup />
+				<pre>{JSON.stringify(basket, null, 2)}</pre>;
 			</main>
 		</div>
 	)
