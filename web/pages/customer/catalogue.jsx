@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 
-import { Container, Row, Col, Card, FormControl, InputGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, FormControl, InputGroup, Nav } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
 import Spinner from '../../components/spinner';
 
@@ -10,6 +10,7 @@ import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import GET_PRODUCTS from '../../queries/products';
 
+import categories from '../../categories';
 import routes from '../../routes';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -20,6 +21,28 @@ const Catalogue = () => {
 	const [searchText, setSearchText] = useState("");
 
 	const { loading, error, data } = useQuery(GET_PRODUCTS);
+
+	const CategoryCheckboxGroup = () => {
+		let jsx = [];
+
+		for (const i = 0; i < categories.length; i++) {
+			const category = categories[i];
+			jsx.append(<Form.Check key={i} type="checkbox" label={category.name} />);
+		}
+
+		return jsx
+	}
+
+	const Sidebar = () => (
+		<Nav defaultActiveKey="/home" className="flex-column">
+			<Form>
+				<Form.Label>Categories:</Form.Label>
+				<Form.Group controlId="categoriesCheckbox">
+					<Form.Check type="checkbox" label="Check me out" />
+				</Form.Group>
+			</Form>
+		</Nav>
+	)
 
 	const Product = ({ productId, name, image, price, dimensions }) => (
 		<Col>
@@ -67,6 +90,7 @@ const Catalogue = () => {
 
 			<main className={styles.main}>
 				<Navigation />
+				<Sidebar />
 				<Container>
 					<Row>
 						<Col>
