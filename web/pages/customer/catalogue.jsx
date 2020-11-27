@@ -11,6 +11,7 @@ import withApollo from "../../libraries/apollo";
 import GET_PRODUCTS from '../../queries/products';
 
 import categories from '../../categories';
+import priceRanges from '../../priceRanges';
 import routes from '../../routes';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,23 +23,35 @@ const Catalogue = () => {
 
 	const { loading, error, data } = useQuery(GET_PRODUCTS);
 
-	const CategoryCheckboxGroup = () => {
+	const CategoryGroup = () => {
 		let jsx = [];
+		let i = 0;
 
-		for (const i = 0; i < categories.length; i++) {
-			const category = categories[i];
-			jsx.append(<Form.Check key={i} type="checkbox" label={category.name} />);
+		for (const category in categories) {
+			if (categories.hasOwnProperty(category)) {
+				jsx.push(<Form.Check key={i} type="checkbox" label={categories[category].name} />);
+				i++;
+			}
 		}
 
-		return jsx
+		return jsx;
 	}
+
+	const PriceGroup = () => (
+		priceRanges.map((range, i) => {
+			<Form.Check key={i} type="checkbox" label={priceRanges[range].upper} />
+		})
+	)
 
 	const Sidebar = () => (
 		<Nav defaultActiveKey="/home" className="flex-column">
 			<Form>
 				<Form.Label>Categories:</Form.Label>
 				<Form.Group controlId="categoriesCheckbox">
-					<Form.Check type="checkbox" label="Check me out" />
+					<CategoryGroup />
+				</Form.Group>
+				<Form.Group controlId="categoriesCheckbox">
+					{/* <PriceGroup /> */}
 				</Form.Group>
 			</Form>
 		</Nav>
