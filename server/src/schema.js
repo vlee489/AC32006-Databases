@@ -35,8 +35,8 @@ const schema = makeExecutableSchema({
     Products,
     Staff,
     Shifts,
-    Warehouse
-    Branches,
+    Warehouse,
+    Branches
   ],
   resolvers: merge(
     resolvers,
