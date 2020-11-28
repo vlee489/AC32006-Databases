@@ -13,6 +13,7 @@ class Shifts extends Model {
 
   static get relationMappings() {
     const { StaffShifts } = require('./staffShifts');
+    const { Branch } = require('./branch');
     return {
       staffShifts: {
         relation: Model.HasManyRelation, // Each product can be in many relations

@@ -13,6 +13,7 @@ class StaffShifts extends Model {
   }
 
   static get relationMappings() {
+    const {Shifts} = require('./shifts')
     return {
       shifts: {
         relation: Model.BelongsToOneRelation,
