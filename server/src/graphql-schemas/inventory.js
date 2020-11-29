@@ -79,7 +79,11 @@ const resolvers = {
                     Branch: branchQuery,
                     Product: productQuery,
                 }
-            }
+            }else {
+                throw new ForbiddenError(
+                  'Authentication token is invalid, please log in'
+                )
+              }
         }
     },
 };
