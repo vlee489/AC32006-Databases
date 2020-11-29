@@ -2,20 +2,19 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 
-import { Container, Row, Col, Card, Form, FormControl, InputGroup, Nav } from 'react-bootstrap';
-import Navigation from '../../components/navigation';
-import Spinner from '../../components/spinner';
-
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import GET_PRODUCTS from '../../queries/products';
-
-import categories from '../../categories';
-import priceRanges from '../../priceRanges';
 import routes from '../../routes';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import categories from '../../categories';
+
+import { Container, Row, Col, Card, Form, FormControl, InputGroup, Nav } from 'react-bootstrap';
+import Navigation from '../../components/navigation';
+import Sidebar from '../../components/sidebar';
+import Spinner from '../../components/spinner';
+import ToggleToken from '../../components/toggleToken';
+import { FaSearch } from 'react-icons/fa';
 import styles from '../../styles/customer/Catalogue.module.scss';
 
 const Catalogue = () => {
@@ -23,39 +22,9 @@ const Catalogue = () => {
 
 	const { loading, error, data } = useQuery(GET_PRODUCTS);
 
-	const CategoryGroup = () => {
-		let jsx = [];
-		let i = 0;
+	const changeCategories = () => {
 
-		for (const category in categories) {
-			if (categories.hasOwnProperty(category)) {
-				jsx.push(<Form.Check key={i} type="checkbox" label={categories[category].name} />);
-				i++;
-			}
-		}
-
-		return jsx;
 	}
-
-	const PriceGroup = () => (
-		priceRanges.map((range, i) => {
-			<Form.Check key={i} type="checkbox" label={priceRanges[range].upper} />
-		})
-	)
-
-	const Sidebar = () => (
-		<Nav defaultActiveKey="/home" className="flex-column">
-			<Form>
-				<Form.Label>Categories:</Form.Label>
-				<Form.Group controlId="categoriesCheckbox">
-					<CategoryGroup />
-				</Form.Group>
-				<Form.Group controlId="categoriesCheckbox">
-					{/* <PriceGroup /> */}
-				</Form.Group>
-			</Form>
-		</Nav>
-	)
 
 	const Product = ({ productId, name, image, price, dimensions }) => (
 		<Col>
@@ -94,6 +63,24 @@ const Catalogue = () => {
 		return <p>{`${data}`}</p>;
 	}
 
+	const CategoryToggles = () => {
+		let jsx = [];
+		let i = 0;
+
+		for (const category in categories) {
+			if (categories.hasOwnProperty(category)) {
+				jsx.push(
+					<Col>
+						<ToggleToken key={i} activeDefault={false} onClickFunc={changeCategories}>{categories[category].name}</ToggleToken>
+					</Col>
+				);
+				i++;
+			}
+		}
+
+		return jsx;
+	}
+
 	return (
 		<div className={styles.container}>
 			<Head>
@@ -110,7 +97,7 @@ const Catalogue = () => {
 							<InputGroup className="mb-3 pt-5">
 								<InputGroup.Prepend>
 									<InputGroup.Text>
-										<FontAwesomeIcon className="form-control-feedback" icon={faSearch} />
+										<FaSearch />
 									</InputGroup.Text>
 								</InputGroup.Prepend>
 								<FormControl
@@ -121,6 +108,9 @@ const Catalogue = () => {
 								/>
 							</InputGroup>
 						</Col>
+					</Row>
+					<Row>
+						<CategoryToggles />
 					</Row>
 					<Row>
 						<Col>

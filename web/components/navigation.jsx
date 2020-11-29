@@ -1,60 +1,14 @@
 import React, { useContext } from 'react';
-
 import Link from 'next/link';
 import routes from '../routes';
-
-import BasketContext from '../contexts/basket';
 import UserContext from '../contexts/user';
 
-import { Button, Form, FormControl, Nav, Navbar, NavDropdown, Row, Col } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons';
+import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import { FaShoppingBasket } from 'react-icons/fa';
 import styles from "../styles/navigation.module.scss";
 
 const Navigation = props => {
-    const { basket, dispatch } = useContext(BasketContext);
     const { userToken, setUserToken } = useContext(UserContext);
-
-    // const product = {
-    //     ProductID: 0,
-    //     Name: "Shelf",
-    //     Category: "Shelves",
-    //     Price: 5,
-    //     Dimensions: "2x2cm",
-    //     Quantity: 1
-    //   }
-
-    // let basketProducts = [];
-
-    // basketProducts.push(product);
-
-    // const BasketDropdowns = () => {
-    //     return (
-    //         // basketProducts.map((p, i) => {
-    //             <Link href="" passHref>
-    //                 <NavDropdown.Item className="product-item">
-    //                     <Row>
-    //                         <Col>
-    //                             <img />
-    //                         </Col>
-    //                         <Col>
-    //                             Product
-    //                         </Col>
-    //                         <Col>
-    //                             Price
-    //                         </Col>
-    //                         <Col>
-    //                             Quantity
-    //                         </Col>
-    //                         <Col>
-    //                             <button>X</button>
-    //                         </Col>
-    //                     </Row>
-    //                 </NavDropdown.Item>
-    //             </Link>
-    //         // })
-    //     )
-    // }
 
     return (
         <>
@@ -93,8 +47,7 @@ const Navigation = props => {
                         </NavDropdown>
                     </Nav>
                     <Nav className="nav-basket">
-                        <NavDropdown alignRight className={styles.basketDropdown} title={<FontAwesomeIcon className="form-control-feedback" icon={faShoppingBasket} />} id="basket">
-                            {/* <BasketDropdowns /> */}
+                        <NavDropdown alignRight className={styles.basketDropdown} title={<FaShoppingBasket />} id="basket">
                             <Link href={routes.basket} passHref>
                                 <NavDropdown.Item>Basket</NavDropdown.Item>
                             </Link>
@@ -103,10 +56,6 @@ const Navigation = props => {
                             </Link>
                         </NavDropdown>
                     </Nav>
-                    {/* <Form inline>
-                        <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-                        <Button variant="outline-info">Search</Button>
-                    </Form> */}
                 </Navbar.Collapse>
             </Navbar>
         </>
