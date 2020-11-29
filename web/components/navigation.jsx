@@ -4,8 +4,7 @@ import routes from '../routes';
 import UserContext from '../contexts/user';
 
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons';
+import { FaShoppingBasket } from 'react-icons/fa';
 import styles from "../styles/navigation.module.scss";
 
 const Navigation = props => {
@@ -48,7 +47,7 @@ const Navigation = props => {
                         </NavDropdown>
                     </Nav>
                     <Nav className="nav-basket">
-                        <NavDropdown alignRight className={styles.basketDropdown} title={<FontAwesomeIcon className="form-control-feedback" icon={faShoppingBasket} />} id="basket">
+                        <NavDropdown alignRight className={styles.basketDropdown} title={<FaShoppingBasket />} id="basket">
                             <Link href={routes.basket} passHref>
                                 <NavDropdown.Item>Basket</NavDropdown.Item>
                             </Link>

@@ -10,9 +10,7 @@ import routes from '../../routes';
 import { Container, Row, Col, Card, Form, FormControl, InputGroup, Nav } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
 import Spinner from '../../components/spinner';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { FaSearch } from 'react-icons/fa';
 import styles from '../../styles/customer/Catalogue.module.scss';
 
 const Catalogue = () => {
@@ -73,7 +71,7 @@ const Catalogue = () => {
 							<InputGroup className="mb-3 pt-5">
 								<InputGroup.Prepend>
 									<InputGroup.Text>
-										<FontAwesomeIcon className="form-control-feedback" icon={faSearch} />
+										<FaSearch />
 									</InputGroup.Text>
 								</InputGroup.Prepend>
 								<FormControl
