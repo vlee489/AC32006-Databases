@@ -2,17 +2,14 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 
-import { Container, Row, Col, Card, Form, FormControl, InputGroup, Nav } from 'react-bootstrap';
-import Navigation from '../../components/navigation';
-import Spinner from '../../components/spinner';
-
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import GET_PRODUCTS from '../../queries/products';
-
-import categories from '../../categories';
-import priceRanges from '../../priceRanges';
 import routes from '../../routes';
+
+import { Container, Row, Col, Card, Form, FormControl, InputGroup, Nav } from 'react-bootstrap';
+import Navigation from '../../components/navigation';
+import Spinner from '../../components/spinner';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -22,40 +19,6 @@ const Catalogue = () => {
 	const [searchText, setSearchText] = useState("");
 
 	const { loading, error, data } = useQuery(GET_PRODUCTS);
-
-	const CategoryGroup = () => {
-		let jsx = [];
-		let i = 0;
-
-		for (const category in categories) {
-			if (categories.hasOwnProperty(category)) {
-				jsx.push(<Form.Check key={i} type="checkbox" label={categories[category].name} />);
-				i++;
-			}
-		}
-
-		return jsx;
-	}
-
-	const PriceGroup = () => (
-		priceRanges.map((range, i) => {
-			<Form.Check key={i} type="checkbox" label={priceRanges[range].upper} />
-		})
-	)
-
-	const Sidebar = () => (
-		<Nav defaultActiveKey="/home" className="flex-column">
-			<Form>
-				<Form.Label>Categories:</Form.Label>
-				<Form.Group controlId="categoriesCheckbox">
-					<CategoryGroup />
-				</Form.Group>
-				<Form.Group controlId="categoriesCheckbox">
-					{/* <PriceGroup /> */}
-				</Form.Group>
-			</Form>
-		</Nav>
-	)
 
 	const Product = ({ productId, name, image, price, dimensions }) => (
 		<Col>
@@ -103,7 +66,7 @@ const Catalogue = () => {
 
 			<main className={styles.main}>
 				<Navigation />
-				<Sidebar />
+
 				<Container>
 					<Row>
 						<Col>
