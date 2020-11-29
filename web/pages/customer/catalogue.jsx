@@ -7,6 +7,8 @@ import withApollo from "../../libraries/apollo";
 import GET_PRODUCTS from '../../queries/products';
 import routes from '../../routes';
 
+import categories from '../../categories';
+
 import { Container, Row, Col, Card, Form, FormControl, InputGroup, Nav } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
 import Sidebar from '../../components/sidebar';
@@ -61,6 +63,24 @@ const Catalogue = () => {
 		return <p>{`${data}`}</p>;
 	}
 
+	const CategoryToggles = () => {
+		let jsx = [];
+		let i = 0;
+
+		for (const category in categories) {
+			if (categories.hasOwnProperty(category)) {
+				jsx.push(
+					<Col>
+						<ToggleToken key={i} activeDefault={false} onClickFunc={changeCategories}>{categories[category].name}</ToggleToken>
+					</Col>
+				);
+				i++;
+			}
+		}
+
+		return jsx;
+	}
+
 	return (
 		<div className={styles.container}>
 			<Head>
@@ -90,9 +110,7 @@ const Catalogue = () => {
 						</Col>
 					</Row>
 					<Row>
-						<Col>
-							<ToggleToken activeDefault={false} onClickFunc={changeCategories}>Dog</ToggleToken>
-						</Col>
+						<CategoryToggles />
 					</Row>
 					<Row>
 						<Col>
