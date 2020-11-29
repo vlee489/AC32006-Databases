@@ -26,17 +26,17 @@ const Sidebar = () => {
 
     return (
         <div className={styles.sidebar}>
-            <Nav className="flex-column">
+            {/* <Nav className="flex-column">
                 <Form>
                     <Form.Label>Categories:</Form.Label>
                     <Form.Group controlId="categoriesCheckbox">
                         <CategoryGroup />
-                    </Form.Group>
+                    </Form.Group> */}
                     {/* <Form.Group controlId="categoriesCheckbox"> */}
                     {/* <PriceGroup /> */}
                     {/* </Form.Group> */}
-                </Form>
-            </Nav>
+                {/* </Form>
+            </Nav> */}
         </div>
     )
 }

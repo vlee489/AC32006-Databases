@@ -1,0 +1,20 @@
+.toggleToken {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+    max-width: 6rem;
+    font-weight: 0.6em;
+    border-radius: 4px;
+    flex: 1;
+}
+
+.inactive {
+    color: #000000;
+    background: #c4c4c4;
+}
+
+.active {
+    color: #ffffff;
+    background: #0075F2;
+}

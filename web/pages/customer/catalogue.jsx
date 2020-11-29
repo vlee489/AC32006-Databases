@@ -9,7 +9,9 @@ import routes from '../../routes';
 
 import { Container, Row, Col, Card, Form, FormControl, InputGroup, Nav } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
+import Sidebar from '../../components/sidebar';
 import Spinner from '../../components/spinner';
+import ToggleToken from '../../components/toggleToken';
 import { FaSearch } from 'react-icons/fa';
 import styles from '../../styles/customer/Catalogue.module.scss';
 
@@ -17,6 +19,10 @@ const Catalogue = () => {
 	const [searchText, setSearchText] = useState("");
 
 	const { loading, error, data } = useQuery(GET_PRODUCTS);
+
+	const changeCategories = () => {
+
+	}
 
 	const Product = ({ productId, name, image, price, dimensions }) => (
 		<Col>
@@ -64,7 +70,7 @@ const Catalogue = () => {
 
 			<main className={styles.main}>
 				<Navigation />
-
+				<Sidebar />
 				<Container>
 					<Row>
 						<Col>
@@ -81,6 +87,11 @@ const Catalogue = () => {
 									onChange={e => setSearchText(e.target.value)}
 								/>
 							</InputGroup>
+						</Col>
+					</Row>
+					<Row>
+						<Col>
+							<ToggleToken activeDefault={false} onClickFunc={changeCategories}>Dog</ToggleToken>
 						</Col>
 					</Row>
 					<Row>
