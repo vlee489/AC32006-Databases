@@ -14,6 +14,8 @@ class BranchStaff extends Model {
   }
 
   static get relationMappings() {
+    const { Branch } = require('../models/branch');
+    const { Staff } = require('../models/staff');
     return {
       staff: {
         relation: Model.BelongsToOneRelation,
