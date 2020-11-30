@@ -13,6 +13,8 @@ class ProductPurchases extends Model {
   }
 
   static get relationMappings() {
+    const { Inventory } = require('../models/inventory');
+    const { Purchases } = require('../models/purchases');
     return {
       inventory: {
         relation: Model.BelongsToOneRelation,
