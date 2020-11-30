@@ -1,7 +1,7 @@
 /*
 Defines all the Scheme for Warehouse related GraphQL functions
 */
-const { gql } = require('apollo-server-express');
+const { gql, ForbiddenError, UserInputError } = require('apollo-server-express');
 const { Products } = require('../models/products');
 const { Warehouse } = require('../models/warehouse');
 const { WarehouseProducts } = require('../models/warehouseProducts');
