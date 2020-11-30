@@ -29,10 +29,19 @@ const Mutation = gql`
 
 const resolvers = {};
 
+const SharedTypes = gql`
+  "Represents a entry of product ordered in a Purchase"
+  type OrderItem{
+      Product: Product
+      Qty: Int
+  }
+`;
+
 // Build Scheme with each file
 const schema = makeExecutableSchema({
   typeDefs: [
     Query,
+    SharedTypes,
     Mutation,
     Products,
     Staff,

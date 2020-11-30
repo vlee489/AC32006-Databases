@@ -6,12 +6,6 @@ const { Purchases } = require('../models/purchases');
 const { ProductPurchases } = require('../models/productPurchases');
 
 const typeDefs = gql`
-    "Represents a entry of product ordered in a Purchase"
-    type PurchaseItem{
-        Product: Product
-        Qty: Int
-    }
-
     "Represents a Customer purchase"
     type Purchase{
         PurchaseID: ID
@@ -23,7 +17,7 @@ const typeDefs = gql`
         TotalPrice: Float
         Dispatched: Boolean
         Branch: Branch
-        Products: [PurchaseItem]
+        Products: [OrderItem]
     }
 
     extend type Query{
@@ -230,6 +224,9 @@ const resolvers = {
                 // Build reply
                 replyProducts = [] //Holds products
                 for (const item in purchaseInsert.productPurchases) { //For each product in the purchase order
+                    // Update Inventory
+                    inventoryUpdate = await Inventory.query().findById(purchaseInsert.productPurchases[item].InventoryID).decrement("QTY", purchaseInsert.productPurchases[item].QTY)
+                    // Add product to a hold 
                     replyProducts.push({
                         Product: (await Products.query().findById((await Inventory.query().findById(purchaseInsert.productPurchases[item].InventoryID)).ProductID)),
                         Qty: purchaseInsert.productPurchases[item].QTY
