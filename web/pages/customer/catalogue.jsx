@@ -9,7 +9,7 @@ import routes from '../../routes';
 
 import categories from '../../categories';
 
-import { Container, Row, Col, Card, Form, FormControl, InputGroup, Nav } from 'react-bootstrap';
+import { Container, Row, Col, Card, FormControl, InputGroup } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
 import Sidebar from '../../components/sidebar';
 import Spinner from '../../components/spinner';
@@ -19,11 +19,30 @@ import styles from '../../styles/customer/Catalogue.module.scss';
 
 const Catalogue = () => {
 	const [searchText, setSearchText] = useState("");
+	let categoryRefs = [];
+
+	const getActiveCategories = () => {
+		let activeCategories = [];
+
+		// https://stackoverflow.com/questions/9907419/how-to-get-a-key-in-a-javascript-object-by-its-value
+		const getKeyByValue = (object, value) => {
+			return Object.keys(object).find(key => object[key].name === value);
+		}
+
+		categoryRefs.forEach(cat => {
+			if (cat.state.active) {
+				const catergoryNum = getKeyByValue(categories, cat.props.name);
+				activeCategories.push(catergoryNum);
+			}
+		});
+
+		return activeCategories;
+	}
 
 	const { loading, error, data } = useQuery(GET_PRODUCTS);
 
 	const changeCategories = () => {
-
+		// getActiveCategories();
 	}
 
 	const Product = ({ productId, name, image, price, dimensions }) => (
@@ -46,7 +65,7 @@ const Catalogue = () => {
 		if (error) return <p>{`${error}`}</p>;
 		if (data) {
 			const products = data.getProducts;
-			const filteredProducts = products.filter(
+			const searchFiltered = products.filter(
 				product => {
 					if (!searchText) return true;
 					else if (product.Name.toLowerCase().includes(searchText.toLowerCase())) return true;
@@ -54,7 +73,7 @@ const Catalogue = () => {
 			);
 			return (
 				<Row>
-					{filteredProducts.map(
+					{searchFiltered.map(
 						(p, i) => <Product key={i} productId={p.ProductID} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
 					)}
 				</Row>
@@ -69,11 +88,14 @@ const Catalogue = () => {
 
 		for (const category in categories) {
 			if (categories.hasOwnProperty(category)) {
-				jsx.push(
-					// <Col key={i}>
-						<ToggleToken key={i} activeDefault={false} onClickFunc={changeCategories}>{categories[category].name}</ToggleToken>
-					// </Col>
-				);
+				jsx.push(<ToggleToken
+					key={i}
+					ref={ref => categoryRefs.push(ref)}
+					name={categories[category].name}
+					number={categories[category]}
+					activeDefault={true}
+					onClickFunc={changeCategories}
+				/>);
 				i++;
 			}
 		}
@@ -109,11 +131,9 @@ const Catalogue = () => {
 							</InputGroup>
 						</Col>
 					</Row>
-					{/* <Row> */}
 					<div className="flexWrap">
 						<CategoryToggles />
 					</div>
-					{/* </Row> */}
 					<Row>
 						<Col>
 							<ProductsGroup />

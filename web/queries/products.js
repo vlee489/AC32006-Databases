@@ -15,4 +15,19 @@ const GET_PRODUCTS = gql`
   }
 `;
 
+export const GET_PRODUCTS_BY_CATEGORY = category => gql`
+  query {
+    getProducts(category: ${category}) {
+      ProductID
+      Name
+      Category
+      Price
+      Description
+      Weight
+      Colour
+      Dimensions
+    }
+  }
+`;
+
 export default GET_PRODUCTS;
