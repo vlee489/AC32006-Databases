@@ -70,9 +70,9 @@ const Catalogue = () => {
 		for (const category in categories) {
 			if (categories.hasOwnProperty(category)) {
 				jsx.push(
-					<Col>
+					// <Col key={i}>
 						<ToggleToken key={i} activeDefault={false} onClickFunc={changeCategories}>{categories[category].name}</ToggleToken>
-					</Col>
+					// </Col>
 				);
 				i++;
 			}
@@ -109,9 +109,11 @@ const Catalogue = () => {
 							</InputGroup>
 						</Col>
 					</Row>
-					<Row>
+					{/* <Row> */}
+					<div className="flexWrap">
 						<CategoryToggles />
-					</Row>
+					</div>
+					{/* </Row> */}
 					<Row>
 						<Col>
 							<ProductsGroup />
