@@ -35,12 +35,6 @@ const typeDefs = gql`
         ): [Purchase]
     }
 
-    "Product and Qty required for an order"
-    input ProductOrder{
-        ProductID: ID,
-        Qty: Int
-    } 
-
     extend type Mutation{
         "Add an order to the system as a customer"
         createPurchase(

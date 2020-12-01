@@ -107,16 +107,16 @@ const resolvers = {
         // Build the query to warehouseProducts
         warehouseProductsQuery = WarehouseProducts.query().where('WarehouseID', arg.WarehouseID)
         if ('ProductID' in arg) {
-          warehouseQuery = warehouseQuery.where('ProductID', arg.ProductID)
+          warehouseProductsQuery = warehouseProductsQuery.where('ProductID', arg.ProductID)
         }
-        warehouseQuery = await warehouseQuery
+        warehouseProductsQuery = await warehouseProductsQuery
         reply = [] // Holds item for reply
-        for (const item in warehouseQuery) {
+        for (const item in warehouseProductsQuery) {
           reply.push({
-            WarehouseProductID: warehouseQuery[item].WarehouseProductID,
-            Product: (await Products.query().findById(warehouseQuery[item].ProductID)),
-            Qty: warehouseQuery[item].QTY,
-            Location: warehouseQuery[item].Location,
+            WarehouseProductID: warehouseProductsQuery[item].WarehouseProductID,
+            Product: (await Products.query().findById(warehouseProductsQuery[item].ProductID)),
+            Qty: warehouseProductsQuery[item].QTY,
+            Location: warehouseProductsQuery[item].Location,
             Warehouse: warehouseQuery,
           })
         }
@@ -139,13 +139,13 @@ const resolvers = {
         }
         warehouseProductsQuery = await WarehouseProducts.query().where('ProductID', arg.ProductID)
         reply = [] // Holds item for reply
-        for (const item in warehouseQuery) {
+        for (const item in warehouseProductsQuery) {
           reply.push({
-            WarehouseProductID: warehouseQuery[item].WarehouseProductID,
+            WarehouseProductID: warehouseProductsQuery[item].WarehouseProductID,
             Product: productQuery,
-            Qty: warehouseQuery[item].QTY,
-            Location: warehouseQuery[item].Location,
-            Warehouse: (await Warehouse.query().findById(warehouseQuery[item].WarehouseID)),
+            Qty: warehouseProductsQuery[item].QTY,
+            Location: warehouseProductsQuery[item].Location,
+            Warehouse: (await Warehouse.query().findById(warehouseProductsQuery[item].WarehouseID)),
           })
         }
         return reply

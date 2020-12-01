@@ -13,6 +13,7 @@ const { Shifts, ShiftResolvers } = require('./graphql-schemas/shifts');
 const { Warehouse, WarehouseResolvers } = require('./graphql-schemas/warehouse');
 const { Inventory, InventoryResolvers } = require('./graphql-schemas/inventory');
 const { Purchase,PurchaseResolvers } = require('./graphql-schemas/purchase')
+const { Order, InternalOrderResolvers } = require('./graphql-schemas/order')
 
 // These empty Query an Mutations give a base to build off of for extending
 const Query = gql`
@@ -35,6 +36,11 @@ const SharedTypes = gql`
       Product: Product
       Qty: Int
   }
+  "Product and Qty required for an order"
+    input ProductOrder{
+        ProductID: ID,
+        Qty: Int
+    } 
 `;
 
 // Build Scheme with each file
@@ -49,7 +55,8 @@ const schema = makeExecutableSchema({
     Warehouse,
     Branches,
     Inventory,
-    Purchase
+    Purchase,
+    Order,
   ],
   resolvers: merge(
     resolvers,
@@ -59,7 +66,8 @@ const schema = makeExecutableSchema({
     WarehouseResolvers,
     BranchResolvers,
     InventoryResolvers,
-    PurchaseResolvers
+    PurchaseResolvers,
+    InternalOrderResolvers
   ),
 });
 
