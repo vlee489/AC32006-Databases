@@ -23,6 +23,8 @@ const typeDefs = gql`
   extend type Query{
     "Get a list of products"
     getProducts(ProductID: ID, Category: Int): [Product]
+    "Get a list of products in a list of catergories"
+    getProductsFromCatergories(Category: [Int]!): [Product]
   }
 `;
 
@@ -42,6 +44,15 @@ const resolvers = {
 
       return await dbQuery;
     },
+
+    getProductsFromCatergories: async (parent, arg, ctx, info) => {
+      reply = []
+      for(const i in arg.Category){
+        dbQuery = await Products.query().where('Category', arg.Category[i]);
+        reply = reply.concat(dbQuery)
+      }
+      return reply
+    }
   },
 };
 
