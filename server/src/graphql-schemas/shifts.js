@@ -105,20 +105,20 @@ const resolvers = {
         var staffID
         const now = new Date()
         // Get ID 
-        if ('StaffID' in arg){
+        if ('StaffID' in arg) {
           staffID = arg.StaffID
-        }else{
+        } else {
           staffID = ctx.user.ID
         }
         staffShiftQuery = await StaffShifts.query().where('StaffID', staffID)
         reply = []
-        for(const item in staffShiftQuery){
+        for (const item in staffShiftQuery) {
           shiftQuery = Shifts.query().findById(staffShiftQuery[item].ShiftID)
-          if('Future' in arg){
+          if ('Future' in arg) {
             shiftQuery = shiftQuery.where('Start', '>', now)
           }
           shiftQuery = await shiftQuery
-          if(shiftQuery){
+          if (shiftQuery) {
             reply.push({
               ShiftID: shiftQuery.ShiftID,
               End: shiftQuery.End.toISOString(), // Turns date into ISO format
@@ -138,7 +138,7 @@ const resolvers = {
     staffOnShift: async (parent, arg, ctx, info) => {
       if (ctx.auth) {
         // Check if ShiftID exists
-        if(!(await Shifts.query().findById(arg.ShiftID))){
+        if (!(await Shifts.query().findById(arg.ShiftID))) {
           throw new UserInputError(
             'Shift does not exist', { invalidArgs: Object.keys(arg) }
           )
@@ -146,7 +146,7 @@ const resolvers = {
         // Where for staff on shift
         reply = []  //List to hold staff on shift
         staffShiftQuery = await StaffShifts.query().where('ShiftID', arg.ShiftID)
-        for(const item in staffShiftQuery){
+        for (const item in staffShiftQuery) {
           reply.push((await Staff.query().findById(staffShiftQuery[item].StaffID)))
         }
         return reply
@@ -161,32 +161,32 @@ const resolvers = {
     assignShift: async (parent, arg, ctx, info) => {
       if (ctx.auth) {
         // Gets staff from query
-        if ('StaffID' in arg){
+        if ('StaffID' in arg) {
           staffQuery = await Staff.query().findById(arg.StaffID)
           // We check if the Staff member isn't in a high or same position of the 
           // person issuing the shift assignement, if they are throw an error
-          if(staffQuery.Position < ctx.user.Position){
+          if (staffQuery.Position < ctx.user.Position) {
             throw new ForbiddenError(
               'Can not assign shift for staff member at a high position'
             )
           }
-          if((staffQuery.Position == ctx.user.Position)&&(staffQuery.StaffID != ctx.user.ID)){
+          if ((staffQuery.Position == ctx.user.Position) && (staffQuery.StaffID != ctx.user.ID)) {
             throw new ForbiddenError(
               'Can not assign shift for staff member at same level'
             )
           }
-        }else{
+        } else {
           staffQuery = await Staff.query().findById(ctx.user.ID)
         }
         shiftQuery = await Shifts.query().findById(arg.ShiftID)
         // Check if both staff and shift exist
-        if(!(shiftQuery instanceof Shifts) || !(staffQuery instanceof Staff)){
+        if (!(shiftQuery instanceof Shifts) || !(staffQuery instanceof Staff)) {
           throw new UserInputError(
             'Shift or Staff does not exist', { invalidArgs: Object.keys(arg) }
           )
         }
         // Checks if the staff member has been assigned to shift already
-        if((await StaffShifts.query().findById([shiftQuery.ShiftID, staffQuery.StaffID])) instanceof StaffShifts){
+        if ((await StaffShifts.query().findById([shiftQuery.ShiftID, staffQuery.StaffID])) instanceof StaffShifts) {
           throw new UserInputError(
             'Staff assigned to Shift already'
           )
@@ -198,7 +198,7 @@ const resolvers = {
         })
 
 
-        if(assignShift instanceof StaffShifts){
+        if (assignShift instanceof StaffShifts) {
           return {
             ShiftID: shiftQuery.ShiftID,
             Start: shiftQuery.Start.toISOString(),
