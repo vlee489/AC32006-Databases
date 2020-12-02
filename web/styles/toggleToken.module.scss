@@ -2,13 +2,12 @@
     cursor: pointer;
     display: flex;
     justify-content: center;
-    align-items: center;
     margin: 8px;
     padding: 2px;
     min-width: 8rem;
+    max-width: 8rem;
     font-weight: 0.6em;
     border-radius: 4px;
-    flex: 1;
 }
 
 .inactive {

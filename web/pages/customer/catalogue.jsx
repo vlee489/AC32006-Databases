@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
@@ -8,8 +9,9 @@ import GET_PRODUCTS from '../../queries/products';
 import routes from '../../routes';
 
 import categories from '../../categories';
+import categoryNum from '../../categoryNum';
 
-import { Container, Row, Col, Card, Form, FormControl, InputGroup, Nav } from 'react-bootstrap';
+import { Container, Row, Col, Card, FormControl, InputGroup } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
 import Sidebar from '../../components/sidebar';
 import Spinner from '../../components/spinner';
@@ -18,12 +20,33 @@ import { FaSearch } from 'react-icons/fa';
 import styles from '../../styles/customer/Catalogue.module.scss';
 
 const Catalogue = () => {
+	const router = useRouter();
+	const { categoryDefault } = router.query;
 	const [searchText, setSearchText] = useState("");
+	const categoryRefs = useRef([]);
+
+	const getActiveCategories = () => {
+		let activeCategories = [];
+
+		// https://stackoverflow.com/questions/9907419/how-to-get-a-key-in-a-javascript-object-by-its-value
+		const getKeyByValue = (object, value) => {
+			return Object.keys(object).find(key => object[key].name === value);
+		}
+
+		categoryRefs.forEach(cat => {
+			if (cat.state.active) {
+				const catergoryNum = getKeyByValue(categories, cat.props.name);
+				activeCategories.push(catergoryNum);
+			}
+		});
+
+		return activeCategories;
+	}
 
 	const { loading, error, data } = useQuery(GET_PRODUCTS);
 
 	const changeCategories = () => {
-
+		// getActiveCategories();
 	}
 
 	const Product = ({ productId, name, image, price, dimensions }) => (
@@ -46,7 +69,18 @@ const Catalogue = () => {
 		if (error) return <p>{`${error}`}</p>;
 		if (data) {
 			const products = data.getProducts;
-			const filteredProducts = products.filter(
+			const categoryFiltered = products.filter(
+				product => {
+					return categoryRefs.current.filter(
+						categoryRef => {
+							debugger;
+							if (categoryRef && categoryRef.state.active && categories[product.Category].name === categoryRef.props.name) return true;
+							return false;
+						}
+					)
+				}
+			);
+			const searchFiltered = categoryFiltered.filter(
 				product => {
 					if (!searchText) return true;
 					else if (product.Name.toLowerCase().includes(searchText.toLowerCase())) return true;
@@ -54,7 +88,7 @@ const Catalogue = () => {
 			);
 			return (
 				<Row>
-					{filteredProducts.map(
+					{searchFiltered.map(
 						(p, i) => <Product key={i} productId={p.ProductID} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
 					)}
 				</Row>
@@ -67,13 +101,22 @@ const Catalogue = () => {
 		let jsx = [];
 		let i = 0;
 
+		const getActiveDefault = categoryName => {
+			// if (!categoryDefault) return true;
+			return categoryName === categoryDefault;
+		}
+
 		for (const category in categories) {
 			if (categories.hasOwnProperty(category)) {
-				jsx.push(
-					<Col>
-						<ToggleToken key={i} activeDefault={false} onClickFunc={changeCategories}>{categories[category].name}</ToggleToken>
-					</Col>
-				);
+				const categoryName = categories[category].name;
+				jsx.push(<ToggleToken
+					key={i}
+					ref={ref => categoryRefs.current.push(ref)}
+					name={categoryName}
+					number={categoryNum[categoryName]}
+					activeDefault={getActiveDefault(categoryName)}
+					onClickFunc={changeCategories}
+				/>);
 				i++;
 			}
 		}
@@ -109,9 +152,9 @@ const Catalogue = () => {
 							</InputGroup>
 						</Col>
 					</Row>
-					<Row>
+					<div className="flexWrap">
 						<CategoryToggles />
-					</Row>
+					</div>
 					<Row>
 						<Col>
 							<ProductsGroup />
