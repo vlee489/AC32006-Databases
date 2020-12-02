@@ -1,11 +1,12 @@
 import Head from 'next/head';
-import Image from 'next/image';
+import Link from 'next/link';
 import { Card, Row, Col, Container } from 'react-bootstrap';
 
 import { useQuery } from '@apollo/client';
 import withApollo from "../libraries/apollo";
 
 import categories from '../categories';
+import routes from '../routes';
 import Navigation from '../components/navigation';
 import styles from '../styles/index.module.scss';
 
@@ -20,24 +21,26 @@ import styles from '../styles/index.module.scss';
 
 const Browse = () => {
 
-  const CategoryCard = ({categoryName, categoryImage}) => (
-      <Col>
+  const CategoryCard = ({ categoryName, categoryImage }) => (
+    <Col>
+      <Link href={{ pathname: routes.catalogue, query: { name: categoryName } }}>
         <Card className={styles.category}>
-          <Card.Img layout="fill" src={categoryImage}/>
+          <Card.Img layout="fill" src={categoryImage} />
           <Card.Body>
             <Card.Title href="" className="text-center">{categoryName}</Card.Title>
           </Card.Body>
         </Card>
-      </Col>
+      </Link>
+    </Col>
   )
 
   const GenerateCategoryCards = () => {
-    let cats = []  
+    let cats = []
     for (const cat in categories) {
-        cats.push(
-          <CategoryCard categoryName={categories[cat].name} categoryImage={categories[cat].image}/>
-        )
-      }
+      cats.push(
+        <CategoryCard categoryName={categories[cat].name} categoryImage={categories[cat].image} />
+      )
+    }
     return cats
   }
 
