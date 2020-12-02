@@ -1,7 +1,12 @@
 import Head from 'next/head'
+import { Table } from 'react-bootstrap'
+
+import { useQuery } from '@apollo/client';
+import withApollo from "../../libraries/apollo";
+// import GET
+
 import styles from '../../styles/staff/Shift.module.scss'
 import Navigation from '../../components/navigation'
-import { Table } from 'react-bootstrap'
 
 export default function Shift() {
   return (
