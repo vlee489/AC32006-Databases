@@ -18,6 +18,7 @@ const typeDefs = gql`
       Start: String
       "Date/Time in ISO 8601"
       End: String
+      StaffReq: Int
       "Branch the shift is taking place at"
       Branch: Branch 
   }
@@ -88,6 +89,7 @@ const resolvers = {
               ShiftID: ShiftQuery[item].ShiftID,
               End: (ShiftQuery[item].End).toISOString(), // Turns date into ISO format
               Start: (ShiftQuery[item].Start).toISOString(),
+              StaffReq: ShiftQuery[item].StaffReq,
               Branch: BranchQuery[0] //As we only ever query shifts for a single branch, we can use the first item returned
             }
           )
@@ -123,6 +125,7 @@ const resolvers = {
               ShiftID: shiftQuery.ShiftID,
               End: shiftQuery.End.toISOString(), // Turns date into ISO format
               Start: shiftQuery.Start.toISOString(),
+              StaffReq: shiftQuery.StaffReq,
               Branch: (await Branch.query().findById(shiftQuery.BranchID))
             })
           }
@@ -203,6 +206,7 @@ const resolvers = {
             ShiftID: shiftQuery.ShiftID,
             Start: shiftQuery.Start.toISOString(),
             End: shiftQuery.End.toISOString(),
+            StaffReq: shiftQuery.StaffReq,
             Branch: (await Branch.query().findById(shiftQuery.BranchID))
           }
         }
