@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import styles from '../../styles/staff/Shift.module.scss'
 import Navigation from '../../components/navigation'
+import { Table } from 'react-bootstrap'
 
 export default function Shift() {
   return (
@@ -12,6 +13,18 @@ export default function Shift() {
 
       <main className={styles.main}>
         <Navigation />
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Slots left</th>
+              <th>Staff required for shift</th>
+              <th>Choose shift</th>
+              <th>Cancel shift</th>
+            </tr>
+          </thead>
+        </Table>
       </main>
     </div>
   )
