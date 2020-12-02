@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
@@ -18,6 +19,8 @@ import { FaSearch } from 'react-icons/fa';
 import styles from '../../styles/customer/Catalogue.module.scss';
 
 const Catalogue = () => {
+	const router = useRouter();
+	const { categoryDefault } = router.query;
 	const [searchText, setSearchText] = useState("");
 	let categoryRefs = [];
 
@@ -86,6 +89,11 @@ const Catalogue = () => {
 		let jsx = [];
 		let i = 0;
 
+		const getActiveDefault = categoryName => {
+			if (!categoryDefault) return true;
+			return categoryName === categoryDefault;
+		}
+
 		for (const category in categories) {
 			if (categories.hasOwnProperty(category)) {
 				jsx.push(<ToggleToken
@@ -93,7 +101,7 @@ const Catalogue = () => {
 					ref={ref => categoryRefs.push(ref)}
 					name={categories[category].name}
 					number={categories[category]}
-					activeDefault={true}
+					activeDefault={getActiveDefault(categories[category].name)}
 					onClickFunc={changeCategories}
 				/>);
 				i++;
