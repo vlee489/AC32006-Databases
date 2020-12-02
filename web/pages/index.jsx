@@ -23,7 +23,7 @@ const Browse = () => {
 
   const CategoryCard = ({ categoryName, categoryImage }) => (
     <Col>
-      <Link href={{ pathname: routes.catalogue, query: { name: categoryName } }}>
+      <Link href={{ pathname: routes.catalogue, query: { categoryDefault: categoryName } }}>
         <Card className={styles.category}>
           <Card.Img layout="fill" src={categoryImage} />
           <Card.Body>
@@ -38,7 +38,7 @@ const Browse = () => {
     let cats = []
     for (const cat in categories) {
       cats.push(
-        <CategoryCard categoryName={categories[cat].name} categoryImage={categories[cat].image} />
+        <CategoryCard key={cats.length} categoryName={categories[cat].name} categoryImage={categories[cat].image} />
       )
     }
     return cats
