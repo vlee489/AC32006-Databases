@@ -13,7 +13,8 @@ const { Shifts, ShiftResolvers } = require('./graphql-schemas/shifts');
 const { Warehouse, WarehouseResolvers } = require('./graphql-schemas/warehouse');
 const { Inventory, InventoryResolvers } = require('./graphql-schemas/inventory');
 const { Purchase,PurchaseResolvers } = require('./graphql-schemas/purchase')
-const { Order, InternalOrderResolvers } = require('./graphql-schemas/order')
+const { Order, InternalOrderResolvers } = require('./graphql-schemas/order');
+const { Suppliers, SupplierResolvers } = require("./graphql-schemas/suppliers");
 
 // These empty Query an Mutations give a base to build off of for extending
 const Query = gql`
@@ -57,6 +58,8 @@ const schema = makeExecutableSchema({
     Inventory,
     Purchase,
     Order,
+    Suppliers,
+
   ],
   resolvers: merge(
     resolvers,
@@ -67,7 +70,8 @@ const schema = makeExecutableSchema({
     BranchResolvers,
     InventoryResolvers,
     PurchaseResolvers,
-    InternalOrderResolvers
+    InternalOrderResolvers,
+    SupplierResolvers,
   ),
 });
 
