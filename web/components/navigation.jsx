@@ -1,8 +1,15 @@
-import { Button, Form, FormControl, Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import React, { useContext } from 'react';
 import Link from 'next/link';
 import routes from '../routes';
+import UserContext from '../contexts/user';
+
+import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import { FaShoppingBasket } from 'react-icons/fa';
+import styles from "../styles/navigation.module.scss";
 
 const Navigation = props => {
+    const { userToken, setUserToken } = useContext(UserContext);
+
     return (
         <>
             <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -17,17 +24,12 @@ const Navigation = props => {
                         <Link href={routes.index} passHref>
                             <Nav.Link>Home</Nav.Link>
                         </Link>
-                        <Link href={routes.basket} passHref>
-                            <Nav.Link>Basket</Nav.Link>
-                        </Link>
+
                         <Link href={routes.catalogue} passHref>
                             <Nav.Link>Catalogue</Nav.Link>
                         </Link>
                         <Link href={routes.checkout} passHref>
                             <Nav.Link>Checkout</Nav.Link>
-                        </Link>
-                        <Link href={routes.product} passHref>
-                            <Nav.Link>Product</Nav.Link>
                         </Link>
                         <NavDropdown title="Staff" id="staffDropdown">
                             <Link href={routes.login} passHref>
@@ -44,10 +46,16 @@ const Navigation = props => {
                             </Link>
                         </NavDropdown>
                     </Nav>
-                    <Form inline>
-                        <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-                        <Button variant="outline-info">Search</Button>
-                    </Form>
+                    <Nav className="nav-basket">
+                        <NavDropdown alignRight className={styles.basketDropdown} title={<FaShoppingBasket />} id="basket">
+                            <Link href={routes.basket} passHref>
+                                <NavDropdown.Item>Basket</NavDropdown.Item>
+                            </Link>
+                            <Link href={routes.checkout} passHref>
+                                <NavDropdown.Item>Checkout</NavDropdown.Item>
+                            </Link>
+                        </NavDropdown>
+                    </Nav>
                 </Navbar.Collapse>
             </Navbar>
         </>

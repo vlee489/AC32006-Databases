@@ -4,7 +4,7 @@ const { Model } = require('objection');
 class Shifts extends Model {
   // States table name
   static get tableName() {
-    return 'Shift';
+    return 'Shifts';
   }
   // Set id column
   static get idColumn() {
@@ -13,6 +13,7 @@ class Shifts extends Model {
 
   static get relationMappings() {
     const { StaffShifts } = require('./staffShifts');
+    const { Branch } = require('./branch');
     return {
       staffShifts: {
         relation: Model.HasManyRelation, // Each product can be in many relations

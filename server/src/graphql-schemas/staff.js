@@ -81,8 +81,6 @@ const resolvers = {
       }
       const hashPass = await bcrypt.hash(arg.Password, 12)
       if (hashPass) {
-        console.log(hashPass)
-
         const newStaff = await Staff.query().insertAndFetch(
           {
             FirstName: arg.FirstName,

@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
-
-import { Container, Row, Col, Card, FormControl, InputGroup, Spinner } from 'react-bootstrap';
-import Navigation from '../../components/navigation';
+import Link from 'next/link';
 
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import GET_PRODUCTS from '../../queries/products';
+import routes from '../../routes';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import categories from '../../categories';
+
+import { Container, Row, Col, Card, Form, FormControl, InputGroup, Nav } from 'react-bootstrap';
+import Navigation from '../../components/navigation';
+import Sidebar from '../../components/sidebar';
+import Spinner from '../../components/spinner';
+import ToggleToken from '../../components/toggleToken';
+import { FaSearch } from 'react-icons/fa';
 import styles from '../../styles/customer/Catalogue.module.scss';
 
 const Catalogue = () => {
@@ -17,27 +22,27 @@ const Catalogue = () => {
 
 	const { loading, error, data } = useQuery(GET_PRODUCTS);
 
-	const Product = ({ name, image, price, dimensions }) => (
+	const changeCategories = () => {
+
+	}
+
+	const Product = ({ productId, name, image, price, dimensions }) => (
 		<Col>
-			<Card className={`${styles.product} my-4`}>
-				<Card.Img variant="top" src={image} />
-				<Card.Body>
-					<Card.Title>{name}</Card.Title>
-					<Card.Text>{`£${price}`}</Card.Text>
-					<Card.Text>{dimensions}</Card.Text>
-				</Card.Body>
-			</Card>
+			<Link href={`${routes.product}/${encodeURIComponent(productId)}`}>
+				<Card className={`${styles.product} my-4`}>
+					<Card.Img variant="top" width="100%" src="https://picsum.photos/360/200" />
+					<Card.Body>
+						<Card.Title>{name}</Card.Title>
+						<Card.Text>{`£${price}`}</Card.Text>
+						<Card.Text>{dimensions}</Card.Text>
+					</Card.Body>
+				</Card>
+			</Link>
 		</Col>
 	)
 
 	const ProductsGroup = () => {
-		if (loading) return (
-			<div className="d-flex align-self-center justify-content-center">
-				<Spinner animation="border" className="align-items-center" role="status" variant="primary">
-					<span className="sr-only">Loading...</span>
-				</Spinner>
-			</div>
-		)
+		if (loading) return <Spinner />;
 		if (error) return <p>{`${error}`}</p>;
 		if (data) {
 			const products = data.getProducts;
@@ -50,12 +55,30 @@ const Catalogue = () => {
 			return (
 				<Row>
 					{filteredProducts.map(
-						(p, i) => <Product key={i} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
+						(p, i) => <Product key={i} productId={p.ProductID} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
 					)}
 				</Row>
 			)
 		}
 		return <p>{`${data}`}</p>;
+	}
+
+	const CategoryToggles = () => {
+		let jsx = [];
+		let i = 0;
+
+		for (const category in categories) {
+			if (categories.hasOwnProperty(category)) {
+				jsx.push(
+					<Col>
+						<ToggleToken key={i} activeDefault={false} onClickFunc={changeCategories}>{categories[category].name}</ToggleToken>
+					</Col>
+				);
+				i++;
+			}
+		}
+
+		return jsx;
 	}
 
 	return (
@@ -67,13 +90,14 @@ const Catalogue = () => {
 
 			<main className={styles.main}>
 				<Navigation />
+				<Sidebar />
 				<Container>
 					<Row>
 						<Col>
 							<InputGroup className="mb-3 pt-5">
 								<InputGroup.Prepend>
 									<InputGroup.Text>
-										<FontAwesomeIcon className="form-control-feedback" icon={faSearch} />
+										<FaSearch />
 									</InputGroup.Text>
 								</InputGroup.Prepend>
 								<FormControl
@@ -84,6 +108,9 @@ const Catalogue = () => {
 								/>
 							</InputGroup>
 						</Col>
+					</Row>
+					<Row>
+						<CategoryToggles />
 					</Row>
 					<Row>
 						<Col>
