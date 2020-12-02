@@ -4,7 +4,7 @@ import UserContext from '../contexts/user';
 import CustomerBar from './nav/customerBar';
 import StaffBar from './nav/staffBar';
 
-const Navigation = props => {
+const Navigation = () => {
     const { userToken, setUserToken } = useContext(UserContext);
 
     useEffect(() => {

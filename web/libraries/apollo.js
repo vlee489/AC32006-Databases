@@ -9,8 +9,11 @@ const httpLink = createHttpLink({
 
 const authLink = setContext((_, { headers }) => {
     const cookies = Cookies.get();
-    const userToken = JSON.parse(cookies.userToken)
-    // debugger;
+    let userToken = "";
+    try {
+        userToken = JSON.parse(cookies.userToken)
+    } catch (error) {}
+
     return {
         headers: {
             ...headers,
