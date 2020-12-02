@@ -27,7 +27,7 @@ const Browse = () => {
         <Card className={styles.category}>
           <Card.Img layout="fill" src={categoryImage} />
           <Card.Body>
-            <Card.Title href="" className="text-center">{categoryName}</Card.Title>
+            <Card.Title className="text-center">{categoryName}</Card.Title>
           </Card.Body>
         </Card>
       </Link>
