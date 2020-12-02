@@ -9,11 +9,12 @@ const httpLink = createHttpLink({
 
 const authLink = setContext((_, { headers }) => {
     const cookies = Cookies.get();
-    const userToken = JSON.parse(cookies.userToken);
+    const userToken = JSON.parse(cookies.userToken)
+    // debugger;
     return {
         headers: {
             ...headers,
-            authorization: userToken ? `Bearer ${userToken}` : "",
+            Authorization: userToken.token ? userToken.token : "",
         }
     }
 });

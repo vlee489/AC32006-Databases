@@ -12,13 +12,13 @@ import Navigation from '../../components/navigation'
 import Spinner from '../../components/spinner';
 
 const ShiftsPage = () => {
-  // const { userToken, setUserToken } = useContext(UserContext);
-  // const { loading, error, data } = useQuery(GET_SHIFTS(userToken));
-  const data = {getShifts: {ShiftID: "69", Start: "4:20", End: "10:00", Branch: "Slough"}}
+  const { userToken, setUserToken } = useContext(UserContext);
+  const { loading, error, data } = useQuery(GET_SHIFTS(1));
+  // const data = {getShifts: {ShiftID: "69", Start: "4:20", End: "10:00", Branch: "Slough"}}
 
   const ShiftsTable = () => {
-    // if (loading) return <Spinner />;
-		// if (error) return <p>{`${error}`}</p>;
+    if (loading) return <Spinner />;
+		if (error) return <p>{`${error}`}</p>;
 		if (data) {
       const shifts = data.getShifts;
       const staffOnShift = data.staffOnShift;
