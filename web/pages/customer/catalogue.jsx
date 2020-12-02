@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -9,6 +9,7 @@ import GET_PRODUCTS from '../../queries/products';
 import routes from '../../routes';
 
 import categories from '../../categories';
+import categoryNum from '../../categoryNum';
 
 import { Container, Row, Col, Card, FormControl, InputGroup } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
@@ -22,7 +23,7 @@ const Catalogue = () => {
 	const router = useRouter();
 	const { categoryDefault } = router.query;
 	const [searchText, setSearchText] = useState("");
-	let categoryRefs = [];
+	const categoryRefs = useRef([]);
 
 	const getActiveCategories = () => {
 		let activeCategories = [];
@@ -68,7 +69,18 @@ const Catalogue = () => {
 		if (error) return <p>{`${error}`}</p>;
 		if (data) {
 			const products = data.getProducts;
-			const searchFiltered = products.filter(
+			const categoryFiltered = products.filter(
+				product => {
+					return categoryRefs.current.filter(
+						categoryRef => {
+							debugger;
+							if (categoryRef && categoryRef.state.active && categories[product.Category].name === categoryRef.props.name) return true;
+							return false;
+						}
+					)
+				}
+			);
+			const searchFiltered = categoryFiltered.filter(
 				product => {
 					if (!searchText) return true;
 					else if (product.Name.toLowerCase().includes(searchText.toLowerCase())) return true;
@@ -90,18 +102,19 @@ const Catalogue = () => {
 		let i = 0;
 
 		const getActiveDefault = categoryName => {
-			if (!categoryDefault) return true;
+			// if (!categoryDefault) return true;
 			return categoryName === categoryDefault;
 		}
 
 		for (const category in categories) {
 			if (categories.hasOwnProperty(category)) {
+				const categoryName = categories[category].name;
 				jsx.push(<ToggleToken
 					key={i}
-					ref={ref => categoryRefs.push(ref)}
-					name={categories[category].name}
-					number={categories[category]}
-					activeDefault={getActiveDefault(categories[category].name)}
+					ref={ref => categoryRefs.current.push(ref)}
+					name={categoryName}
+					number={categoryNum[categoryName]}
+					activeDefault={getActiveDefault(categoryName)}
 					onClickFunc={changeCategories}
 				/>);
 				i++;
