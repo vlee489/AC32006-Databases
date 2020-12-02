@@ -1,9 +1,11 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import Link from 'next/link';
+import Cookies from 'js-cookie';
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import { FaShoppingBasket } from 'react-icons/fa';
 import categories from '../../categories';
 import routes from '../../routes';
+import basketActions from '../../basketActions';
 import BasketContext from '../../contexts/basket';
 
 

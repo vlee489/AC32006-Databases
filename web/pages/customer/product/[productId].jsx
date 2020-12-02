@@ -1,7 +1,8 @@
-import React, { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
 
 import { useQuery } from '@apollo/client';
 import withApollo from "../../../libraries/apollo";
@@ -23,22 +24,22 @@ const Product = () => {
 	const { productId } = router.query;
 	const { loading, error, data } = useQuery(GET_PRODUCT(productId));
 	const { basket, dispatch } = useContext(BasketContext);
-
-	const addToBasket = product => { 
-		dispatch({ type: basketActions.addProduct, product: product }); 
+	
+	const addToBasket = product => {
+		dispatch({ type: basketActions.addProduct, product: product });
 	}
 
-	const removeOneFromBasket = product => { 
+	const removeOneFromBasket = product => {
 		dispatch({ type: basketActions.removeProduct, product: product });
 	}
 
-	const getProductFromBasket = product => ( 
-		basket.items.find(item => item.ProductID === product.ProductID) 
+	const getProductFromBasket = product => (
+		basket.items.find(item => item.ProductID === product.ProductID)
 	)
 
-	const isInBasket = product => { 
-		if (getProductFromBasket(product)) return true; 
-		return false; 
+	const isInBasket = product => {
+		if (getProductFromBasket(product)) return true;
+		return false;
 	}
 
 	const BasketModifier = ({ product }) => {
