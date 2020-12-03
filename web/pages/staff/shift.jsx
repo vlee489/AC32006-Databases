@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { Table } from 'react-bootstrap'
+import { Container, Table } from 'react-bootstrap'
 import { useContext } from 'react'
 
 import UserContext from '../../contexts/user'
