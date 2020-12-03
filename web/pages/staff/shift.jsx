@@ -18,12 +18,12 @@ const ShiftsPage = () => {
 
   const ShiftsTable = () => {
     if (loading) return <Spinner />;
-		if (error) return <p>{`${error}`}</p>;
-		if (data) {
+    if (error) return <p>{`${error}`}</p>;
+    if (data) {
       const shifts = data.getShifts;
       const staffOnShift = data.staffOnShift;
       const shiftOfStaff = data.shiftOfStaff;
-      return(
+      return (
         <tr>
           <td>date</td>
           <td>start</td>
@@ -34,7 +34,7 @@ const ShiftsPage = () => {
           <td>cancel</td>
         </tr>
       )
-    }    
+    }
   }
 
   return (
@@ -46,20 +46,22 @@ const ShiftsPage = () => {
 
       <main className={styles.main}>
         <Navigation />
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Start Time</th>
-              <th>End Time</th>
-              <th>Slots left</th>
-              <th>Staff required for shift</th>
-              <th>Choose shift</th>
-              <th>Cancel shift</th>
-            </tr>
-            <ShiftsTable />
-          </thead>
-        </Table>
+        <Container>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Slots left</th>
+                <th>Staff required for shift</th>
+                <th>Choose shift</th>
+                <th>Cancel shift</th>
+              </tr>
+              <ShiftsTable />
+            </thead>
+          </Table>
+        </Container>
       </main>
     </div>
   )
