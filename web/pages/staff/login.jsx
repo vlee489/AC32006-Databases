@@ -1,17 +1,25 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { Button, Container, Card, Form } from "react-bootstrap";
 import Navigation from '../../components/navigation';
 import login from '../../libraries/login';
 import UserContext from '../../contexts/user';
+import Cookies from 'js-cookie';
 import routes from '../../routes';
 import styles from '../../styles/staff/Login.module.scss';
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const {userToken, setUserToken} = useContext(UserContext);
+  const { userToken, setUserToken } = useContext(UserContext);
   const [errors, setErrors] = useState([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    const cookies = Cookies.get();
+    if (cookies && cookies.userToken) setUserToken(JSON.parse(cookies.userToken));
+  }, [])
 
   const sendCredentials = async () => {
     let data = {
@@ -25,6 +33,8 @@ const Login = () => {
 
     if (response.success) {
       setUserToken(response);
+      Cookies.set('userToken', response, { expires: new Date(response.expire) });
+      if (typeof window !== 'undefined') router.push(routes.shift);
     }
     else {
       setErrors(response.error);
