@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { Button, Container, Card, Form } from "react-bootstrap";
+import { Button, Container, Card, Form, Alert } from "react-bootstrap";
 import Navigation from '../../components/navigation';
 import login from '../../libraries/login';
 import UserContext from '../../contexts/user';
@@ -29,21 +29,28 @@ const Login = () => {
 
     setErrors([]);
 
-    const response = await login(data);
-
-    if (response.success) {
-      setUserToken(response);
-      Cookies.set('userToken', response, { expires: new Date(response.expire) });
-      if (typeof window !== 'undefined') router.push(routes.shift);
+    try {
+      const response = await login(data);
+      if (response.success) {
+        setUserToken(response);
+        Cookies.set('userToken', response, { expires: new Date(response.expire) });
+        if (typeof window !== 'undefined') router.push(routes.shift);
+      }
+      else {
+        setErrors(response.error);
+      }
     }
-    else {
-      setErrors(response.error);
+    catch(error) {
+      setErrors("Sorry: Your login credentials are not correct");
     }
   }
 
   const LoginFooter = () => {
-    if (errors.length > 0) return <p>{errors}</p>;
-    return <pre>{JSON.stringify(userToken, null, 2)}</pre>;
+    if (errors.length > 0) return (
+      <Alert className="mt-3" variant="danger">{errors}</Alert>
+    );
+    // return <pre>{JSON.stringify(userToken, null, 2)}</pre>;
+    return null;
   }
 
   return (
@@ -59,7 +66,7 @@ const Login = () => {
         <Container className={styles.container}>
           <Card className={styles.loginCard}>
             <Card.Body>
-              <Card.Title className="text-center">Login</Card.Title>
+              <Card.Title className="text-center">Staff Login</Card.Title>
               <Form>
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Email address</Form.Label>
