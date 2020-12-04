@@ -1,7 +1,8 @@
 /*
 Defines all the Scheme for Store related GraphQL functions
 */
-const { gql } = require('apollo-server-express');
+const { gql, UserInputError } = require('apollo-server-express');
+const { IdError } = require('../func/errors');
 const { Branch } = require('../models/branch');
 const { BranchStaff } = require('../models/branchStaff');
 const { Staff } = require('../models/staff');
@@ -70,7 +71,7 @@ const resolvers = {
             if (ctx.auth) {
                 branchQuery = await Branch.query().findById(arg.BranchID)
                 if (!(branchQuery instanceof Branch)) {
-                    throw new UserInputError(
+                    throw new IdError(
                         'Branch does not exist', { invalidArgs: Object.keys(arg) }
                     )
                 }
@@ -93,13 +94,13 @@ const resolvers = {
                 // Check if Branch and Staff exist
                 branchQuery = await Branch.query().findById(arg.BranchID)
                 if (!(branchQuery instanceof Branch)) {
-                    throw new UserInputError(
+                    throw new IdError(
                         'Branch does not exist', { invalidArgs: Object.keys(arg) }
                     )
                 }
                 staffQuery = await Staff.query().findById(arg.StaffID)
                 if (!(staffQuery instanceof Staff)) {
-                    throw new UserInputError(
+                    throw new IdError(
                         'Staff does not exist', { invalidArgs: Object.keys(arg) }
                     )
                 }
@@ -148,13 +149,13 @@ const resolvers = {
                 // Check if Branch and Staff exist
                 branchQuery = await Branch.query().findById(arg.BranchID)
                 if (!(branchQuery instanceof Branch)) {
-                    throw new UserInputError(
+                    throw new IdError(
                         'Branch does not exist', { invalidArgs: Object.keys(arg) }
                     )
                 }
                 staffQuery = await Staff.query().findById(arg.StaffID)
                 if (!(staffQuery instanceof Staff)) {
-                    throw new UserInputError(
+                    throw new IdError(
                         'Staff does not exist', { invalidArgs: Object.keys(arg) }
                     )
                 }

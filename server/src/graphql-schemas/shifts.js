@@ -2,6 +2,7 @@
 Defines all the Scheme for Shifts related GraphQL functions
 */
 const { gql, ForbiddenError, UserInputError } = require('apollo-server-express');
+const { IdError } = require('../func/errors');
 const { Branch } = require('../models/branch');
 const { Shifts } = require('../models/shifts')
 const { Staff } = require('../models/staff')
@@ -68,7 +69,7 @@ const resolvers = {
         BranchQuery = await Branch.query().where('BranchID', arg.BranchID);
         if (BranchQuery.length == 0) {
           // if branch doesn't exist throw an error
-          throw new UserInputError(
+          throw new IdError(
             'BranchID does not exist', { invalidArgs: Object.keys(arg) }
           )
         }
@@ -142,7 +143,7 @@ const resolvers = {
       if (ctx.auth) {
         // Check if ShiftID exists
         if (!(await Shifts.query().findById(arg.ShiftID))) {
-          throw new UserInputError(
+          throw new IdError(
             'Shift does not exist', { invalidArgs: Object.keys(arg) }
           )
         }
@@ -184,7 +185,7 @@ const resolvers = {
         shiftQuery = await Shifts.query().findById(arg.ShiftID)
         // Check if both staff and shift exist
         if (!(shiftQuery instanceof Shifts) || !(staffQuery instanceof Staff)) {
-          throw new UserInputError(
+          throw new IdError(
             'Shift or Staff does not exist', { invalidArgs: Object.keys(arg) }
           )
         }

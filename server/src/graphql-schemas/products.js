@@ -5,6 +5,7 @@ const { gql } = require('apollo-server-express');
 const { Products } = require('../models/products');
 const { getStorageItem } = require('../func/storageHelper');
 const { ProductMaterials } = require('../models/productMaterials');
+const { IdError } = require('../func/errors');
 
 // A schema is a collection of type definitions (hence "typeDefs")
 // that together define the "shape" of queries that are executed against
