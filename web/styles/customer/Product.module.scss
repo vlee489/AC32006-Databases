@@ -1,7 +1,10 @@
 .card {
+    align-items: center;
+    justify-content: center;
     max-width: 600px;
 }
 
-// .cardImage {
-//     max-width: 600px;
-// }
+.cardImage {
+    max-height: 720px;
+    max-width: 400px;
+}
