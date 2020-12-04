@@ -65,7 +65,7 @@ const Product = () => {
 		<Row>
 			<Col>
 				<Card className={`${styles.card} my-4`}>
-					<Card.Img className={styles.cardImage} variant="top" src="https://picsum.photos/720/400" />
+					<Card.Img className={styles.cardImage} variant="top" src={product.ImageURL} />
 				</Card>
 			</Col>
 			<Col>

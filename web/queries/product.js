@@ -11,6 +11,7 @@ const GET_PRODUCT = productId => gql`
       Weight
       Colour
       Dimensions
+      ImageURL
     }
   }
 `;

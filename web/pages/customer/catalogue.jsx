@@ -43,7 +43,7 @@ const Catalogue = () => {
 		<Col>
 			<Link href={`${routes.product}/${encodeURIComponent(productId)}`}>
 				<Card className={`${styles.product} my-4`}>
-					<Card.Img variant="top" width="100%" src="https://picsum.photos/360/200" />
+					<Card.Img variant="top" width="100%" src={image} />
 					<Card.Body>
 						<Card.Title>{name}</Card.Title>
 						<Card.Text>{`£${price}`}</Card.Text>
@@ -77,7 +77,7 @@ const Catalogue = () => {
 			return (
 				<Row>
 					{searchFiltered.map(
-						(p, i) => <Product key={i} productId={p.ProductID} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
+						(p, i) => <Product key={i} productId={p.ProductID} name={p.Name} image={p.ImageURL} price={p.Price} dimensions={p.Dimensions} />
 					)}
 				</Row>
 			)
