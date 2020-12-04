@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Shelves",
+        "number": 1
+    },
+    {
+        "name": "Plants",
+        "number": 2
+    },
+    {
+        "name": "Tables and Desks",
+        "number": 3
+    },
+    {
+        "name": "Sofas",
+        "number": 4
+    },
+    {
+        "name": "Refrigerators",
+        "number": 5
+    },
+    {
+        "name": "Timber",
+        "number": 6
+    },
+    {
+        "name": "Chairs",
+        "number": 7
+    },
+    {
+        "name": "Bedframes",
+        "number": 8
+    }
+]
