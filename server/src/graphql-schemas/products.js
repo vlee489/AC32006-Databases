@@ -21,6 +21,7 @@ const typeDefs = gql`
       Weight: Float
       Colour: String
       Dimensions: String
+      ImageURL: String
   }
 
   "The instance of materials that make up a product"
