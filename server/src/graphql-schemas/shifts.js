@@ -2,7 +2,7 @@
 Defines all the Scheme for Shifts related GraphQL functions
 */
 const { gql, ForbiddenError, UserInputError } = require('apollo-server-express');
-const { IdError } = require('../func/errors');
+const { IdError, PermissionsError } = require('../func/errors');
 const { Branch } = require('../models/branch');
 const { Shifts } = require('../models/shifts')
 const { Staff } = require('../models/staff')
@@ -170,12 +170,12 @@ const resolvers = {
           // We check if the Staff member isn't in a high or same position of the 
           // person issuing the shift assignement, if they are throw an error
           if (staffQuery.Position < ctx.user.Position) {
-            throw new ForbiddenError(
+            throw new PermissionsError(
               'Can not assign shift for staff member at a high position'
             )
           }
           if ((staffQuery.Position == ctx.user.Position) && (staffQuery.StaffID != ctx.user.ID)) {
-            throw new ForbiddenError(
+            throw new PermissionsError(
               'Can not assign shift for staff member at same level'
             )
           }
