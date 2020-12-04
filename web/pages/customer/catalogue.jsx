@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
@@ -19,12 +20,12 @@ import styles from '../../styles/customer/Catalogue.module.scss';
 const Catalogue = () => {
 	const [searchText, setSearchText] = useState("");
 	const [categories, setCategories] = useState([]);
-
+	const router = useRouter();
+	const { categoryDefault } = router.query;
 	const { loading, error, data } = useQuery(GET_PRODUCTS);
 
 	useEffect(() => {
 		let categories = [];
-		const categoryDefault = window.location.href.split('=').pop();
 
 		categoriesJSON.forEach(cat => {
 			const category = {
@@ -36,7 +37,7 @@ const Catalogue = () => {
 		})
 
 		setCategories(categories);
-	}, [])
+	}, [categoryDefault])
 
 	const Product = ({ productId, name, image, price, dimensions }) => (
 		<Col>
