@@ -18,12 +18,12 @@ import styles from '../../styles/customer/Catalogue.module.scss';
 
 const Catalogue = () => {
 	const [searchText, setSearchText] = useState("");
-	const [categoriesStore, setCategoriesStore] = useState([]);
+	const [categories, setCategories] = useState([]);
 
 	const { loading, error, data } = useQuery(GET_PRODUCTS);
 
 	useEffect(() => {
-		let categoriesArray = [];
+		let categories = [];
 		const categoryDefault = window.location.href.split('=').pop();
 
 		categoriesJSON.forEach(cat => {
@@ -32,10 +32,10 @@ const Catalogue = () => {
 				number: cat.number,
 				active: cat.name === categoryDefault
 			}
-			categoriesArray.push(category);
+			categories.push(category);
 		})
 
-		setCategoriesStore(categoriesArray);
+		setCategories(categories);
 	}, [])
 
 	const Product = ({ productId, name, image, price, dimensions }) => (
@@ -58,32 +58,14 @@ const Catalogue = () => {
 		if (error) return <p>{`${error}`}</p>;
 		if (data) {
 			const products = data.getProducts;
-			// const categoryFiltered = () => {
-			// 	let array = [];
-
-			// 	products.forEach(
-			// 		product => {
-			// 			return categoriesStore.forEach(
-			// 				category => {
-			// 					if (category.active && category.number === product.Category) array.push(product);
-			// 					debugger;
-			// 				}
-			// 			)
-			// 		}
-			// 	)
-			// 	debugger;
-
-			// 	return array;
-			// }
+			const activeCategories = categories.filter(category => category.active);
 			const categoryFiltered = products.filter(
-				product =>
-					categoriesStore.filter(
-						category => {
-							if (category.active && category.number === product.Category) return true;
-							return false;
-						}
-					)
-
+				product => {
+					for (const category of activeCategories) {
+						if (category.number === product.Category) return true;
+					}
+					return false;
+				}
 			);
 			const searchFiltered = categoryFiltered.filter(
 				product => {
@@ -105,13 +87,13 @@ const Catalogue = () => {
 	const CategoryToggles = () => {
 		let jsx = [];
 
-		categoriesStore.forEach(category => {
+		categories.forEach(category => {
 			jsx.push(<ToggleToken
 				key={category.number}
 				name={category.name}
 				number={category.number}
 				active={category.active}
-				toggle={() => setCategoriesStore(
+				toggle={() => setCategories(
 					categoriesStore => {
 						const newStore = JSON.parse(JSON.stringify(categoriesStore));
 						const cat = newStore[category.number - 1];
