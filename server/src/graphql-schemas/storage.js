@@ -3,6 +3,7 @@ const { Suppliers } = require('../models/suppliers')
 const { MaterialsCatalogue } = require('../models/materialsCatalogue')
 const { SuppliersCatalogue } = require('../models/suppliersCatalogue')
 const { Storage } = require('../models/storage');
+const { getStorageItem } = require('../func/storageHelper');
 
 const typeDefs = gql`
     "Get storage details"
@@ -14,10 +15,14 @@ const typeDefs = gql`
     }
 
     extend type Query{
-        "Get a material that's in sotrage"
+        "Get a material that's in storage"
         getStorage(
             MaterialID: ID
         ): [Storage]
+        "Get the details of a storage entry"
+        getStorageEntry(
+            StorageID: ID!
+        ): Storage
     }
 `;
 
@@ -55,6 +60,16 @@ const resolvers = {
                     })
                 }
                 return reply
+            } else {
+                throw new ForbiddenError(
+                    'Authentication token is invalid, please log in'
+                )
+            }
+        },
+
+        getStorageEntry: async (parent, arg, ctx, info) => {
+            if (ctx.auth) {
+                return (await getStorageItem(arg.StorageID))
             } else {
                 throw new ForbiddenError(
                     'Authentication token is invalid, please log in'
