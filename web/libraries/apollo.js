@@ -4,7 +4,7 @@ import { setContext } from '@apollo/client/link/context';
 import Cookies from 'js-cookie';
 
 const httpLink = createHttpLink({
-    uri: "http://168.119.243.209:4000/graphql",
+    uri: "https://ac32006api.vlee.me.uk/graphql",
 });
 
 const authLink = setContext((_, { headers }) => {
