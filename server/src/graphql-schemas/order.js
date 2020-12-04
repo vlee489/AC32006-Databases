@@ -1,4 +1,5 @@
 const { gql, ForbiddenError, UserInputError } = require('apollo-server-express');
+const { IdError } = require('../func/errors');
 const { Branch } = require('../models/branch');
 const { OrderProducts } = require('../models/orderProducts');
 const { Orders } = require('../models/orders');
@@ -46,7 +47,7 @@ const resolvers = {
             if (ctx.auth) {
                 warehouseQuery = await Warehouse.query().findById(arg.WarehouseID)
                 if (!(warehouseQuery instanceof Warehouse)) {
-                    throw new UserInputError(
+                    throw new IdError(
                         'Warehouse does not exist', { invalidArgs: Object.keys(arg) }
                     )
                 }
@@ -92,7 +93,7 @@ const resolvers = {
                 branchQuery = await Branch.query().findById(arg.BranchID)
                 // Check if branch exists
                 if (!(branchQuery instanceof Branch)) {
-                    throw new UserInputError(
+                    throw new IdError(
                         'Branch does not exist', { invalidArgs: Object.keys(arg) }
                     )
                 }
@@ -140,7 +141,7 @@ const resolvers = {
                 branchQuery = await Branch.query().findById(arg.BranchID)
                 warehouseQuery = await Warehouse.query().findById(arg.WarehouseID)
                 if (!(branchQuery instanceof Branch) || !(warehouseQuery instanceof Warehouse)) {
-                    throw new UserInputError('Warehouse or Branch does not exist', { invalidArgs: Object.keys(arg) })
+                    throw new IdError('Warehouse or Branch does not exist', { invalidArgs: Object.keys(arg) })
                 }
                 orderProducts = []  // Used to do the final reply
                 orderProductInsert = []  //Used for created the orderProduct link for the insert and updating the stock level
@@ -148,14 +149,14 @@ const resolvers = {
                     // Check if product Exists
                     productQuery = await Products.query().findById(arg.Products[i].ProductID)
                     if (!(productQuery instanceof Products)) {
-                        throw new UserInputError(`Product does not exist, ProductID:${arg.Products[i].ProductID}`, { invalidArgs: Object.keys(arg) })
+                        throw new IdError(`Product does not exist, ProductID:${arg.Products[i].ProductID}`, { invalidArgs: Object.keys(arg) })
                     }
                     warehouseProductQuery = await WarehouseProducts.query().where('WarehouseID', arg.WarehouseID).where('ProductID', arg.Products[i].ProductID)
                     if (warehouseQuery.length == 0) {
-                        throw new UserInputError(`Warehouse does not stock ProductID:${arg.Products[i].ProductID}`, { invalidArgs: Object.keys(arg) })
+                        throw new IdError(`Warehouse does not stock ProductID:${arg.Products[i].ProductID}`, { invalidArgs: Object.keys(arg) })
                     }
                     if (warehouseProductQuery[0].QTY < arg.Products[i].Qty) {
-                        throw new UserInputError(`Warehouse does not have enough stock of ProductID:${arg.Products[i].ProductID}`, { invalidArgs: Object.keys(arg) })
+                        throw new IdError(`Warehouse does not have enough stock of ProductID:${arg.Products[i].ProductID}`, { invalidArgs: Object.keys(arg) })
                     }
                     orderProducts.push({
                         Product: productQuery,

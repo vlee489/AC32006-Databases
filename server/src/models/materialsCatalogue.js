@@ -8,7 +8,7 @@ class MaterialsCatalogue extends Model {
   }
   // Set id column
   static get idColumn() {
-    return 'MaterialsCatalogueID';
+    return 'MaterialID';
   }
   static get relationMappings() {
     const { SuppliersCatalogue } = require('./suppliersCatalogue');

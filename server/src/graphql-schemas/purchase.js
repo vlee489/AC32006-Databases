@@ -4,6 +4,8 @@ const { Products } = require('../models/products');
 const { Inventory } = require('../models/inventory');
 const { Purchases } = require('../models/purchases');
 const { ProductPurchases } = require('../models/productPurchases');
+const { IdError } = require('../func/errors');
+
 
 const typeDefs = gql`
     "Represents a Customer purchase"
@@ -92,7 +94,7 @@ const resolvers = {
                     Products: replyProducts,
                 }
             } else {
-                throw new UserInputError(
+                throw new IdError(
                     'Purchase does not exist', { invalidArgs: Object.keys(arg) }
                 )
             }
@@ -103,7 +105,7 @@ const resolvers = {
                 // Check if branch exists
                 branchQuery = await Branch.query().findById(arg.BranchID)
                 if (!(branchQuery instanceof Branch)) {
-                    throw new UserInputError(
+                    throw new IdError(
                         'Branch does not exist', { invalidArgs: Object.keys(arg) }
                     )
                 }
@@ -159,7 +161,7 @@ const resolvers = {
             // Check if branch exists in system
             branchQuery = await Branch.query().findById(arg.Branch)
             if (!(branchQuery instanceof Branch)) {
-                throw new UserInputError(
+                throw new IdError(
                     'Branch does not exist', { invalidArgs: Object.keys(arg) }
                 )
             }
@@ -196,7 +198,7 @@ const resolvers = {
                         )
                     }
                 } else {
-                    throw new UserInputError(
+                    throw new IdError(
                         `Product: ${arg.Products[item].ProductID} does not exist`, { invalidArgs: Object.keys(arg) }
                     )
                 }
@@ -248,7 +250,7 @@ const resolvers = {
             if (ctx.auth) {
                 purchaseQuery = await Purchases.query().findById(arg.PurchaseID)
                 if (!(purchaseQuery instanceof Purchases)) {
-                    throw new UserInputError(
+                    throw new IdError(
                         'Purchase does not exist', { invalidArgs: Object.keys(arg) }
                     )
                 }
