@@ -2,6 +2,7 @@
 Defines all the Scheme for Shifts related GraphQL functions
 */
 const { gql, ForbiddenError, UserInputError } = require('apollo-server-express');
+const { IdError, PermissionsError } = require('../func/errors');
 const { Branch } = require('../models/branch');
 const { Shifts } = require('../models/shifts')
 const { Staff } = require('../models/staff')
@@ -18,6 +19,7 @@ const typeDefs = gql`
       Start: String
       "Date/Time in ISO 8601"
       End: String
+      StaffReq: Int
       "Branch the shift is taking place at"
       Branch: Branch 
   }
@@ -67,7 +69,7 @@ const resolvers = {
         BranchQuery = await Branch.query().where('BranchID', arg.BranchID);
         if (BranchQuery.length == 0) {
           // if branch doesn't exist throw an error
-          throw new UserInputError(
+          throw new IdError(
             'BranchID does not exist', { invalidArgs: Object.keys(arg) }
           )
         }
@@ -88,6 +90,7 @@ const resolvers = {
               ShiftID: ShiftQuery[item].ShiftID,
               End: (ShiftQuery[item].End).toISOString(), // Turns date into ISO format
               Start: (ShiftQuery[item].Start).toISOString(),
+              StaffReq: ShiftQuery[item].StaffReq,
               Branch: BranchQuery[0] //As we only ever query shifts for a single branch, we can use the first item returned
             }
           )
@@ -123,6 +126,7 @@ const resolvers = {
               ShiftID: shiftQuery.ShiftID,
               End: shiftQuery.End.toISOString(), // Turns date into ISO format
               Start: shiftQuery.Start.toISOString(),
+              StaffReq: shiftQuery.StaffReq,
               Branch: (await Branch.query().findById(shiftQuery.BranchID))
             })
           }
@@ -139,7 +143,7 @@ const resolvers = {
       if (ctx.auth) {
         // Check if ShiftID exists
         if (!(await Shifts.query().findById(arg.ShiftID))) {
-          throw new UserInputError(
+          throw new IdError(
             'Shift does not exist', { invalidArgs: Object.keys(arg) }
           )
         }
@@ -166,12 +170,12 @@ const resolvers = {
           // We check if the Staff member isn't in a high or same position of the 
           // person issuing the shift assignement, if they are throw an error
           if (staffQuery.Position < ctx.user.Position) {
-            throw new ForbiddenError(
+            throw new PermissionsError(
               'Can not assign shift for staff member at a high position'
             )
           }
           if ((staffQuery.Position == ctx.user.Position) && (staffQuery.StaffID != ctx.user.ID)) {
-            throw new ForbiddenError(
+            throw new PermissionsError(
               'Can not assign shift for staff member at same level'
             )
           }
@@ -181,7 +185,7 @@ const resolvers = {
         shiftQuery = await Shifts.query().findById(arg.ShiftID)
         // Check if both staff and shift exist
         if (!(shiftQuery instanceof Shifts) || !(staffQuery instanceof Staff)) {
-          throw new UserInputError(
+          throw new IdError(
             'Shift or Staff does not exist', { invalidArgs: Object.keys(arg) }
           )
         }
@@ -203,6 +207,7 @@ const resolvers = {
             ShiftID: shiftQuery.ShiftID,
             Start: shiftQuery.Start.toISOString(),
             End: shiftQuery.End.toISOString(),
+            StaffReq: shiftQuery.StaffReq,
             Branch: (await Branch.query().findById(shiftQuery.BranchID))
           }
         }
