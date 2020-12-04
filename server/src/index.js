@@ -5,6 +5,10 @@ Runs all the code for the API
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
+// Deals with HTTPS
+const fs = require('fs')
+const https = require('https')
+const os = require('os')
 // Apollo & GraphQL related imports
 const { ApolloServer } = require('apollo-server-express');
 const schema = require('./schema');
@@ -114,3 +118,20 @@ app.post('/login', async (req, res) => {
 app.listen({ port: PORT }, () => {
   console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
 });
+
+// Only launch the HTTPS server if we are on the deployment system
+if (os.hostname() == 'Uni-DB') {
+  // Start server with HTTPS
+  https
+    .createServer(
+      {
+        key: fs.readFileSync('/etc/letsencrypt/live/ac32006api.vlee.me.uk/privkey.pem'),
+        cert: fs.readFileSync('/etc/letsencrypt/live/ac32006api.vlee.me.uk/cert.pem'),
+        ca: fs.readFileSync('/etc/letsencrypt/live/ac32006api.vlee.me.uk/chain.pem'),
+      },
+      app
+    )
+    .listen(443, () => {
+      console.log(`🚀 Server ready at https://localhost${server.graphqlPath}`)
+    })
+}
