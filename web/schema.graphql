@@ -1,0 +1,341 @@
+# Exposes a URL that specifies the behaviour of this scalar.
+directive @specifiedBy(
+  # The URL that specifies the behaviour of this scalar.
+  url: String!
+) on SCALAR
+# Represents A Branch's details
+type Branch {
+  BranchID: ID
+  Name: String
+  Address1: String
+  Address2: String
+  City: String
+  Region: String
+  Country: String
+  Postcode: String
+  PhoneNumber: String
+  Email: String
+}
+
+# Represents an Inventory
+type Inventory {
+  InventoryID: ID
+  QTY: Int
+  Branch: Branch
+  Product: Product
+}
+
+# Represents a Material's details
+type Material {
+  MaterialID: ID
+  Name: String
+  PartType: String
+  Price: Float
+  SKU: String
+  Description: String
+  Weight: Float
+  Suppliers: [Supplier]
+}
+
+type Mutation {
+  _empty: String
+  # Add Material to a Product
+  addMaterialToProduct(
+    ProductID: ID!
+    Materials: [QtyStorage]
+  ): ProductComponents
+  # Add a new staff member
+  addStaff(
+    FirstName: String!
+    LastName: String!
+    PhoneNumber: String!
+    NINumber: String!
+    Address: String!
+    Wage: Float!
+    Position: Int!
+    Email: String!
+    Password: String!
+  ): Staff
+  # Assign staff to a shift. Returns the shift you've been assigned to.
+  assignShift(
+    # Shift to assign to
+    ShiftID: ID!
+    # Staff to assign to said shift. If not provided assigned the currently logged in user
+    StaffID: ID
+  ): Shift
+  # Update an qty of a product in a warehouse
+  updateQTYofWarehouseProduct(
+    WarehouseID: ID!
+    ProductID: ID!
+    Qty: Int!
+  ): WarehouseProduct
+  # Assign staff member to a branch
+  assignStaffToBranch(BranchID: ID!, StaffID: ID!): StaffBranch
+  # Remove staff member from Branch
+  removeStaffFromBranch(BranchID: ID!, StaffID: ID!): Staff
+  # Update the inventory of a product at a branch
+  updateInventory(BranchID: ID!, ProductID: ID!, Qty: Int!): Inventory
+  # Add an order to the system as a customer
+  createPurchase(
+    # Branch you want to order from
+    Branch: ID!
+    CustomerFirstName: String!
+    CustomerLastName: String!
+    BillingAddress: String!
+    DeliveryAddress: String!
+    Products: [ProductOrder]!
+  ): Purchase
+  # Set dispatch of a Purchase
+  dispatchPurchase(PurchaseID: ID!, Dispatched: Boolean!): Purchase
+  createOrder(
+    WarehouseID: ID!
+    BranchID: ID!
+    Status: Int!
+    Products: [ProductOrder]!
+  ): WarehouseOrder
+  addSupplier(
+    Name: String!
+    Address1: String!
+    Address2: String!
+    City: String!
+    Region: String!
+    Country: String!
+    Postcode: String!
+    PhoneNumber: String!
+    Email: String!
+    Website: String!
+  ): Supplier
+  # Add a Material to the materials database
+  addMaterial(
+    Name: String!
+    PartType: String!
+    Price: Float!
+    SKU: String!
+    Description: String!
+    Weight: Float!
+    # ID of the suppliers supply the material
+    Suppliers: [Int]!
+  ): Material
+  # Update of a stock of an item
+  updateStock(StorageID: ID!, Stock: Int!): Storage
+  # Add a material to storage
+  addMaterialToStorage(
+    MaterialID: ID!
+    StorageLocation: String!
+    Stock: Int!
+  ): Storage
+}
+
+# Represents a entry of product ordered in a Purchase
+type OrderItem {
+  Product: Product
+  Qty: Int
+}
+
+# Represents A product's details
+type Product {
+  ProductID: ID
+  Name: String
+  Category: Int
+  Price: Float
+  Description: String
+  Weight: Float
+  Colour: String
+  Dimensions: String
+  ImageURL: String
+}
+
+# Parts that make up a product
+type ProductComponents {
+  Product: Product
+  Components: [ProductMaterials]
+}
+
+# The instance of materials that make up a product
+type ProductMaterials {
+  Storage: Storage
+  Qty: Int
+}
+
+# Product and Qty required for an order
+input ProductOrder {
+  ProductID: ID
+  Qty: Int
+}
+
+# Represents a Customer purchase
+type Purchase {
+  PurchaseID: ID
+  CustomerFirstName: String
+  CustomerLastName: String
+  BillingAddress: String
+  DeliveryAddress: String
+  Paid: Boolean
+  TotalPrice: Float
+  Dispatched: Boolean
+  Branch: Branch
+  Products: [OrderItem]
+}
+
+input QtyStorage {
+  StorageID: ID!
+  Qty: Int!
+}
+
+type Query {
+  _empty: String
+  # Get a list of products
+  getProducts(ProductID: ID, Category: Int): [Product]
+  # Get a list of products in a list of catergories
+  getProductsFromCatergories(Category: [Int]!): [Product]
+  # Get the materials used for a product
+  getProductMaterials(ProductID: ID!): ProductComponents
+  # Get List of Staff
+  getStaff(StaffID: Int, Position: Int): [Staff]
+  # Get the current used logged in using current Token
+  loginStaff: Staff
+  # Get shifts available for a branch
+  getShifts(
+    # Branch to get shifts for
+    BranchID: ID!
+    # Get shifts in the future only
+    Future: Boolean
+  ): [Shift]
+  # Get Shifts Staff is assigned to
+  shiftOfStaff(
+    # id of staff memeber
+    StaffID: ID
+    # Get shifts in the future only
+    Future: Boolean
+  ): [Shift]
+  # Get staff members in a shift
+  staffOnShift(
+    # ID of shift
+    ShiftID: ID!
+  ): [Staff]
+  # Get details on a warehouse
+  getWarehouse(
+    WarehouseID: ID
+    Address1: String
+    Address2: String
+    City: String
+    Region: String
+    Country: String
+    Postcode: String
+  ): [Warehouse]
+  # Get the Products housed in a warehouse
+  getWarehouseProducts(WarehouseID: ID!, ProductID: ID): [WarehouseProduct]
+  # Get the warehouses with a product
+  getWarehouseWithProduct(ProductID: ID!): [WarehouseProduct]
+  # Get branches
+  getBranches(Region: String, BranchID: ID): [Branch]
+  # Get the staff who work at a branch
+  getBranchStaff(BranchID: ID!): [Staff]
+  # Get inventory of a store
+  getInventory(BranchID: ID!, ProductID: ID): [Inventory]
+  # Get a purchase as a customer
+  getPurchase(
+    PurchaseID: ID!
+    CustomerFirstName: String!
+    CustomerLastName: String!
+  ): Purchase
+  # Get the purchase orders per branch
+  getBranchPurchases(BranchID: ID!, Dispatched: Boolean): [Purchase]
+  # Get the orders branch has put into warehouses
+  getBranchWarehouseOrders(BranchID: ID!, Status: Int): [WarehouseOrder]
+  # Get orders to a Warehouse
+  getWarehouseOrders(WarehouseID: ID!, Status: Int): [WarehouseOrder]
+  # Get a list of suppliers
+  getSuppliers(SupplierID: ID, Category: Int): [Supplier]
+  getMaterials(MaterialID: ID): [Material]
+  # Get a material that's in storage
+  getStorage(MaterialID: ID): [Storage]
+  # Get the details of a storage entry
+  getStorageEntry(StorageID: ID!): Storage
+}
+
+# Represents A shift's details
+type Shift {
+  ShiftID: ID
+  # Date/Time in ISO 8601
+  Start: String
+  # Date/Time in ISO 8601
+  End: String
+  StaffReq: Int
+  # Branch the shift is taking place at
+  Branch: Branch
+}
+
+# Represents a member of staff
+type Staff {
+  StaffID: ID
+  FirstName: String
+  LastName: String
+  PhoneNumber: String
+  NINumber: String
+  Address: String
+  Wage: Float
+  Position: Int
+  Email: String
+}
+
+type StaffBranch {
+  Staff: Staff
+  Branch: Branch
+}
+
+# Get storage details
+type Storage {
+  StorageID: ID
+  Stock: Int
+  StorageLocation: String
+  Material: Material
+}
+
+# Represents A supplier's details
+type Supplier {
+  SupplierID: ID
+  Name: String
+  Address1: String
+  Address2: String
+  City: String
+  Region: String
+  Country: String
+  Postcode: String
+  PhoneNumber: String
+  Email: String
+  Website: String
+}
+
+# Represents A warehouse's details
+type Warehouse {
+  WarehouseID: ID
+  Name: String
+  Address1: String
+  Address2: String
+  City: String
+  Region: String
+  Country: String
+  Postcode: String
+  PhoneNumber: String
+  Email: String
+}
+
+# Details of an order from a warehouse
+type WarehouseOrder {
+  OrderID: ID
+  Warehouse: Warehouse
+  Branch: Branch
+  OrderDate: String
+  Status: Int
+  Products: [OrderItem]
+}
+
+type WarehouseProduct {
+  WarehouseProductID: ID
+  Product: Product
+  Qty: Int
+  Location: String
+  Warehouse: Warehouse
+}
+
