@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import styles from '../../styles/staff/Inventory.module.scss'
 import Navigation from '../../components/navigation'
+import { Container } from 'react-bootstrap'
 
 export default function Inventory() {
   return (
@@ -12,6 +13,9 @@ export default function Inventory() {
 
       <main className={styles.main}>
         <Navigation />
+        <Container>
+          
+        </Container>
       </main>
     </div>
   )

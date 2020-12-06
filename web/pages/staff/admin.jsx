@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import styles from '../../styles/staff/Admin.module.scss'
 import Navigation from '../../components/navigation'
+import { Container } from 'react-bootstrap'
 
 export default function Admin() {
   return (
@@ -12,6 +13,9 @@ export default function Admin() {
 
       <main className={styles.main}>
         <Navigation />
+        <Container>
+          
+        </Container>
       </main>
     </div>
   )
