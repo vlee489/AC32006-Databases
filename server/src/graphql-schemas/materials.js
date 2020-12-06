@@ -1,4 +1,4 @@
-const { gql, ForbiddenError } = require('apollo-server-express');
+const { gql, ForbiddenError, ValidationError } = require('apollo-server-express');
 const { Suppliers } = require('../models/suppliers')
 const { MaterialsCatalogue } = require('../models/materialsCatalogue')
 const { SuppliersCatalogue } = require('../models/suppliersCatalogue')
@@ -21,6 +21,20 @@ const typeDefs = gql`
             MaterialID: ID
         ): [Material]
     }
+
+    extend type Mutation{
+        "Add a Material to the materials database"
+        addMaterial(
+            Name: String!
+            PartType: String!
+            Price: Float!
+            SKU: String!
+            Description: String!
+            Weight: Float!
+            "ID of the suppliers supply the material"
+            Suppliers: [Int]!
+        ): Material
+    }
 `
 
 const resolvers = {
@@ -36,7 +50,7 @@ const resolvers = {
                 for (const i in materialQuery) {
                     supplierHold = []
                     SuppliersCatalogueQuery = await SuppliersCatalogue.query().where('MaterialID', materialQuery[i].MaterialID)
-                    for(const x in SuppliersCatalogueQuery){
+                    for (const x in SuppliersCatalogueQuery) {
                         supplierHold.push((await Suppliers.query().findById(SuppliersCatalogueQuery[x].SupplierID)))
                     }
                     reply.push({
@@ -51,6 +65,50 @@ const resolvers = {
                     })
                 }
                 return reply
+            } else {
+                throw new ForbiddenError(
+                    'Authentication token is invalid, please log in'
+                )
+            }
+        }
+    },
+    Mutation: {
+        addMaterial: async (parent, arg, ctx, info) => {
+            if (ctx.auth) {
+                // Check if Supplies exist
+                supplierStore = []  // Used to build the return message
+                supplierInsert = []  // Used to insert suppliers into DB
+                for (const i in arg.Suppliers) {
+                    supplierQuery = await Suppliers.query().findById(arg.Suppliers[i])
+                    if (supplierQuery instanceof Suppliers) {
+                        supplierStore.push(supplierQuery)
+                        supplierInsert.push({
+                            SupplierID: arg.Suppliers[i]
+                        })
+                    } else {
+                        throw new ValidationError(`Supplier ${arg.Suppliers[i]} does not exist`)
+                    }
+                }
+                // Graph Insert
+                materialInsert = await MaterialsCatalogue.query().insertGraphAndFetch({
+                    Name: arg.Name,
+                    PartType: arg.PartType,
+                    Price: arg.Price,
+                    SKU: arg.SKU,
+                    Description: arg.Description,
+                    Weight: arg.Weight,
+                    supplierCatalogue: supplierInsert // Insert relation to supplier via graph insert
+                })
+                return {
+                    MaterialID: materialInsert.MaterialID,
+                    Name: materialInsert.Name,
+                    PartType: materialInsert.PartType,
+                    Price: materialInsert.Price,
+                    SKU: materialInsert.SKU,
+                    Description: materialInsert.Description,
+                    Weight: materialInsert.Weight,
+                    Suppliers: supplierStore
+                }
             } else {
                 throw new ForbiddenError(
                     'Authentication token is invalid, please log in'

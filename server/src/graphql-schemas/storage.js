@@ -1,4 +1,4 @@
-const { gql, ForbiddenError } = require('apollo-server-express');
+const { gql, ForbiddenError, ValidationError } = require('apollo-server-express');
 const { Suppliers } = require('../models/suppliers')
 const { MaterialsCatalogue } = require('../models/materialsCatalogue')
 const { SuppliersCatalogue } = require('../models/suppliersCatalogue')
@@ -22,6 +22,20 @@ const typeDefs = gql`
         "Get the details of a storage entry"
         getStorageEntry(
             StorageID: ID!
+        ): Storage
+    }
+
+    extend type Mutation{
+        "Update of a stock of an item"
+        updateStock(
+            StorageID: ID!
+            Stock: Int!
+        ): Storage
+        "Add a material to storage"
+        addMaterialToStorage(
+            MaterialID: ID!
+            StorageLocation: String!
+            Stock: Int!
         ): Storage
     }
 `;
@@ -70,6 +84,57 @@ const resolvers = {
         getStorageEntry: async (parent, arg, ctx, info) => {
             if (ctx.auth) {
                 return (await getStorageItem(arg.StorageID))
+            } else {
+                throw new ForbiddenError(
+                    'Authentication token is invalid, please log in'
+                )
+            }
+        }
+    },
+    Mutation: {
+        updateStock: async (parent, arg, ctx, info) => {
+            if (ctx.auth) {
+                storageQuery = await Storage.query().findById(arg.StorageID)
+                if(storageQuery instanceof Storage){
+                    storageUpdate = await Storage.query().findById(arg.StorageID).patchAndFetch({
+                        Stock: arg.Stock
+                    })
+                    if(storageUpdate instanceof Storage){
+                        return (await getStorageItem(arg.StorageID))
+                    }else{
+                        throw new Error(`Internal Error`)
+                    }
+                }else{
+                    throw new IdError(`No item in storage is with StorageID:${arg.StorageID}`)
+                }
+            } else {
+                throw new ForbiddenError(
+                    'Authentication token is invalid, please log in'
+                )
+            }
+        },
+        addMaterialToStorage: async (parent, arg, ctx, info) => {
+            if (ctx.auth) {
+                //Check that material doesn't have an instence in stroage already
+                storageQuery = await Storage.query().findOne('MaterialID', arg.MaterialID)
+                if(storageQuery instanceof Storage){
+                    throw new ValidationError(`Material already in storage`)
+                }
+                // Check material exists
+                materialQuery = await MaterialsCatalogue.query().findById(arg.MaterialID)
+                if(!(materialQuery instanceof MaterialsCatalogue)){
+                    throw new ValidationError(`Material doesn not exist`)
+                }
+                storageInsert = await Storage.query().insertAndFetch({
+                    Stock: arg.Stock,
+                    StorageLocation: arg.StorageLocation,
+                    MaterialID: arg.MaterialID
+                })
+                if(storageInsert instanceof Storage){
+                    return (await getStorageItem(storageInsert.StorageID))
+                }else{
+                    throw new Error("Internal Error")
+                }
             } else {
                 throw new ForbiddenError(
                     'Authentication token is invalid, please log in'

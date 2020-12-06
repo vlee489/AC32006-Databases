@@ -12,6 +12,7 @@ class MaterialsCatalogue extends Model {
   }
   static get relationMappings() {
     const { SuppliersCatalogue } = require('./suppliersCatalogue');
+    const { Storage } = require('../models/storage');
     return {
       // This is a one to one relationship \/
       storage: {

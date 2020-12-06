@@ -6,6 +6,7 @@ const { Products } = require('../models/products');
 const { getStorageItem } = require('../func/storageHelper');
 const { ProductMaterials } = require('../models/productMaterials');
 const { IdError } = require('../func/errors');
+const { Storage } = require('../models/storage');
 
 // A schema is a collection of type definitions (hence "typeDefs")
 // that together define the "shape" of queries that are executed against
@@ -44,6 +45,19 @@ const typeDefs = gql`
     "Get the materials used for a product"
     getProductMaterials(ProductID: ID!): ProductComponents
   }
+
+  input QtyStorage{
+    StorageID: ID!
+    Qty: Int!
+  }
+
+  extend type Mutation{
+    "Add Material to a Product"
+    addMaterialToProduct(
+      ProductID: ID!
+      Materials: [QtyStorage]
+    ): ProductComponents
+  }
 `;
 
 // Resolvers define the technique for fetching the types defined in the Schema above
@@ -62,7 +76,7 @@ const resolvers = {
 
     getProductsFromCatergories: async (parent, arg, ctx, info) => {
       reply = []
-      for(const i in arg.Category){
+      for (const i in arg.Category) {
         dbQuery = await Products.query().where('Category', arg.Category[i]);
         reply = reply.concat(dbQuery)
       }
@@ -72,30 +86,82 @@ const resolvers = {
     getProductMaterials: async (parent, arg, ctx, info) => {
       if (ctx.auth) {
         productQuery = await Products.query().findById(arg.ProductID);
-        if(!(productQuery instanceof Products)){
+        if (!(productQuery instanceof Products)) {
           throw new IdError(`No Product with ProductID:${arg.ProductID}`)
         }
         // Get productMaterials
         productMaterialQuery = await ProductMaterials.query().where('ProductID', arg.ProductID)
         ProductMaterialsReply = []
         // For each item that makes up a product
-        for(const i in productMaterialQuery){
+        for (const i in productMaterialQuery) {
           ProductMaterialsReply.push({
             Storage: (await getStorageItem(productMaterialQuery[i].StorageID)),
             Qty: productMaterialQuery[i].QTY
           })
         }
-        return{
+        return {
           Product: productQuery,
           Components: ProductMaterialsReply
         }
       } else {
         throw new ForbiddenError(
-            'Authentication token is invalid, please log in'
+          'Authentication token is invalid, please log in'
         )
-    }
+      }
     }
   },
+  Mutation: {
+    addMaterialToProduct: async (parent, arg, ctx, info) => {
+      if (ctx.auth) {
+        // Check if product exists
+        productQuery = await Products.query().findById(arg.ProductID);
+        if (!(productQuery instanceof Products)) {
+          throw new IdError(`No Product with ProductID:${arg.ProductID}`)
+        }
+        // Check every storageID exists
+        for(const i in arg.Materials){
+          storageQuery = await Storage.query().findById(arg.Materials[i].StorageID)
+          if(!(storageQuery instanceof Storage)){
+            throw new IdError(`No Storage with StorageID:${arg.Materials[i].StorageID}`)
+          }
+        }
+        //Insert each relation to storage
+        try{
+          productMaterialTrans = await ProductMaterials.transaction(async trx => {
+            for(const i in arg.Materials){
+              productMaterialInsert = await ProductMaterials.query(trx).insert({
+                StorageID: arg.Materials[i].StorageID,
+                ProductID: arg.ProductID,
+                QTY: arg.Materials[i].Qty
+              })
+            }
+          });
+
+          // Get the productMaterials to return
+          ProductMaterialsReply = []
+          productMaterialQuery = await ProductMaterials.query().where('ProductID', arg.ProductID)
+          for (const i in productMaterialQuery) {
+            ProductMaterialsReply.push({
+              Storage: (await getStorageItem(productMaterialQuery[i].StorageID)),
+              Qty: productMaterialQuery[i].QTY
+            })
+          }
+          return {
+            Product: productQuery,
+            Components: ProductMaterialsReply
+          }
+        }catch (err) {
+          console.log(err)
+          // Catches error from transaction
+          throw new Error("Internal Error")
+        }
+      } else {
+        throw new ForbiddenError(
+          'Authentication token is invalid, please log in'
+        )
+      }
+    }
+  }
 };
 
 module.exports = {
