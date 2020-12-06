@@ -170,28 +170,42 @@ const resolvers = {
                 }
 
                 // Create the order
-                orderInsert = await Orders.query().insertGraphAndFetch({
-                    BranchID: arg.BranchID,
-                    WarehouseID: arg.WarehouseID,
-                    OrderDate: now,
-                    Status: arg.Status,
-                    orderProducts: orderProductInsert, //Inserts using graph relation specified in models
-                })
-                if(orderInsert instanceof Orders){
-                    // Update stock level of warehouse
-                    for(const i in orderProducts){
-                        warehouseProductUpdate = await WarehouseProducts.query().findById(orderProducts[i].WarehouseProductID).decrement('QTY', orderProducts[i].Qty)
-                    }
-                    return{
-                        OrderID: orderInsert.OrderID,
-                        Status: orderInsert.Status,
-                        OrderDate: orderInsert.OrderDate.toISOString(),
-                        Branch: branchQuery,
-                        Warehouse: warehouseQuery,
-                        Products: orderProducts
-                    }
-                }else{
+                try {
+                    orderTrans = await Orders.transaction(async trx => {
+                        orderInsert = await Orders.query(trx).insertGraphAndFetch({
+                            BranchID: arg.BranchID,
+                            WarehouseID: arg.WarehouseID,
+                            OrderDate: now,
+                            Status: arg.Status,
+                            orderProducts: orderProductInsert, //Inserts using graph relation specified in models
+                        })
+                        if (orderInsert instanceof Orders) {
+                            try {
+                                warehouseProductTrans = await WarehouseProducts.transaction(async wtrx => {
+                                    // Update stock level of warehouse
+                                    for (const i in orderProducts) {
+                                        warehouseProductUpdate = await WarehouseProducts.query(wtrx).findById(orderProducts[i].WarehouseProductID).decrement('QTY', orderProducts[i].Qty)
+                                    }
+                                });
+                            } catch (err) {
+                                throw new Error()
+                            }
+                        } else {
+                            throw new Error("Internal Error in create order!")
+                        }
+                    });
+                } catch (err) {
+                    console.log(err)
+                    // Catches error from transaction
                     throw new Error("Internal Error in create order!")
+                }
+                return {
+                    OrderID: orderInsert.OrderID,
+                    Status: orderInsert.Status,
+                    OrderDate: orderInsert.OrderDate.toISOString(),
+                    Branch: branchQuery,
+                    Warehouse: warehouseQuery,
+                    Products: orderProducts
                 }
             } else {
                 throw new ForbiddenError(
