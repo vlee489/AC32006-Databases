@@ -2,6 +2,7 @@ const { gql, ForbiddenError, UserInputError } = require('apollo-server-express')
 const { Branch } = require('../models/branch');
 const { Products } = require('../models/products');
 const { Inventory } = require('../models/inventory');
+const { IdError } = require('../func/errors');
 
 const typeDefs = gql`
   "Represents an Inventory"
@@ -54,7 +55,7 @@ const resolvers = {
                 branchQuery = await Branch.query().findById(arg.BranchID)
                 productQuery = await Products.query().findById(arg.ProductID)
                 if(!(branchQuery instanceof Branch) || !(productQuery instanceof Products)){
-                    throw new UserInputError(
+                    throw new IdError(
                         'Branch or Product does not exist', { invalidArgs: Object.keys(arg) }
                       )
                 }

@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-const GET_PRODUCTS = gql`
+export const GET_PRODUCTS = gql`
   query {
     getProducts {
       ProductID
@@ -11,6 +11,7 @@ const GET_PRODUCTS = gql`
       Weight
       Colour
       Dimensions
+      ImageURL
     }
   }
 `;
@@ -26,6 +27,7 @@ export const GET_PRODUCTS_BY_CATEGORY = category => gql`
       Weight
       Colour
       Dimensions
+      ImageURL
     }
   }
 `;

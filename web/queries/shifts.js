@@ -1,31 +1,29 @@
 import { gql } from '@apollo/client';
 
-export const GET_SHIFT = gql`
+export const GET_SHIFTS = (branchId) => gql`
     query{
-        getShifts {
+        getShifts(BranchID: ${branchId}) {
             ShiftID
             Start
             End
-            Branch
+            Branch {
+                BranchID
+            }
         }
     }
 `;
 
-export const SHIFT_OF_STAFF = gql`
-    query{
-        shiftOfStaff {
-            ShiftID
-            Start
-            End
-            Branch
-        }
-    }
-`;
+// query{
+//     shiftOfStaff {
+//         ShiftID
+//         Start
+//         End
+//         Branch
+//     }
+// }
 
-export const STAFF_ON_SHIFT = gql`
-    query{
-        staffOnShift{
-            StaffID
-        }
-    }
-`;
+// query{
+//     staffOnShift{
+//         StaffID
+//     }
+// }

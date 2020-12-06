@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import Head from 'next/head';
+import Cookies from 'js-cookie';
 import { Container } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
 import styles from '../../styles/customer/Basket.module.scss';
-
+import basketActions from '../../basketActions';
 import BasketContext from '../../contexts/basket';
 
 const BasketPage = () => {

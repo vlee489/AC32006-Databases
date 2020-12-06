@@ -8,8 +8,8 @@ import { basketInit, basketReducer } from "../libraries/basket";
 import '../styles/globals.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const MyApp = ({ Component, pageProps }) => {
-	const [basket, dispatch] = useReducer(basketReducer, basketInit);
+const GFFC = ({ Component, pageProps }) => {
+	const [basket, dispatch] = useReducer(basketReducer, basketInit());
 	const basketProvider = useMemo(() => ({ basket, dispatch }), [basket, dispatch]);
 
 	const [userToken, setUserToken] = useState(null);	
@@ -24,4 +24,4 @@ const MyApp = ({ Component, pageProps }) => {
 	)
 }
 
-export default MyApp;
+export default GFFC;

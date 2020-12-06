@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -7,9 +7,7 @@ import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import GET_PRODUCTS from '../../queries/products';
 import routes from '../../routes';
-
-import categories from '../../categories';
-import categoryNum from '../../categoryNum';
+import categoriesJSON from '../../categoriesJSON.json';
 
 import { Container, Row, Col, Card, FormControl, InputGroup } from 'react-bootstrap';
 import Navigation from '../../components/navigation';
@@ -20,40 +18,32 @@ import { FaSearch } from 'react-icons/fa';
 import styles from '../../styles/customer/Catalogue.module.scss';
 
 const Catalogue = () => {
+	const [searchText, setSearchText] = useState("");
+	const [categories, setCategories] = useState([]);
 	const router = useRouter();
 	const { categoryDefault } = router.query;
-	const [searchText, setSearchText] = useState("");
-	const categoryRefs = useRef([]);
-
-	const getActiveCategories = () => {
-		let activeCategories = [];
-
-		// https://stackoverflow.com/questions/9907419/how-to-get-a-key-in-a-javascript-object-by-its-value
-		const getKeyByValue = (object, value) => {
-			return Object.keys(object).find(key => object[key].name === value);
-		}
-
-		categoryRefs.forEach(cat => {
-			if (cat.state.active) {
-				const catergoryNum = getKeyByValue(categories, cat.props.name);
-				activeCategories.push(catergoryNum);
-			}
-		});
-
-		return activeCategories;
-	}
-
 	const { loading, error, data } = useQuery(GET_PRODUCTS);
 
-	const changeCategories = () => {
-		// getActiveCategories();
-	}
+	useEffect(() => {
+		let categories = [];
+
+		categoriesJSON.forEach(cat => {
+			const category = {
+				name: cat.name,
+				number: cat.number,
+				active: cat.name === categoryDefault
+			}
+			categories.push(category);
+		})
+
+		setCategories(categories);
+	}, [categoryDefault])
 
 	const Product = ({ productId, name, image, price, dimensions }) => (
 		<Col>
 			<Link href={`${routes.product}/${encodeURIComponent(productId)}`}>
 				<Card className={`${styles.product} my-4`}>
-					<Card.Img variant="top" width="100%" src="https://picsum.photos/360/200" />
+					<Card.Img variant="top" width="100%" src={image} />
 					<Card.Body>
 						<Card.Title>{name}</Card.Title>
 						<Card.Text>{`£${price}`}</Card.Text>
@@ -69,15 +59,13 @@ const Catalogue = () => {
 		if (error) return <p>{`${error}`}</p>;
 		if (data) {
 			const products = data.getProducts;
+			const activeCategories = categories.filter(category => category.active);
 			const categoryFiltered = products.filter(
 				product => {
-					return categoryRefs.current.filter(
-						categoryRef => {
-							debugger;
-							if (categoryRef && categoryRef.state.active && categories[product.Category].name === categoryRef.props.name) return true;
-							return false;
-						}
-					)
+					for (const category of activeCategories) {
+						if (category.number === product.Category) return true;
+					}
+					return false;
 				}
 			);
 			const searchFiltered = categoryFiltered.filter(
@@ -89,7 +77,7 @@ const Catalogue = () => {
 			return (
 				<Row>
 					{searchFiltered.map(
-						(p, i) => <Product key={i} productId={p.ProductID} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
+						(p, i) => <Product key={i} productId={p.ProductID} name={p.Name} image={p.ImageURL} price={p.Price} dimensions={p.Dimensions} />
 					)}
 				</Row>
 			)
@@ -99,27 +87,23 @@ const Catalogue = () => {
 
 	const CategoryToggles = () => {
 		let jsx = [];
-		let i = 0;
 
-		const getActiveDefault = categoryName => {
-			// if (!categoryDefault) return true;
-			return categoryName === categoryDefault;
-		}
-
-		for (const category in categories) {
-			if (categories.hasOwnProperty(category)) {
-				const categoryName = categories[category].name;
-				jsx.push(<ToggleToken
-					key={i}
-					ref={ref => categoryRefs.current.push(ref)}
-					name={categoryName}
-					number={categoryNum[categoryName]}
-					activeDefault={getActiveDefault(categoryName)}
-					onClickFunc={changeCategories}
-				/>);
-				i++;
-			}
-		}
+		categories.forEach(category => {
+			jsx.push(<ToggleToken
+				key={category.number}
+				name={category.name}
+				number={category.number}
+				active={category.active}
+				toggle={() => setCategories(
+					categoriesStore => {
+						const newStore = JSON.parse(JSON.stringify(categoriesStore));
+						const cat = newStore[category.number - 1];
+						cat.active = !cat.active;
+						return newStore;
+					}
+				)}
+			/>)
+		})
 
 		return jsx;
 	}

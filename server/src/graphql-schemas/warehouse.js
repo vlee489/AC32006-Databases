@@ -2,6 +2,7 @@
 Defines all the Scheme for Warehouse related GraphQL functions
 */
 const { gql, ForbiddenError, UserInputError } = require('apollo-server-express');
+const { IdError } = require('../func/errors');
 const { Products } = require('../models/products');
 const { Warehouse } = require('../models/warehouse');
 const { WarehouseProducts } = require('../models/warehouseProducts');
@@ -100,7 +101,7 @@ const resolvers = {
         // Check if warehouse exists
         warehouseQuery = await Warehouse.query().findById(arg.WarehouseID)
         if (!(warehouseQuery instanceof Warehouse)) {
-          throw new UserInputError(
+          throw new IdError(
             'Warehouse does not exist', { invalidArgs: Object.keys(arg) }
           )
         }
@@ -133,7 +134,7 @@ const resolvers = {
         // Check if product exists
         productQuery = await Products.query().findById(arg.ProductID)
         if (!(productQuery instanceof Products)) {
-          throw new UserInputError(
+          throw new IdError(
             'Product does not exist', { invalidArgs: Object.keys(arg) }
           )
         }
@@ -161,7 +162,7 @@ const resolvers = {
       if (ctx.auth) {
         warehouseProductsQuery = await WarehouseProducts.query().where('ProductID', arg.ProductID).where('WarehouseID', arg.WarehouseID)
         if (warehouseQuery.length !== 1) {
-          throw new UserInputError(
+          throw new IdError(
             'Product does not exist or More then one entry for product', { invalidArgs: Object.keys(arg) }
           )
         }

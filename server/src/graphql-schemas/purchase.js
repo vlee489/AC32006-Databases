@@ -4,6 +4,8 @@ const { Products } = require('../models/products');
 const { Inventory } = require('../models/inventory');
 const { Purchases } = require('../models/purchases');
 const { ProductPurchases } = require('../models/productPurchases');
+const { IdError } = require('../func/errors');
+
 
 const typeDefs = gql`
     "Represents a Customer purchase"
@@ -92,7 +94,7 @@ const resolvers = {
                     Products: replyProducts,
                 }
             } else {
-                throw new UserInputError(
+                throw new IdError(
                     'Purchase does not exist', { invalidArgs: Object.keys(arg) }
                 )
             }
@@ -103,7 +105,7 @@ const resolvers = {
                 // Check if branch exists
                 branchQuery = await Branch.query().findById(arg.BranchID)
                 if (!(branchQuery instanceof Branch)) {
-                    throw new UserInputError(
+                    throw new IdError(
                         'Branch does not exist', { invalidArgs: Object.keys(arg) }
                     )
                 }
@@ -159,7 +161,7 @@ const resolvers = {
             // Check if branch exists in system
             branchQuery = await Branch.query().findById(arg.Branch)
             if (!(branchQuery instanceof Branch)) {
-                throw new UserInputError(
+                throw new IdError(
                     'Branch does not exist', { invalidArgs: Object.keys(arg) }
                 )
             }
@@ -196,35 +198,54 @@ const resolvers = {
                         )
                     }
                 } else {
-                    throw new UserInputError(
+                    throw new IdError(
                         `Product: ${arg.Products[item].ProductID} does not exist`, { invalidArgs: Object.keys(arg) }
                     )
                 }
             }
-            // Create the order
-            purchaseInsert = await Purchases.query().insertGraphAndFetch({
-                CustomerFirstName: arg.CustomerFirstName,
-                CustomerLastName: arg.CustomerLastName,
-                BillingAddress: arg.BillingAddress,
-                DeliveryAddress: arg.DeliveryAddress,
-                Paid: true,
-                TotalPrice: purchaseTotalCost,
-                BranchID: arg.Branch,
-                Dispatched: false,
-                // This create the entries in the productPurchases as a nested insert with relationships we specified in DB models
-                productPurchases: purchaseProductStore
-            })
+            // Create the order in a transaction
+            try {
+                purchaseTrans = await Purchases.transaction(async trx => {
+                    purchaseInsert = await Purchases.query(trx).insertGraphAndFetch({
+                        CustomerFirstName: arg.CustomerFirstName,
+                        CustomerLastName: arg.CustomerLastName,
+                        BillingAddress: arg.BillingAddress,
+                        DeliveryAddress: arg.DeliveryAddress,
+                        Paid: true,
+                        TotalPrice: purchaseTotalCost,
+                        BranchID: arg.Branch,
+                        Dispatched: false,
+                        // This create the entries in the productPurchases as a nested insert with relationships we specified in DB models
+                        productPurchases: purchaseProductStore
+                    })
+                });
+            } catch (err) {
+                console.log(err)
+                // Catches error from transaction
+                throw new Error("Internal error create Purchase Order")
+            }
             if (purchaseInsert instanceof Purchases) {
                 // Build reply
                 replyProducts = [] //Holds products
-                for (const item in purchaseInsert.productPurchases) { //For each product in the purchase order
-                    // Update Inventory
-                    inventoryUpdate = await Inventory.query().findById(purchaseInsert.productPurchases[item].InventoryID).decrement("QTY", purchaseInsert.productPurchases[item].QTY)
-                    // Add product to a hold 
-                    replyProducts.push({
-                        Product: (await Products.query().findById((await Inventory.query().findById(purchaseInsert.productPurchases[item].InventoryID)).ProductID)),
-                        Qty: purchaseInsert.productPurchases[item].QTY
-                    })
+                const inventoryTrx = await Inventory.startTransaction();
+                try {
+                    for (const item in purchaseInsert.productPurchases) { //For each product in the purchase order
+                        // Update Inventory
+                        inventoryUpdate = await Inventory.query().findById(purchaseInsert.productPurchases[item].InventoryID).decrement("QTY", purchaseInsert.productPurchases[item].QTY)
+                        // Add product to a hold 
+                        replyProducts.push({
+                            Product: (await Products.query().findById((await Inventory.query().findById(purchaseInsert.productPurchases[item].InventoryID)).ProductID)),
+                            Qty: purchaseInsert.productPurchases[item].QTY
+                        })
+                    }
+                    await inventoryTrx.commit();
+                } catch (err) {
+                    await inventoryTrx.rollback();
+                    // We roll back manually for purchases and productPurchases instead of using transactions to roll back
+                    // and objection.js has an issue where it can't update inventory while using nested transactions here.
+                    await ProductPurchases.query().delete().where('PurchaseID', purchaseInsert.PurchaseID)
+                    await Purchases.query().deleteById(purchaseInsert.PurchaseID)  // remove order from failed order
+                    throw new Error("Internal error create Purchase Order")
                 }
                 return {
                     PurchaseID: purchaseInsert.PurchaseID,
@@ -239,20 +260,18 @@ const resolvers = {
                     Products: replyProducts,
                 }
             } else {
-                throw new Error(
-                    "Internal error create Purchase Order"
-                )
+                throw new Error("Internal error create Purchase Order")
             }
         },
         dispatchPurchase: async (parent, arg, ctx, info) => {
             if (ctx.auth) {
                 purchaseQuery = await Purchases.query().findById(arg.PurchaseID)
                 if (!(purchaseQuery instanceof Purchases)) {
-                    throw new UserInputError(
+                    throw new IdError(
                         'Purchase does not exist', { invalidArgs: Object.keys(arg) }
                     )
                 }
-                purchaseQuery = await Purchases.query().patchAndFetchById(arg.PurchaseID, {Dispatched: arg.Dispatched})
+                purchaseQuery = await Purchases.query().patchAndFetchById(arg.PurchaseID, { Dispatched: arg.Dispatched })
                 // Building reply
                 purchaseProductQuery = await ProductPurchases.query().where('PurchaseID', arg.PurchaseID)
                 // Get products to reply with
