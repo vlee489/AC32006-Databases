@@ -13,6 +13,8 @@ class ProductMaterials extends Model {
   }
 
   static get relationMappings() {
+    const { Products } = require('../models/products');
+    const { Storage } = require('../models/storage');
     return {
       product: {
         relation: Model.BelongsToOneRelation, // Each entry has a relation to one entry in the other table

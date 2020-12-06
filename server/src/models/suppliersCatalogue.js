@@ -14,6 +14,8 @@ class SuppliersCatalogue extends Model {
     }
 
     static get relationMappings() {
+        const { Suppliers } = require('../models/suppliers')
+        const { MaterialsCatalogue } = require('../models/materialsCatalogue')
         return {
             suppliers: {
                 relation: Model.BelongsToOneRelation,
