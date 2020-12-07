@@ -3,8 +3,9 @@ import Head from 'next/head'
 import styles from '../../styles/staff/Admin.module.scss'
 import Navigation from '../../components/navigation'
 import withApollo from "../../libraries/apollo";
-import { Accordion, Button, Card, Col, Container, Form, FormControl, InputGroup } from 'react-bootstrap'
+import { Accordion, Button, Card, Col, Container, Form, FormControl, InputGroup, Table } from 'react-bootstrap'
 import { useQuery, useMutation } from '@apollo/client';
+import Spinner from '../../components/spinner';
 import { FaSearch } from 'react-icons/fa';
 import { ADD_STAFF } from '../../mutations/staff';
 import { GET_STAFF } from '../../queries/staff';
@@ -94,12 +95,49 @@ const Admin = () => {
     )
   }
 
+  const StaffTable = ({ data }) => {
+
+    const StaffMember = ({ member }) => {
+      return (
+        <tr>
+          <td>{member.StaffID}</td>
+          <td>{member.FirstName}</td>
+          <td>{member.LastName}</td>
+        </tr>
+      )
+    }
+
+    return (
+      <Table striped bordered hover size="sm">
+        <thead>
+          <tr>
+            <th>Staff ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            data.getStaff.map((member, i) => <StaffMember key={i} member={member} />)
+          }
+        </tbody>
+      </Table>
+    )
+  }
+
+  const StaffList = () => {
+    const { loading, error, data } = useQuery(GET_STAFF);
+
+    if (loading) return <Spinner />;
+    if (error) return <p>{JSON.stringify(error)}</p>;
+    if (data) return (
+      <StaffTable data={data} />
+    );
+    return null;
+  }
+
   const AssignStaffMember = () => {
     const [searchText, setSearchText] = useState("");
-
-    const PeopleList = () => {
-      const { loading, error, data } = useQuery(GET_STAFF);
-    }
 
     return (
       <Card>
@@ -108,7 +146,7 @@ const Admin = () => {
         </Accordion.Toggle>
         <Accordion.Collapse eventKey="1">
           <Card.Body>
-            <InputGroup className="mb-3 pt-5">
+            <InputGroup className="mt-2 mb-4">
               <InputGroup.Prepend>
                 <InputGroup.Text>
                   <FaSearch />
@@ -121,7 +159,7 @@ const Admin = () => {
                 onChange={e => setSearchText(e.target.value)}
               />
             </InputGroup>
-
+            <StaffList />
           </Card.Body>
         </Accordion.Collapse>
       </Card>
@@ -135,7 +173,22 @@ const Admin = () => {
           Remove Staff Member from Branch
         </Accordion.Toggle>
         <Accordion.Collapse eventKey="2">
-          <Card.Body>Hello! I'm another body</Card.Body>
+          <Card.Body>
+            <InputGroup className="mt-2 mb-4">
+              <InputGroup.Prepend>
+                <InputGroup.Text>
+                  <FaSearch />
+                </InputGroup.Text>
+              </InputGroup.Prepend>
+              <FormControl
+                placeholder="Search staff..."
+                aria-label="Search"
+                aria-describedby="search"
+                onChange={e => setSearchText(e.target.value)}
+              />
+            </InputGroup>
+            <StaffList />
+          </Card.Body>
         </Accordion.Collapse>
       </Card>
     )
