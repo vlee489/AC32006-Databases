@@ -95,6 +95,10 @@ const Admin = () => {
     )
   }
 
+  const BranchDropdown = () => {
+    
+  }
+
   const StaffTable = ({ data }) => {
 
     const StaffMember = ({ member }) => {
@@ -167,6 +171,8 @@ const Admin = () => {
   }
 
   const UnassignStaffMember = () => {
+    const [searchText, setSearchText] = useState("");
+
     return (
       <Card>
         <Accordion.Toggle as={Card.Header} eventKey="2">
