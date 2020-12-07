@@ -1,20 +1,25 @@
 import Head from 'next/head'
-import { Container, Table } from 'react-bootstrap'
+import { Container, Table, Button } from 'react-bootstrap'
 import { useContext } from 'react'
+import { useRouter } from 'next/router'
 
 import UserContext from '../../contexts/user'
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
-import { GET_SHIFTS } from '../../queries/shifts';
+import GET_SHIFTS from '../../queries/shifts';
+import { getBranches } from '../../queries/branch';
+import { loginStaff } from '../../queries/loginStaff';
+
 
 import styles from '../../styles/staff/Shift.module.scss'
 import Navigation from '../../components/navigation'
 import Spinner from '../../components/spinner';
 
 const ShiftsPage = () => {
+  const router = useRouter();
   const { userToken, setUserToken } = useContext(UserContext);
+  const { shiftID } = router.query;
   const { loading, error, data } = useQuery(GET_SHIFTS(1));
-  // const data = {getShifts: {ShiftID: "69", Start: "4:20", End: "10:00", Branch: "Slough"}}
 
   const ShiftsTable = () => {
     if (loading) return <Spinner />;
@@ -23,16 +28,22 @@ const ShiftsPage = () => {
       const shifts = data.getShifts;
       const staffOnShift = data.staffOnShift;
       const shiftOfStaff = data.shiftOfStaff;
+      
       return (
-        <tr>
-          <td>date</td>
-          <td>start</td>
-          <td>end</td>
-          <td>slots</td>
-          <td>req</td>
-          <td>choose</td>
-          <td>cancel</td>
-        </tr>
+        <tbody>
+          {shifts.map(
+            (Shift, i) => <tr key={i}>
+                            <td>{new Date(Shift.Start).toLocaleDateString("ja-JP")}</td>
+                            <td>{new Date(Shift.Start).toLocaleTimeString('en-UK')}</td>
+                            <td>{new Date(Shift.End).toLocaleTimeString('en-UK')}</td>
+                            <td>Slots</td>
+                            <td>{Shift.StaffReq}</td>
+                            <td><Button variant="primary">Choose shift</Button></td>
+                            <td><Button variant="primary">Cancel shift</Button></td>
+                          </tr>
+            )
+          }
+        </tbody>
       )
     }
   }
@@ -58,8 +69,8 @@ const ShiftsPage = () => {
                 <th>Choose shift</th>
                 <th>Cancel shift</th>
               </tr>
-              <ShiftsTable />
             </thead>
+            <ShiftsTable />
           </Table>
         </Container>
       </main>

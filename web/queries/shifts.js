@@ -6,12 +6,15 @@ export const GET_SHIFTS = (branchId) => gql`
             ShiftID
             Start
             End
+            StaffReq
             Branch {
                 BranchID
             }
         }
     }
 `;
+
+export default GET_SHIFTS;
 
 // query{
 //     shiftOfStaff {
