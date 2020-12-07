@@ -1,9 +1,10 @@
 import Head from 'next/head'
 import styles from '../../styles/staff/Inventory.module.scss'
 import Navigation from '../../components/navigation'
-import { Container } from 'react-bootstrap'
+import withApollo from "../../libraries/apollo";
+import { Container, Dropdown } from 'react-bootstrap'
 
-export default function Inventory() {
+const Inventory = () => {
   return (
     <div className={styles.container}>
       <Head>
@@ -20,3 +21,5 @@ export default function Inventory() {
     </div>
   )
 }
+
+export default withApollo({ ssr: false })(Inventory);
