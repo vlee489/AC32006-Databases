@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { Container, Table } from 'react-bootstrap'
+import { Container, Table, Button } from 'react-bootstrap'
 import { useContext } from 'react'
 import { useRouter } from 'next/router'
 
@@ -38,10 +38,11 @@ const ShiftsPage = () => {
                             <td>{Shift.End}</td>
                             <td>Slots</td>
                             <td>{Shift.StaffReq}</td>
-                            <td></td>
-                            <td></td>
+                            <td><Button variant="primary">Choose shift</Button></td>
+                            <td><Button variant="primary">Cancel shift</Button></td>
                           </tr>
-          )}
+            )
+          }
         </tbody>
       )
     }
