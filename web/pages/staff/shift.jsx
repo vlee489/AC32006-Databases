@@ -33,9 +33,9 @@ const ShiftsPage = () => {
         <tbody>
           {shifts.map(
             (Shift, i) => <tr key={i}>
-                            <td>{Shift.Start}</td>
-                            <td>{Shift.Start}</td>
-                            <td>{Shift.End}</td>
+                            <td>{new Date(Shift.Start).toLocaleDateString("ja-JP")}</td>
+                            <td>{new Date(Shift.Start).toLocaleTimeString('en-UK')}</td>
+                            <td>{new Date(Shift.End).toLocaleTimeString('en-UK')}</td>
                             <td>Slots</td>
                             <td>{Shift.StaffReq}</td>
                             <td><Button variant="primary">Choose shift</Button></td>
