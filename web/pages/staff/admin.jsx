@@ -11,6 +11,7 @@ import { FaSearch } from 'react-icons/fa';
 
 import { ADD_STAFF } from '../../mutations/staff';
 import { GET_STAFF } from '../../queries/staff';
+import { GET_BRANCH_STAFF } from '../../queries/branchStaff';
 
 const Admin = () => {
   const CreateStaffMember = () => {
@@ -97,20 +98,45 @@ const Admin = () => {
     )
   }
 
-  const StaffTable = ({ data }) => {
+  const StaffTable = ({ staffProp, branch }) => {
+    const staff = JSON.parse(JSON.stringify(staffProp));
+    const { loading, error, data } = useQuery(GET_BRANCH_STAFF(branch.BranchID));
 
     const StaffMember = ({ member }) => {
+      const ToggleButton = ({ onBranch }) => {
+        if (onBranch) return (
+          <Button variant="danger" onClick={null}>Unassign</Button>
+        )
+        return <Button onClick={null}>Assign</Button>
+      }
+
       return (
         <tr>
           <td>{member.StaffID}</td>
           <td>{member.FirstName}</td>
           <td>{member.LastName}</td>
-          <td>{<div className="text-center"><Button onClick={null}>Assign</Button></div>}</td>
+          <td>
+            <div className="text-center">
+              <ToggleButton onBranch={member.onBranch} />
+            </div>
+          </td>
         </tr>
       )
     }
 
-    return (
+    if (loading) return <Spinner />
+    if (error) return <p>{JSON.stringify(error)}</p>
+    if (data) {
+      const branchStaff = data.getBranchStaff;
+      staff.forEach(staffMember => {
+        branchStaff.forEach(branchMember => {
+          if (branchMember.StaffID === staffMember.StaffID) {
+            // debugger;
+            staffMember.onBranch = true;
+          }
+        })
+      });
+      return (
       <Table striped bordered hover size="sm">
         <thead>
           <tr>
@@ -122,11 +148,12 @@ const Admin = () => {
         </thead>
         <tbody>
           {
-            data.getStaff.map((member, i) => <StaffMember key={i} member={member} />)
+            staff.map(member => <StaffMember key={member.StaffID} member={member} />)
           }
         </tbody>
       </Table>
-    )
+    )}
+    return null;
   }
 
   const StaffList = ({ branch, searchText }) => {
@@ -135,7 +162,7 @@ const Admin = () => {
     if (loading) return <Spinner />;
     if (error) return <p>{JSON.stringify(error)}</p>;
     if (data) return (
-      <StaffTable data={data} />
+      <StaffTable staffProp={data.getStaff} branch={branch} />
     );
     return null;
   }
@@ -162,7 +189,7 @@ const Admin = () => {
                   <FormControl
                     placeholder="Search staff..."
                     aria-label="Search"
-                    aria-described-by="search"
+                    aria-describedby="search"
                     onChange={e => setSearchText(e.target.value)}
                   />
                 </InputGroup>

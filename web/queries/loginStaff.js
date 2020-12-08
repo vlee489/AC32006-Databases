@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const loginStaff = () => gql`
     query {
-        loginStaff {
+        getLoginStaff {
             BranchID
             Name
             Address1
