@@ -5,7 +5,8 @@ export const ADD_STAFF = details => {
     return gql`
         mutation{
             addStaff(FirstName: ${firstName}, LastName: ${lastName}, PhoneNumber: ${phoneNumber}, NINumber: ${niNumber}, Address: ${address}, Wage: ${wage}, Position: ${position}, Email: ${email}, Password: ${password}) {
-                StaffID
+                FirstName
+                LastName
             }
         }
     `
