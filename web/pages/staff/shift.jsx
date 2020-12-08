@@ -9,7 +9,7 @@ import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import { GET_BRANCHES } from '../../queries/branch';
 import { GET_SHIFTS, GET_STAFF_ON_SHIFT } from '../../queries/shifts';
-import { loginStaff } from '../../queries/loginStaff';
+import { LOGIN_STAFF } from '../../queries/loginStaff';
 
 import styles from '../../styles/staff/Shift.module.scss'
 import Navigation from '../../components/navigation'
@@ -24,24 +24,30 @@ const ShiftsPage = () => {
   const { userToken, setUserToken } = useContext(UserContext);
   const { shiftID } = router.query;
   const shifts = useQuery(GET_SHIFTS(branchSelected.BranchID));
+  const loggedInStaff = useQuery(LOGIN_STAFF);
+  debugger;
 
   const changeBranch = (newBranch) => {
     setBranchSelected(newBranch)
   }
 
+  const ShiftButton = ({shift}) => {
+    if (shift.Staff.includes(loggedInStaff.data.loginStaff.StaffID)){
+      return(
+        <Button variant="danger">Leave shift</Button>
+      )
+    } else {
+      return(
+        <Button variant="primary">Join shift</Button>
+      )
+    }
+      
+  }
+
   const ShiftsTable = () => {
-    if (shifts.loading) return <Spinner />;
-    if (shifts.error) return <p>{`${shifts.error}`}</p>;
-    if (shifts.data) {
-
-      var staffOnShifts = {}
-    
-      for (const i in shifts.data.getShifts){
-        const staffOnShift = useQuery(GET_STAFF_ON_SHIFT(shifts.data.getShifts[i].ShiftID));
-        staffOnShifts[`${shifts.data.getShifts[i].ShiftID}`] = staffOnShift.data.staffOnShift
-      }
-
-      debugger;
+    if (shifts.loading || loggedInStaff.loading) return <Spinner />;
+    if (shifts.error || loggedInStaff.error) return <p>{`${shifts.error}`}</p>;
+    if (shifts.data && loggedInStaff.data) {
       
       return (
         <tbody>
@@ -50,10 +56,9 @@ const ShiftsPage = () => {
                             <td>{new Date(Shift.Start).toLocaleDateString("ja-JP")}</td>
                             <td>{new Date(Shift.Start).toLocaleTimeString('en-UK')}</td>
                             <td>{new Date(Shift.End).toLocaleTimeString('en-UK')}</td>
-                            <td>{Shift.StaffReq - staffOnShift.data.staffOnShift.length}</td>
+                            <td>{Shift.StaffReq - Shift.Staff.length}</td>
                             <td>{Shift.StaffReq}</td>
-                            <td><Button variant="primary">Choose shift</Button></td>
-                            <td><Button variant="primary">Cancel shift</Button></td>
+                            <td><ShiftButton shift={Shift}/></td>
                           </tr>
             )
           }
@@ -83,7 +88,6 @@ const ShiftsPage = () => {
                 <th>Slots left</th>
                 <th>Staff required for shift</th>
                 <th>Choose shift</th>
-                <th>Cancel shift</th>
               </tr>
             </thead>
             <ShiftsTable />
