@@ -2,6 +2,7 @@ import Head from 'next/head'
 import { Container, Table, Button } from 'react-bootstrap'
 import { useContext } from 'react'
 import { useRouter } from 'next/router'
+import BranchDropdown from '../../components/branchDropdown'
 
 import UserContext from '../../contexts/user'
 import { useQuery } from '@apollo/client';
@@ -10,28 +11,37 @@ import { GET_BRANCHES } from '../../queries/branch';
 import { GET_SHIFTS, GET_STAFF_ON_SHIFT } from '../../queries/shifts';
 import { loginStaff } from '../../queries/loginStaff';
 
-
 import styles from '../../styles/staff/Shift.module.scss'
 import Navigation from '../../components/navigation'
 import Spinner from '../../components/spinner';
+import { useState } from 'react'
 
 const ShiftsPage = () => {
+
+  const [branchSelected, setBranchSelected] = useState({BranchID:1})
+
   const router = useRouter();
   const { userToken, setUserToken } = useContext(UserContext);
   const { shiftID } = router.query;
-  const shifts = useQuery(GET_SHIFTS(1));
-  const staffOnShift = useQuery(GET_STAFF_ON_SHIFT(1));
+  const shifts = useQuery(GET_SHIFTS(branchSelected.BranchID));
+
+  const changeBranch = (newBranch) => {
+    setBranchSelected(newBranch)
+  }
 
   const ShiftsTable = () => {
-    if (shifts.loading || staffOnShift.loading ) return <Spinner />;
-    if (shifts.error || staffOnShift.error) return <p>{`${error}`}</p>;
-    if (shifts.data && staffOnShift.data) {
-      
-      
-      // const staffOnShift = data2.staffOnShift;
-      // const shiftOfStaff = data.shiftOfStaff;
+    if (shifts.loading) return <Spinner />;
+    if (shifts.error) return <p>{`${shifts.error}`}</p>;
+    if (shifts.data) {
 
-      // var numStaffOnShift = staffOnShift.length;
+      var staffOnShifts = {}
+    
+      for (const i in shifts.data.getShifts){
+        const staffOnShift = useQuery(GET_STAFF_ON_SHIFT(shifts.data.getShifts[i].ShiftID));
+        staffOnShifts[`${shifts.data.getShifts[i].ShiftID}`] = staffOnShift.data.staffOnShift
+      }
+
+      debugger;
       
       return (
         <tbody>
@@ -63,6 +73,7 @@ const ShiftsPage = () => {
       <main className={styles.main}>
         <Navigation />
         <Container>
+          <BranchDropdown branchSelected={branchSelected} changeBranch={changeBranch}/>
           <Table striped bordered hover>
             <thead>
               <tr>
