@@ -2,12 +2,13 @@ import { useState } from 'react';
 import Head from 'next/head'
 import styles from '../../styles/staff/Admin.module.scss'
 import Navigation from '../../components/navigation'
+import BranchDropdown from '../../components/branchDropdown';
 import withApollo from "../../libraries/apollo";
 import { Accordion, Button, Card, Col, Container, Dropdown, DropdownButton, Form, FormControl, Row, InputGroup, Table } from 'react-bootstrap'
 import { useQuery, useMutation } from '@apollo/client';
 import Spinner from '../../components/spinner';
 import { FaSearch } from 'react-icons/fa';
-import { GET_BRANCHES } from '../../queries/branch';
+
 import { ADD_STAFF } from '../../mutations/staff';
 import { GET_STAFF } from '../../queries/staff';
 
@@ -94,25 +95,6 @@ const Admin = () => {
         </Accordion.Collapse>
       </Card>
     )
-  }
-
-  const BranchDropdown = ({ branchSelected, changeBranch }) => {
-    const { loading, error, data } = useQuery(GET_BRANCHES);
-
-    if (loading) return <Spinner />;
-    if (error) return <p>{error}</p>;
-
-    if (data) {
-      const branches = data.getBranches;
-
-      return (
-        <DropdownButton id="dropdown-basic-button" title={branchSelected.Name}>
-          {
-            branches.map(branch => <Dropdown.Item key={branch.BranchID} onClick={() => changeBranch(branch)}>{branch.Name}</Dropdown.Item>)
-          }
-        </DropdownButton>
-      )
-    }
   }
 
   const StaffTable = ({ data }) => {
