@@ -4,10 +4,11 @@ import styles from '../../styles/staff/Admin.module.scss'
 import Navigation from '../../components/navigation'
 import BranchDropdown from '../../components/branchDropdown';
 import withApollo from "../../libraries/apollo";
-import { Accordion, Alert, Button, Card, Col, Container, Form, FormControl, Row, InputGroup, Table } from 'react-bootstrap'
+import { Accordion, Alert, Button, Card, Col, Container, Dropdown, DropdownButton, Form, FormControl, Row, InputGroup, Table } from 'react-bootstrap'
 import { useQuery, useMutation } from '@apollo/client';
 import Spinner from '../../components/spinner';
 import { FaSearch } from 'react-icons/fa';
+import positions from '../../positions';
 
 import { ADD_STAFF } from '../../mutations/staff';
 import { GET_STAFF } from '../../queries/staff';
@@ -17,7 +18,7 @@ const Admin = () => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
+        <title>GFFC Admin</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -46,18 +47,35 @@ const CreateStaffMember = () => {
 
     if (!details.firstName) setValidationError("We need a first name");
     if (!details.lastName) setValidationError("We need a last name");
-    if (!details.lastName) setValidationError("We need a last name");
+    if (!details.phoneNumber) setValidationError("We need a phone number");
+    if (!details.niNumber) setValidationError("We need a National Insurance number");
+    if (!details.email) setValidationError("We need a email");
+    if (!details.password) setValidationError("We need a password");
+    if (!details.address) setValidationError("We need an address");
+    if (!details.wage) setValidationError("We need a wage level");
+    if (!details.position) setValidationError("We need a position");
+
     else {
       const [addStaff, { data }] = useMutation(ADD_STAFF(details));
       setMutationData(data);
     }
   }
-  
+
   const handleChange = (e, field) => {
     setDetails(
       details => {
         const newDetails = JSON.parse(JSON.stringify(details));
         newDetails[field] = e.target.value;
+        return newDetails;
+      }
+    )
+  }
+
+  const handlePositionChange = (num, field) => {
+    setDetails(
+      details => {
+        const newDetails = JSON.parse(JSON.stringify(details));
+        newDetails.position = num;
         return newDetails;
       }
     )
@@ -117,12 +135,16 @@ const CreateStaffMember = () => {
             </Form.Group>
             <Form.Row>
               <Form.Group as={Col} controlId="formWage">
-                <Form.Label>Wage</Form.Label>
+                <Form.Label>Wage (£)</Form.Label>
                 <Form.Control type="number" step="0.1" defaultValue="4.55" onChange={e => handleChange(e, "wage")} placeholder="Enter wage" />
               </Form.Group>
-              <Form.Group as={Col} controlId="formPosition">
+              {/* <Form.Group as={Col} controlId="formPosition">
                 <Form.Label>Position</Form.Label>
                 <Form.Control type="number" onChange={e => handleChange(e, "position")} placeholder="Enter position" />
+              </Form.Group> */}
+              <Form.Group as={Col} controlId="formPosition">
+                <Form.Label>Position</Form.Label>
+                <PositionDropdown position={details.position} onPositionChange={num => handlePositionChange(num)}/>
               </Form.Group>
             </Form.Row>
 
@@ -132,6 +154,18 @@ const CreateStaffMember = () => {
         </Card.Body>
       </Accordion.Collapse>
     </Card>
+  )
+}
+
+const PositionDropdown = ({ position, onPositionChange }) => {
+  const title = position ? positions[position] : "Position";
+
+  return (
+    <DropdownButton id="dropdown-basic-button" title={title}>
+      <Dropdown.Item onClick={() => onPositionChange(1)}>Executives</Dropdown.Item>
+      <Dropdown.Item onClick={() => onPositionChange(2)}>Manager</Dropdown.Item>
+      <Dropdown.Item onClick={() => onPositionChange(3)}>Associates</Dropdown.Item>
+    </DropdownButton>
   )
 }
 
@@ -159,6 +193,7 @@ const StaffMember = ({ member }) => {
 
 const StaffTable = ({ staffProp, branch }) => {
   const staff = JSON.parse(JSON.stringify(staffProp));
+  if (!branch) return <div className="pt-5"></div>;
   const { loading, error, data } = useQuery(GET_BRANCH_STAFF(branch.BranchID));
 
   if (loading) return <Spinner />
@@ -173,22 +208,23 @@ const StaffTable = ({ staffProp, branch }) => {
       })
     });
     return (
-    <Table striped bordered hover size="sm">
-      <thead>
-        <tr>
-          <th>Staff ID</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Toggle</th>
-        </tr>
-      </thead>
-      <tbody>
-        {
-          staff.map(member => <StaffMember key={member.StaffID} member={member} />)
-        }
-      </tbody>
-    </Table>
-  )}
+      <Table striped bordered hover size="sm">
+        <thead>
+          <tr>
+            <th>Staff ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Toggle</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            staff.map(member => <StaffMember key={member.StaffID} member={member} />)
+          }
+        </tbody>
+      </Table>
+    )
+  }
   return null;
 }
 
@@ -204,7 +240,7 @@ const StaffList = ({ branch, searchText }) => {
 }
 
 const AssignStaffMember = () => {
-  const [branchSelected, setBranchSelected] = useState({});
+  const [branchSelected, setBranchSelected] = useState(null);
   const [searchText, setSearchText] = useState("");
 
   return (
@@ -231,7 +267,7 @@ const AssignStaffMember = () => {
               </InputGroup>
             </Col>
             <Col md="auto">
-              <BranchDropdown branchSelected={branchSelected} changeBranch={newBranch => setBranchSelected(newBranch)}/>
+              <BranchDropdown branchSelected={branchSelected} changeBranch={newBranch => setBranchSelected(newBranch)} />
             </Col>
           </Row>
           <StaffList branch={branchSelected} searchText={searchText} />
