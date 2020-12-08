@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import UserContext from '../../contexts/user'
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
-import GET_SHIFTS from '../../queries/shifts';
+import { GET_SHIFTS, GET_STAFF_ON_SHIFT } from '../../queries/shifts';
 import { getBranches } from '../../queries/branch';
 import { loginStaff } from '../../queries/loginStaff';
 
@@ -19,24 +19,28 @@ const ShiftsPage = () => {
   const router = useRouter();
   const { userToken, setUserToken } = useContext(UserContext);
   const { shiftID } = router.query;
-  const { loading, error, data } = useQuery(GET_SHIFTS(1));
+  const shifts = useQuery(GET_SHIFTS(1));
+  const staffOnShift = useQuery(GET_STAFF_ON_SHIFT(1));
 
   const ShiftsTable = () => {
-    if (loading) return <Spinner />;
-    if (error) return <p>{`${error}`}</p>;
-    if (data) {
-      const shifts = data.getShifts;
-      const staffOnShift = data.staffOnShift;
-      const shiftOfStaff = data.shiftOfStaff;
+    if (shifts.loading || staffOnShift.loading ) return <Spinner />;
+    if (shifts.error || staffOnShift.error) return <p>{`${error}`}</p>;
+    if (shifts.data && staffOnShift.data) {
+      
+      
+      // const staffOnShift = data2.staffOnShift;
+      // const shiftOfStaff = data.shiftOfStaff;
+
+      // var numStaffOnShift = staffOnShift.length;
       
       return (
         <tbody>
-          {shifts.map(
+          {shifts.data.getShifts.map(
             (Shift, i) => <tr key={i}>
                             <td>{new Date(Shift.Start).toLocaleDateString("ja-JP")}</td>
                             <td>{new Date(Shift.Start).toLocaleTimeString('en-UK')}</td>
                             <td>{new Date(Shift.End).toLocaleTimeString('en-UK')}</td>
-                            <td>Slots</td>
+                            <td>{Shift.StaffReq - staffOnShift.data.staffOnShift.length}</td>
                             <td>{Shift.StaffReq}</td>
                             <td><Button variant="primary">Choose shift</Button></td>
                             <td><Button variant="primary">Cancel shift</Button></td>
@@ -46,6 +50,7 @@ const ShiftsPage = () => {
         </tbody>
       )
     }
+    return null
   }
 
   return (

@@ -14,7 +14,14 @@ export const GET_SHIFTS = (branchId) => gql`
     }
 `;
 
-export default GET_SHIFTS;
+export const GET_STAFF_ON_SHIFT = (shiftID) => gql`
+    query{
+        staffOnShift(ShiftID: ${shiftID}){
+            StaffID
+        }
+    }`
+
+
 
 // query{
 //     shiftOfStaff {
@@ -22,11 +29,5 @@ export default GET_SHIFTS;
 //         Start
 //         End
 //         Branch
-//     }
-// }
-
-// query{
-//     staffOnShift{
-//         StaffID
 //     }
 // }
