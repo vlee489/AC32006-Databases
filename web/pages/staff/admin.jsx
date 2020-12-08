@@ -37,7 +37,8 @@ const Admin = () => {
 
 const CreateStaffMember = () => {
   let submitAttempted = false;
-  const [details, setDetails] = useState({});
+  const defaultWage = 4.55;
+  const [details, setDetails] = useState({ wage: defaultWage });
   const [validationError, setValidationError] = useState(null);
   const [mutationData, setMutationData] = useState(null);
 
@@ -46,15 +47,14 @@ const CreateStaffMember = () => {
     submitAttempted = true;
 
     if (!details.firstName) setValidationError("We need a first name");
-    if (!details.lastName) setValidationError("We need a last name");
-    if (!details.phoneNumber) setValidationError("We need a phone number");
-    if (!details.niNumber) setValidationError("We need a National Insurance number");
-    if (!details.email) setValidationError("We need a email");
-    if (!details.password) setValidationError("We need a password");
-    if (!details.address) setValidationError("We need an address");
-    if (!details.wage) setValidationError("We need a wage level");
-    if (!details.position) setValidationError("We need a position");
-
+    else if (!details.lastName) setValidationError("We need a last name");
+    else if (!details.phoneNumber) setValidationError("We need a phone number");
+    else if (!details.niNumber) setValidationError("We need a National Insurance number");
+    else if (!details.email) setValidationError("We need a email");
+    else if (!details.password) setValidationError("We need a password");
+    else if (!details.address) setValidationError("We need an address");
+    else if (!details.wage) setValidationError("We need a wage level");
+    else if (!details.position) setValidationError("We need a position");
     else {
       const [addStaff, { data }] = useMutation(ADD_STAFF(details));
       setMutationData(data);
@@ -136,7 +136,7 @@ const CreateStaffMember = () => {
             <Form.Row>
               <Form.Group as={Col} controlId="formWage">
                 <Form.Label>Wage (£)</Form.Label>
-                <Form.Control type="number" step="0.1" defaultValue="4.55" onChange={e => handleChange(e, "wage")} placeholder="Enter wage" />
+                <Form.Control type="number" step="0.1" defaultValue={defaultWage} onChange={e => handleChange(e, "wage")} placeholder="Enter wage" />
               </Form.Group>
               {/* <Form.Group as={Col} controlId="formPosition">
                 <Form.Label>Position</Form.Label>
