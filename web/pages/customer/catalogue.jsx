@@ -130,7 +130,7 @@ const Catalogue = () => {
 								<FormControl
 									placeholder="Search products..."
 									aria-label="Search"
-									aria-describedby="search"
+									aria-described-by="search"
 									onChange={e => setSearchText(e.target.value)}
 								/>
 							</InputGroup>

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const getBranches = () => gql`
+export const GET_BRANCHES = gql`
     query {
         getBranches {
             BranchID

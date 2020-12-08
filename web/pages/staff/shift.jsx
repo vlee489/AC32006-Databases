@@ -7,7 +7,7 @@ import UserContext from '../../contexts/user'
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import GET_SHIFTS from '../../queries/shifts';
-import { getBranches } from '../../queries/branch';
+import { GET_BRANCHES } from '../../queries/branch';
 import { loginStaff } from '../../queries/loginStaff';
 
 
