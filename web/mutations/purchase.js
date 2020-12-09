@@ -1,6 +1,11 @@
 import { gql } from '@apollo/client';
 
-export const ADD_STAFF = gql`
+export const CREATE_PURCHASE = gql`
+    input ProductOrder {
+        ProductID: ID, 
+        Quantity: Int
+    }
+
     mutation CreatePurchase(
         $branch: ID!
         $customerFirstName: FirstName_String_NotNull_minLength_1_maxLength_45!,
@@ -8,18 +13,15 @@ export const ADD_STAFF = gql`
         $phoneNumber: PhoneNumber_String_NotNull_maxLength_12!,
         $billingAddress: String!,
         $deliveryAddress: String!,
-        $products:[{
-            $ProductID: ID!,
-            $Qty: Int!
-        }]
-        )
-        {
+        $products: [ProductOrder]
+    )
+    {
         createPurchase(
             Details:{
                 Branch: $branch,
                 CustomerFirstName: $customerFirstName,
                 CustomerLastName: $customerLastName,
-                BillingAddress: $billingAddres,
+                BillingAddress: $billingAddress,
                 DeliveryAddress: $deliveryAddress,
                 Products: $products
             }
