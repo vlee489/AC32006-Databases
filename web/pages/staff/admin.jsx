@@ -243,9 +243,9 @@ const StaffList = ({ branch, searchText }) => {
 
   if (loading) return <Spinner />;
   if (error) return <p>{JSON.stringify(error)}</p>;
-  if (data) return (
-    <StaffTable staffProp={data.getStaff} branch={branch} />
-  );
+  if (data) {
+    return <StaffTable staffProp={data.getStaff} branch={branch} />
+  }
   return null;
 }
 
