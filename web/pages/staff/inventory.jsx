@@ -6,7 +6,7 @@ import withApollo from "../../libraries/apollo";
 import { Container, Dropdown, DropdownButton, ButtonGroup, Navbar, Nav, NavDropdown, Form, FormControl, Button } from 'react-bootstrap'
 import { GET_BRANCHES } from '../../queries/branch';
 import { useQuery } from '@apollo/client';
-import BranchDropdown from '../../components/BranchDropdown'
+import BranchDropdown from '../../components/branchDropdown'
 
 
 
