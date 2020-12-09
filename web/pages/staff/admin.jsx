@@ -10,7 +10,7 @@ import Spinner from '../../components/spinner';
 import { FaSearch } from 'react-icons/fa';
 import positions from '../../positions';
 
-import { ADD_STAFF, ASSIGN_STAFF_TO_BRANCH } from '../../mutations/staff';
+import { ADD_STAFF, ASSIGN_STAFF_TO_BRANCH, REMOVE_STAFF_FROM_BRANCH } from '../../mutations/staff';
 import { GET_STAFF } from '../../queries/staff';
 import { GET_BRANCH_STAFF } from '../../queries/branchStaff';
 
@@ -241,22 +241,18 @@ const StaffTable = ({ staffProp, branch, onAssign, onUnAssign }) => {
 const StaffList = ({ branch, searchText }) => {
   const { loading, error, data } = useQuery(GET_STAFF);
   const [assignStaff, assignStaffResponse] = useMutation(ASSIGN_STAFF_TO_BRANCH);
+  const [removeStaff, removeStaffResponse] = useMutation(REMOVE_STAFF_FROM_BRANCH);
 
-  const onAssign = member => {
-    console.log("Assign member " + member.FirstName)
-    assignStaff({ variables: { branchId: branch.BranchID, staffId: member.StaffID } });
-  }
+  const onAssign = member => assignStaff({ variables: { branchId: branch.BranchID, staffId: member.StaffID } });
+  const onUnAssign = member => removeStaff({ variables: { branchId: branch.BranchID, staffId: member.StaffID } });
 
-  const onUnAssign = member => {
-    console.log("Unassign member " + member.FirstName)
-  }
+  if (loading || assignStaffResponse.loading || removeStaffResponse.loading) return <Spinner />;
 
-  if (loading || assignStaffResponse.loading) return <Spinner />;
   if (error) return <p>{JSON.stringify(error)}</p>;
   if (assignStaffResponse.error) return <p>{JSON.stringify(assignStaff.error)}</p>;
-  if (data) {
-    return <StaffTable staffProp={data.getStaff} branch={branch} onAssign={onAssign} onUnAssign={onUnAssign} />
-  }
+  if (removeStaffResponse.error) return <p>{JSON.stringify(removeStaffResponse.error)}</p>;
+
+  if (data) return <StaffTable staffProp={data.getStaff} branch={branch} onAssign={onAssign} onUnAssign={onUnAssign} />;
   return null;
 }
 
