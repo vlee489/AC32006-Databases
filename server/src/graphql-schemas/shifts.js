@@ -249,7 +249,6 @@ const resolvers = {
       }
     },
     unassignShift: async (parent, arg, ctx, info) => {
-      console.log("test")
       if (ctx.auth) {
         // Gets staff from query
         if ('StaffID' in arg) {
