@@ -61,3 +61,12 @@ export const ADD_STAFF = gql`
         }
     }
 `;
+
+export const DISPATCH_PURCHASE = gql`
+    mutation DispatchPurchase( $PurchaseID: ID!,$Dispatched: Boolean!){
+        dispatchPurchase(PurchaseID: $PurchaseID, Dispatched: $Dispatched) {
+            PurchaseID
+            Dispatched
+        }
+    }
+`;

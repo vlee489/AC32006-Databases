@@ -7,5 +7,6 @@ export default {
     admin: '/staff/admin',
     inventory: '/staff/inventory',
     login: '/staff/login',
-    shift: '/staff/shift'
+    shift: '/staff/shift',
+    purchases: '/staff/purchases'
 }
