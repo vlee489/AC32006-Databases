@@ -40,12 +40,12 @@ const ShiftsPage = () => {
 
     const onAssignShift = () => {
       assignShift({variables: {ShiftID: shift.ShiftID, StaffID: loggedInStaff.data.loginStaff.StaffID}})
-      router.reload()
+      // router.reload()
     }
 
     const onUnassignShift = () => {
       unassignShift({variables: {ShiftID: shift.ShiftID, StaffID: loggedInStaff.data.loginStaff.StaffID}})
-      router.reload()
+      // router.reload()
     }
 
     // debugger;
