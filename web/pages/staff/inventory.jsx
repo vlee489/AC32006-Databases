@@ -3,13 +3,13 @@ import styles from '../../styles/staff/Inventory.module.scss'
 import Navigation from '../../components/navigation'
 import withApollo from "../../libraries/apollo";
 import { Container, Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap'
-import { getBranches } from '../../queries/branch';
+import { GET_BRANCHES } from '../../queries/branch';
 import { useQuery } from '@apollo/client';
 
 
 
 const Inventory = () => {
-  const { loading, error, data } = useQuery(getBranches());
+  const { loading, error, data } = useQuery(GET_BRANCHES);
   return (
     <div className={styles.container}>
       <Head>
