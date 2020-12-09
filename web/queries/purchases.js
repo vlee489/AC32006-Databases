@@ -14,6 +14,10 @@ export const GET_PURCHASES = branchId => gql`
             Products{
                 Product{
                     Name
+                    Price
+                    Weight
+                    Colour
+                    Dimensions
                 }
                 Qty
             }
