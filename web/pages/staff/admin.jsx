@@ -10,7 +10,7 @@ import Spinner from '../../components/spinner';
 import { FaSearch } from 'react-icons/fa';
 import positions from '../../positions';
 
-import { ADD_STAFF } from '../../mutations/staff';
+import { ADD_STAFF, ASSIGN_STAFF_TO_BRANCH } from '../../mutations/staff';
 import { GET_STAFF } from '../../queries/staff';
 import { GET_BRANCH_STAFF } from '../../queries/branchStaff';
 
@@ -179,14 +179,14 @@ const PositionDropdown = ({ position, onPositionChange }) => {
   )
 }
 
-const ToggleButton = ({ onBranch }) => {
+const ToggleButton = ({ onBranch, onAssign, onUnAssign }) => {
   if (onBranch) return (
-    <Button variant="danger" onClick={null}>Unassign</Button>
+    <Button variant="danger" onClick={onUnAssign}>Unassign</Button>
   )
-  return <Button onClick={null}>Assign</Button>
+  return <Button onClick={onAssign}>Assign</Button>
 }
 
-const StaffMember = ({ member }) => {
+const StaffMember = ({ member, onAssign, onUnAssign }) => {
   return (
     <tr>
       <td>{member.StaffID}</td>
@@ -194,14 +194,14 @@ const StaffMember = ({ member }) => {
       <td>{member.LastName}</td>
       <td>
         <div className="text-center">
-          <ToggleButton onBranch={member.onBranch} />
+          <ToggleButton onBranch={member.onBranch} onAssign={() => onAssign(member)} onUnAssign={() => onUnAssign(member)}/>
         </div>
       </td>
     </tr>
   )
 }
 
-const StaffTable = ({ staffProp, branch }) => {
+const StaffTable = ({ staffProp, branch, onAssign, onUnAssign }) => {
   const staff = JSON.parse(JSON.stringify(staffProp));
   if (!branch) return <div className="pt-5"></div>;
   const { loading, error, data } = useQuery(GET_BRANCH_STAFF(branch.BranchID));
@@ -229,7 +229,7 @@ const StaffTable = ({ staffProp, branch }) => {
         </thead>
         <tbody>
           {
-            staff.map(member => <StaffMember key={member.StaffID} member={member} />)
+            staff.map(member => <StaffMember key={member.StaffID} member={member} onAssign={onAssign} onUnAssign={onUnAssign}/>)
           }
         </tbody>
       </Table>
@@ -240,11 +240,22 @@ const StaffTable = ({ staffProp, branch }) => {
 
 const StaffList = ({ branch, searchText }) => {
   const { loading, error, data } = useQuery(GET_STAFF);
+  const [assignStaff, assignStaffResponse] = useMutation(ASSIGN_STAFF_TO_BRANCH);
 
-  if (loading) return <Spinner />;
+  const onAssign = member => {
+    console.log("Assign member " + member.FirstName)
+    assignStaff({ variables: { branchId: branch.BranchID, staffId: member.StaffID } });
+  }
+
+  const onUnAssign = member => {
+    console.log("Unassign member " + member.FirstName)
+  }
+
+  if (loading || assignStaffResponse.loading) return <Spinner />;
   if (error) return <p>{JSON.stringify(error)}</p>;
+  if (assignStaffResponse.error) return <p>{JSON.stringify(assignStaff.error)}</p>;
   if (data) {
-    return <StaffTable staffProp={data.getStaff} branch={branch} />
+    return <StaffTable staffProp={data.getStaff} branch={branch} onAssign={onAssign} onUnAssign={onUnAssign} />
   }
   return null;
 }

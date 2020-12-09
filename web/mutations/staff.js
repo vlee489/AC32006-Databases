@@ -9,18 +9,18 @@ export const ADD_STAFF = gql`
     }
 `;
 
-export const ASSIGN_STAFF_TO_BRANCH = (branchId, staffId) => gql`
-    mutation {
-        assignStaffToBranch(BranchID: ${branchId}, StaffID: ${staffId}) {
-            Staff: {
-                StaffID
-                FirstName
-                LastName
-            }
-            Branch: {
-                BranchID
-                Name
-            }
+export const ASSIGN_STAFF_TO_BRANCH = gql`
+    mutation AssignStaffToBranch($branchId: ID!, $staffId: ID!) {
+        assignStaffToBranch(BranchID: $branchId, StaffID: $staffId) {
+                Staff {
+                    StaffID
+                    FirstName
+                    LastName
+                }
+                Branch {
+                    BranchID
+                    Name
+                }
         }
     }
 `;
