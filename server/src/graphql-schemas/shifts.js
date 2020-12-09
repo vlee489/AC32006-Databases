@@ -185,16 +185,16 @@ const resolvers = {
           staffQuery = await Staff.query().findById(arg.StaffID)
           // We check if the Staff member isn't in a high or same position of the 
           // person issuing the shift assignement, if they are throw an error
-          if (staffQuery.Position < ctx.user.Position) {
-            throw new PermissionsError(
-              'Can not assign shift for staff member at a high position'
-            )
-          }
-          if ((staffQuery.Position == ctx.user.Position) && (staffQuery.StaffID != ctx.user.ID)) {
-            throw new PermissionsError(
-              'Can not assign shift for staff member at same level'
-            )
-          }
+          // if (staffQuery.Position < ctx.user.Position) {
+          //   throw new PermissionsError(
+          //     'Can not assign shift for staff member at a high position'
+          //   )
+          // }
+          // if ((staffQuery.Position == ctx.user.Position) && (staffQuery.StaffID != ctx.user.ID)) {
+          //   throw new PermissionsError(
+          //     'Can not assign shift for staff member at same level'
+          //   )
+          // }
         } else {
           staffQuery = await Staff.query().findById(ctx.user.ID)
         }
