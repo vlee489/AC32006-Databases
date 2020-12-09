@@ -31,18 +31,22 @@ const typeDefs = gql`
     getSuppliers(SupplierID: ID, Category: Int): [Supplier]
   }
 
+  input SupplierDetails{
+    Name: String!
+    Address1: String!
+    Address2: String!
+    City: String!
+    Region: String!
+    Country: String!
+    Postcode: String!
+    PhoneNumber: String!
+    Email: String!
+    Website: String!
+  }
+
   extend type Mutation{
     addSupplier(
-      Name: String!
-      Address1: String!
-      Address2: String!
-      City: String!
-      Region: String!
-      Country: String!
-      Postcode: String!
-      PhoneNumber: String!
-      Email: String!
-      Website: String!
+      Details: SupplierDetails
     ): Supplier
   }
 `;
@@ -110,26 +114,20 @@ const resolvers = {
     addSupplier: async (parent, arg, ctx, info) => {
       if (ctx.auth) {
         // Check data is within range
-        if(!(PostcodeRegex.test(arg.Postcode))){
+        if(!(PostcodeRegex.test(arg.Details.Postcode))){
           throw new ValidationError("Invalid Postcode")
         }
-        if(((arg.PhoneNumber).length > 12) || (/\D/.test(arg.PhoneNumber))){
-          throw new ValidationError("Invalid Phone number")
-        }
-        if(!EmailRegex.test(String(arg.Email).toLowerCase())){
-          throw new ValidationError("Invalid EMail address")
-        }
         supplierInsert = await Suppliers.query().insert({
-          Name: arg.Name,
-          Address1: arg.Address1,
-          Address2: arg.Address2,
-          City: arg.City,
-          Region: arg.Region,
-          Country: arg.Country,
-          Postcode:arg.Postcode,
-          PhoneNumber: arg.PhoneNumber,
-          Email: arg.Email,
-          Website: arg.Website,
+          Name: arg.Details.Name,
+          Address1: arg.Details.Address1,
+          Address2: arg.Details.Address2,
+          City: arg.Details.City,
+          Region: arg.Details.Region,
+          Country: arg.Details.Country,
+          Postcode:arg.Details.Postcode,
+          PhoneNumber: arg.Details.PhoneNumber,
+          Email: arg.Details.Email,
+          Website: arg.Details.Website,
         })
         return supplierInsert
       } else {

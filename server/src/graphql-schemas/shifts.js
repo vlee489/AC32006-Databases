@@ -21,7 +21,9 @@ const typeDefs = gql`
       End: String
       StaffReq: Int
       "Branch the shift is taking place at"
-      Branch: Branch 
+      Branch: Branch
+      "Staff on this shift"
+      Staff: [Staff]
   }
 
   extend type Query{
@@ -84,6 +86,11 @@ const resolvers = {
         var reply = []  // Holds item for reply
         // Builds the reply
         for (const item in ShiftQuery) {//For items in array
+          staffReply = []
+          staffShiftQuery = await StaffShifts.query().where('ShiftID', ShiftQuery[item].ShiftID)
+          for (const x in staffShiftQuery) {
+            staffReply.push(await Staff.query().findById(staffShiftQuery[x].StaffID))
+          }
           // add an item to the reply with the fields
           reply.push(
             {
@@ -91,7 +98,8 @@ const resolvers = {
               End: (ShiftQuery[item].End).toISOString(), // Turns date into ISO format
               Start: (ShiftQuery[item].Start).toISOString(),
               StaffReq: ShiftQuery[item].StaffReq,
-              Branch: BranchQuery[0] //As we only ever query shifts for a single branch, we can use the first item returned
+              Branch: BranchQuery[0], //As we only ever query shifts for a single branch, we can use the first item returned
+              Staff: staffReply
             }
           )
         }
@@ -122,12 +130,20 @@ const resolvers = {
           }
           shiftQuery = await shiftQuery
           if (shiftQuery) {
+            
+            staffReply = []
+            staffOnShiftQuery = await StaffShifts.query().where('ShiftID', shiftQuery.ShiftID)
+            for (const x in staffOnShiftQuery) {
+              staffReply.push(await Staff.query().findById(staffOnShiftQuery[x].StaffID))
+            }
+
             reply.push({
               ShiftID: shiftQuery.ShiftID,
               End: shiftQuery.End.toISOString(), // Turns date into ISO format
               Start: shiftQuery.Start.toISOString(),
               StaffReq: shiftQuery.StaffReq,
-              Branch: (await Branch.query().findById(shiftQuery.BranchID))
+              Branch: (await Branch.query().findById(shiftQuery.BranchID)),
+              Staff: staffReply
             })
           }
         }

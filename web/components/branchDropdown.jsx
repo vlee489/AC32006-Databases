@@ -12,11 +12,13 @@ const BranchDropdown = ({ branchSelected, changeBranch }) => {
 
     if (data) {
       const branches = data.getBranches;
+      const branch = branchSelected ? branchSelected : branches[0];
+      if (!branchSelected) changeBranch(branches[0]);
 
       return (
-        <DropdownButton id="dropdown-basic-button" title={branchSelected.Name}>
+        <DropdownButton id="dropdown-basic-button" title={branch.Name}>
           {
-            branches.map(branch => <Dropdown.Item key={branch.BranchID} onClick={() => changeBranch(branch)}>{branch.Name}</Dropdown.Item>)
+            branches.map(b => <Dropdown.Item key={b.BranchID} onClick={() => changeBranch(b)}>{b.Name}</Dropdown.Item>)
           }
         </DropdownButton>
       )

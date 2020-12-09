@@ -2,10 +2,12 @@
 https://www.apollographql.com/blog/modularizing-your-graphql-schema-code-d7f71d5ed5f2/
 Schema Builder
 */
-const { makeExecutableSchema, gql } = require("apollo-server-express");
+const { gql } = require("apollo-server-express");
+const { makeExecutableSchema } = require('graphql-tools')
 const { merge } = require("lodash");
 
 // Seperate Schema Files
+const { constraintDirective, constraintDirectiveTypeDefs } = require('graphql-constraint-directive')
 const { Products, ProductResolvers } = require('./graphql-schemas/products')
 const { Staff, StaffResolvers } = require('./graphql-schemas/staff');
 const { Branches, BranchResolvers } = require('./graphql-schemas/branch')
@@ -49,6 +51,7 @@ const SharedTypes = gql`
 // Build Scheme with each file
 const schema = makeExecutableSchema({
   typeDefs: [
+    constraintDirectiveTypeDefs,
     Query,
     SharedTypes,
     Mutation,
@@ -78,6 +81,7 @@ const schema = makeExecutableSchema({
     MaterialsResolvers,
     StorageResolvers
   ),
+  schemaTransforms: [constraintDirective()]
 });
 
 // Export as module 
