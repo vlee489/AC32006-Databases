@@ -2,49 +2,46 @@ import React, { useState, useContext } from 'react';
 import Head from 'next/head';
 import { Button, Container, Card, Form } from "react-bootstrap";
 import Navigation from '../../components/navigation';
-//import checkout from '../../libraries/checkout';
-import UserContext from '../../contexts/user';
-//import routes from '../../routes';
+import withApollo from "../../libraries/apollo";
+import BasketContext from '../../contexts/basket';
 import styles from '../../styles/customer/Checkout.module.scss';
 
 const Checkout = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNum, setPhoneNum] = useState("");
-  const [address1, setAddress1] = useState("");
-  const [address2, setAddress2] = useState("");
-  const [address3, setAddress3] = useState("");
-  const [address4, setAddress4] = useState("");
-  const {userToken, setUserToken} = useContext(UserContext);
+  const [basket] = useContext(BasketContext);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState({});
+  const [billingAddress, setBillingAddress] = useState({});
   const [errors, setErrors] = useState([]);
 
-  const sendCredentials = async () => {
-    let data = {
-      name,
-      email,
-      phoneNum,
-      address1,
-      address2,
-      address3,
-      address4
-    }
+  const handleDeliveryAddress = (address, field) => {
+    setDeliveryAddress(
+      deliveryAddress => {
+        copy = JSON.stringify(JSON.parse(deliveryAddress));
+        copy[field] = address;
+        return copy;
+      }
+    );
+  }
 
-    setErrors([]);
+  const handleBillingAddress = (address, field) => {
+    setBillingAddress(
+      billingAddress => {
+        copy = JSON.stringify(JSON.parse(billingAddress));
+        copy[field] = address;
+        return copy;
+      }
+    );
+  }
 
-     const response = await login(data);
+  const checkout = () => {
 
-     if (response.success) {
-       setUserToken(response);
-    }
-    else {
-       setErrors(response.error);
-     }
-   }
+  }
 
   const CheckoutFooter = () => {
     if (errors.length > 0) return <p>{errors}</p>;
-    return <pre>{JSON.stringify(userToken, null, 2)}</pre>;
-  }
+    return <pre>{JSON.stringify(basket, null, 2)}</pre>;
+  } 
 
   return (
     <div className={styles.container}>
@@ -61,26 +58,19 @@ const Checkout = () => {
             <Card.Body>
               <Card.Title className="text-center">Checkout</Card.Title>
               <Form>
-                <Form.Group controlId="formName">
-                  <Form.Label>Name</Form.Label>
+                <Form.Group controlId="formFirstName">
+                  <Form.Label>First AddressName</Form.Label>
                   <Form.Text className="text-muted">
                     Enter your first and last name.
                   </Form.Text>
-                  <Form.Control type="name" placeholder="Hugh Mungous" onChange={e => setName(e.target.value)} />
+                  <Form.Control type="name" placeholder="Hugh Mungous" onChange={e => setFirstName(e.target.value)} />
                 </Form.Group>
-                <Form.Group controlId="formBasicEmail">
-                  <Form.Label>Email address</Form.Label>
+                <Form.Group controlId="formLastName">
+                  <Form.Label>Last Name</Form.Label>
                   <Form.Text className="text-muted">
-                    Enter an email address that we can use to contact you.
+                    Enter your first and last name.
                   </Form.Text>
-                  <Form.Control type="email" placeholder="example@example.com" onChange={e => setEmail(e.target.value)} />
-                </Form.Group>
-                <Form.Group controlId="formPhoneNumber">
-                  <Form.Label>Phone Number</Form.Label>
-                  <Form.Text className="text-muted">
-                    Enter your phone number so we can call you if needed.
-                  </Form.Text>
-                  <Form.Control type="phoneNumber" placeholder="01234 567890" onChange={e => setPhoneNum(e.target.value)} />
+                  <Form.Control type="name" placeholder="Hugh Mungous" onChange={e => setLastName(e.target.value)} />
                 </Form.Group>
                 <Form.Group controlId="formAddress">
                   <Form.Label>Delivery Address</Form.Label>
@@ -93,7 +83,7 @@ const Checkout = () => {
                   <Form.Control type="addressLine4" placeholder="EX1 EX1" onChange={e => setAddress4(e.target.value)} />
                 </Form.Group>
               </Form>
-              <Button variant="primary" onClick={sendCredentials}>Credit/Debit card Checkout</Button>
+              <Button variant="primary" onClick={checkout}>Credit/Debit card Checkout</Button>
               <CheckoutFooter />
             </Card.Body>
           </Card>
@@ -103,4 +93,4 @@ const Checkout = () => {
   )
 }
 
-export default Checkout;
+export default withApollo({ ssr: false })(Checkout);
