@@ -1,8 +1,19 @@
 import { gql } from '@apollo/client';
 
 export const ADD_STAFF = gql`
-    mutation AddStaff($firstName: String!, $lastName: String!, $phoneNumber: String!, $niNumber: String!, $address: String!, $wage: Float!, $position: Int!, $email: String!, $password: String!) {
-        addStaff(FirstName: $firstName, LastName: $lastName, PhoneNumber: $phoneNumber, NINumber: $niNumber, Address: $address, Wage: $wage, Position: $position, Email: $email, Password: $password) {
+    mutation AddStaff(
+        $firstName: FirstName_String_NotNull_minLength_1_maxLength_45!,
+        $lastName: LastName_String_NotNull_minLength_1_maxLength_45!,
+        $phoneNumber: PhoneNumber_String_NotNull_maxLength_12!,
+        $niNumber: NINumber_String_NotNull_minLength_9_maxLength_9!,
+        $address: String!,
+        $wage: Float!,
+        $position: Position_Int_NotNull_min_1_max_3!,
+        $email: Email_String_NotNull_minLength_5_maxLength_45_format_email!,
+        $password: String!
+        )
+        {
+        addStaff(Staff:{FirstName: $firstName, LastName: $lastName, PhoneNumber: $phoneNumber, NINumber: $niNumber, Address: $address, Wage: $wage, Position: $position, Email: $email, Password: $password}) {
             FirstName
             LastName
         }

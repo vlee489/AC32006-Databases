@@ -1,3 +1,21 @@
+directive @constraint(
+  # String constraints
+  minLength: Int
+  maxLength: Int
+  startsWith: String
+  endsWith: String
+  contains: String
+  notContains: String
+  pattern: String
+  format: String
+  # Number constraints
+  min: Int
+  max: Int
+  exclusiveMin: Int
+  exclusiveMax: Int
+  multipleOf: Int
+  uniqueTypeName: String
+) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
 # Exposes a URL that specifies the behaviour of this scalar.
 directive @specifiedBy(
   # The URL that specifies the behaviour of this scalar.
@@ -17,6 +35,14 @@ type Branch {
   Email: String
 }
 
+scalar CustomerFirstName_String_NotNull_minLength_1_maxLength_45
+
+scalar CustomerLastName_String_NotNull_minLength_1_maxLength_45
+
+scalar Email_String_NotNull_minLength_5_maxLength_45_format_email
+
+scalar FirstName_String_NotNull_minLength_1_maxLength_45
+
 # Represents an Inventory
 type Inventory {
   InventoryID: ID
@@ -24,6 +50,8 @@ type Inventory {
   Branch: Branch
   Product: Product
 }
+
+scalar LastName_String_NotNull_minLength_1_maxLength_45
 
 # Represents a Material's details
 type Material {
@@ -37,6 +65,17 @@ type Material {
   Suppliers: [Supplier]
 }
 
+input materialDetails {
+  Name: Name_String_NotNull_minLength_1_maxLength_45!
+  PartType: PartType_String_NotNull_minLength_1_maxLength_45!
+  Price: Float!
+  SKU: SKU_String_NotNull_minLength_1_maxLength_45!
+  Description: String!
+  Weight: Float!
+  # ID of the suppliers supply the material
+  Suppliers: [Int]!
+}
+
 type Mutation {
   _empty: String
   # Add Material to a Product
@@ -45,17 +84,7 @@ type Mutation {
     Materials: [QtyStorage]
   ): ProductComponents
   # Add a new staff member
-  addStaff(
-    FirstName: String!
-    LastName: String!
-    PhoneNumber: String!
-    NINumber: String!
-    Address: String!
-    Wage: Float!
-    Position: Int!
-    Email: String!
-    Password: String!
-  ): Staff
+  addStaff(Staff: newStaff!): Staff
   # Assign staff to a shift. Returns the shift you've been assigned to.
   assignShift(
     # Shift to assign to
@@ -73,18 +102,10 @@ type Mutation {
   assignStaffToBranch(BranchID: ID!, StaffID: ID!): StaffBranch
   # Remove staff member from Branch
   removeStaffFromBranch(BranchID: ID!, StaffID: ID!): Staff
-  # Update the inventory of a product at a branch
+  # Update the inventory of a product at a branch, adds product to inventory if it doesn't exist
   updateInventory(BranchID: ID!, ProductID: ID!, Qty: Int!): Inventory
   # Add an order to the system as a customer
-  createPurchase(
-    # Branch you want to order from
-    Branch: ID!
-    CustomerFirstName: String!
-    CustomerLastName: String!
-    BillingAddress: String!
-    DeliveryAddress: String!
-    Products: [ProductOrder]!
-  ): Purchase
+  createPurchase(Details: purchaseDetails!): Purchase
   # Set dispatch of a Purchase
   dispatchPurchase(PurchaseID: ID!, Dispatched: Boolean!): Purchase
   createOrder(
@@ -93,29 +114,9 @@ type Mutation {
     Status: Int!
     Products: [ProductOrder]!
   ): WarehouseOrder
-  addSupplier(
-    Name: String!
-    Address1: String!
-    Address2: String!
-    City: String!
-    Region: String!
-    Country: String!
-    Postcode: String!
-    PhoneNumber: String!
-    Email: String!
-    Website: String!
-  ): Supplier
+  addSupplier(Details: SupplierDetails): Supplier
   # Add a Material to the materials database
-  addMaterial(
-    Name: String!
-    PartType: String!
-    Price: Float!
-    SKU: String!
-    Description: String!
-    Weight: Float!
-    # ID of the suppliers supply the material
-    Suppliers: [Int]!
-  ): Material
+  addMaterial(Details: materialDetails!): Material
   # Update of a stock of an item
   updateStock(StorageID: ID!, Stock: Int!): Storage
   # Add a material to storage
@@ -126,11 +127,33 @@ type Mutation {
   ): Storage
 }
 
+scalar Name_String_NotNull_minLength_1_maxLength_45
+
+input newStaff {
+  FirstName: FirstName_String_NotNull_minLength_1_maxLength_45!
+  LastName: LastName_String_NotNull_minLength_1_maxLength_45!
+  PhoneNumber: PhoneNumber_String_NotNull_maxLength_12!
+  NINumber: NINumber_String_NotNull_minLength_9_maxLength_9!
+  Address: String!
+  Wage: Float!
+  Position: Position_Int_NotNull_min_1_max_3!
+  Email: Email_String_NotNull_minLength_5_maxLength_45_format_email!
+  Password: String!
+}
+
+scalar NINumber_String_NotNull_minLength_9_maxLength_9
+
 # Represents a entry of product ordered in a Purchase
 type OrderItem {
   Product: Product
   Qty: Int
 }
+
+scalar PartType_String_NotNull_minLength_1_maxLength_45
+
+scalar PhoneNumber_String_NotNull_maxLength_12
+
+scalar Position_Int_NotNull_min_1_max_3
 
 # Represents A product's details
 type Product {
@@ -175,6 +198,16 @@ type Purchase {
   Dispatched: Boolean
   Branch: Branch
   Products: [OrderItem]
+}
+
+input purchaseDetails {
+  # Branch you want to order from
+  Branch: ID!
+  CustomerFirstName: CustomerFirstName_String_NotNull_minLength_1_maxLength_45!
+  CustomerLastName: CustomerLastName_String_NotNull_minLength_1_maxLength_45!
+  BillingAddress: String!
+  DeliveryAddress: String!
+  Products: [ProductOrder]!
 }
 
 input QtyStorage {
@@ -264,7 +297,11 @@ type Shift {
   StaffReq: Int
   # Branch the shift is taking place at
   Branch: Branch
+  # Staff on this shift
+  Staff: [Staff]
 }
+
+scalar SKU_String_NotNull_minLength_1_maxLength_45
 
 # Represents a member of staff
 type Staff {
@@ -305,6 +342,19 @@ type Supplier {
   PhoneNumber: String
   Email: String
   Website: String
+}
+
+input SupplierDetails {
+  Name: String!
+  Address1: String!
+  Address2: String!
+  City: String!
+  Region: String!
+  Country: String!
+  Postcode: String!
+  PhoneNumber: String!
+  Email: String!
+  Website: String!
 }
 
 # Represents A warehouse's details

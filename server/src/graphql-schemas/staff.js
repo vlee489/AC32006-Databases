@@ -33,7 +33,7 @@ const typeDefs = gql`
     FirstName: String! @constraint(minLength: 1, maxLength: 45)
     LastName: String! @constraint(minLength: 1, maxLength: 45)
     PhoneNumber: String! @constraint(maxLength: 12)
-    NINumber: String! @constraint(minLength: 9)
+    NINumber: String! @constraint(minLength: 9, maxLength: 9)
     Address: String!
     Wage: Float!
     Position: Int! @constraint(min: 1, max: 3)
@@ -83,7 +83,6 @@ const resolvers = {
           'Authentication token is invalid, please log in'
         )
       }
-      console.log(arg)
       const hashPass = await bcrypt.hash(arg.Staff.Password, 12)
       if (hashPass) {
         const newStaff = await Staff.query().insertAndFetch(
