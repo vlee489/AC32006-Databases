@@ -4,10 +4,9 @@ import styles from '../../styles/staff/Admin.module.scss'
 import Navigation from '../../components/navigation'
 import BranchDropdown from '../../components/branchDropdown';
 import withApollo from "../../libraries/apollo";
-import { Accordion, Alert, Button, Card, Col, Container, Dropdown, DropdownButton, Form, FormControl, Row, InputGroup, Table } from 'react-bootstrap'
+import { Accordion, Alert, Button, Card, Col, Container, Dropdown, DropdownButton, Form, Row, Table } from 'react-bootstrap'
 import { useQuery, useMutation } from '@apollo/client';
 import Spinner from '../../components/spinner';
-import { FaSearch } from 'react-icons/fa';
 import positions from '../../positions';
 
 import { ADD_STAFF, ASSIGN_STAFF_TO_BRANCH, REMOVE_STAFF_FROM_BRANCH } from '../../mutations/staff';
@@ -238,7 +237,7 @@ const StaffTable = ({ staffProp, branch, onAssign, onUnAssign }) => {
   return null;
 }
 
-const StaffList = ({ branch, searchText }) => {
+const StaffList = ({ branch }) => {
   const { loading, error, data } = useQuery(GET_STAFF);
   const [assignStaff, assignStaffResponse] = useMutation(ASSIGN_STAFF_TO_BRANCH);
   const [removeStaff, removeStaffResponse] = useMutation(REMOVE_STAFF_FROM_BRANCH);
@@ -258,7 +257,6 @@ const StaffList = ({ branch, searchText }) => {
 
 const AssignStaffMember = () => {
   const [branchSelected, setBranchSelected] = useState(null);
-  const [searchText, setSearchText] = useState("");
 
   return (
     <Card>
@@ -268,26 +266,11 @@ const AssignStaffMember = () => {
       <Accordion.Collapse eventKey="1">
         <Card.Body>
           <Row className="align-items-center justify-content-center mt-2 mb-4">
-            <Col>
-              <InputGroup>
-                <InputGroup.Prepend>
-                  <InputGroup.Text>
-                    <FaSearch />
-                  </InputGroup.Text>
-                </InputGroup.Prepend>
-                <FormControl
-                  placeholder="Search staff..."
-                  aria-label="Search"
-                  aria-describedby="search"
-                  onChange={e => setSearchText(e.target.value)}
-                />
-              </InputGroup>
-            </Col>
             <Col md="auto">
               <BranchDropdown branchSelected={branchSelected} changeBranch={newBranch => setBranchSelected(newBranch)} />
             </Col>
           </Row>
-          <StaffList branch={branchSelected} searchText={searchText} />
+          <StaffList branch={branchSelected} />
         </Card.Body>
       </Accordion.Collapse>
     </Card>
