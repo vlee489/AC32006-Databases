@@ -2,18 +2,21 @@ import Head from 'next/head'
 import { Container, Table, Button } from 'react-bootstrap'
 import { useContext } from 'react'
 import { useRouter } from 'next/router'
-import BranchDropdown from '../../components/branchDropdown'
 
 import UserContext from '../../contexts/user'
-import { useQuery } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import { GET_BRANCHES } from '../../queries/branch';
 import { GET_SHIFTS, GET_STAFF_ON_SHIFT } from '../../queries/shifts';
+import { ASSIGN_SHIFT } from '../../mutations/assignShift';
+import { UNASSIGN_SHIFT } from '../../mutations/unassignShift'
 import { LOGIN_STAFF } from '../../queries/loginStaff';
+import routes from '../../routes'
 
 import styles from '../../styles/staff/Shift.module.scss'
 import Navigation from '../../components/navigation'
 import Spinner from '../../components/spinner';
+import BranchDropdown from '../../components/branchDropdown'
 import { useState } from 'react'
 
 const ShiftsPage = () => {
@@ -25,22 +28,37 @@ const ShiftsPage = () => {
   const { shiftID } = router.query;
   const shifts = useQuery(GET_SHIFTS(branchSelected.BranchID));
   const loggedInStaff = useQuery(LOGIN_STAFF);
-  debugger;
 
   const changeBranch = (newBranch) => {
     setBranchSelected(newBranch)
   }
 
-  const ShiftButton = ({shift}) => {
-    if (shift.Staff.includes(loggedInStaff.data.loginStaff.StaffID)){
+
+  const ShiftButton = ({shift, loggedInStaff}) => {
+    const [assignShift, {loading, error, data}] = useMutation(ASSIGN_SHIFT)
+    const [unassignShift, {loading2, error2, data2}] = useMutation(UNASSIGN_SHIFT)
+
+    const onAssignShift = () => {
+      assignShift({variables: {ShiftID: shift.ShiftID, StaffID: loggedInStaff.data.loginStaff.StaffID}})
+      router.reload()
+    }
+
+    const onUnassignShift = () => {
+      unassignShift({variables: {ShiftID: shift.ShiftID, StaffID: loggedInStaff.data.loginStaff.StaffID}})
+      router.reload()
+    }
+
+    // debugger;
+    const isOnShift = shift.Staff.filter(member => member.StaffID === loggedInStaff.data.loginStaff.StaffID)
+    if (isOnShift.length > 0){
       return(
-        <Button variant="danger">Leave shift</Button>
-      )
-    } else {
-      return(
-        <Button variant="primary">Join shift</Button>
+        <Button variant="danger" onClick={onUnassignShift}>Leave shift</Button>
       )
     }
+    
+    return(
+      <Button variant="primary" onClick={onAssignShift}>Join shift</Button>
+    )
       
   }
 
@@ -58,7 +76,7 @@ const ShiftsPage = () => {
                             <td>{new Date(Shift.End).toLocaleTimeString('en-UK')}</td>
                             <td>{Shift.StaffReq - Shift.Staff.length}</td>
                             <td>{Shift.StaffReq}</td>
-                            <td><ShiftButton shift={Shift}/></td>
+                            <td><ShiftButton shift={Shift} loggedInStaff={loggedInStaff}/></td>
                           </tr>
             )
           }

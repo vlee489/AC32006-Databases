@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
-export const ASSIGN_SHIFT = gql`
-    mutation AssignShift ($ShiftID: ID!, $StaffID: ID){
-        assignShift(ShiftID: $ShiftID, StaffID: $StaffID) {
+export const UNASSIGN_SHIFT = gql`
+    mutation UnassignShift ($ShiftID: ID!, $StaffID: ID){
+        unassignShift(ShiftID: $ShiftID, StaffID: $StaffID) {
             ShiftID
             Start
             End
@@ -25,4 +25,4 @@ export const ASSIGN_SHIFT = gql`
     }
 `;
 
-export default ASSIGN_SHIFT;
+export default UNASSIGN_SHIFT;
