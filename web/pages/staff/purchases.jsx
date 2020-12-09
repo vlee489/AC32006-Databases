@@ -127,7 +127,7 @@ const PurchasesPage = () => {
     return (
         <div className={styles.container}>
             <Head>
-                <title>Create Next App</title>
+                <title>Purchases</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
