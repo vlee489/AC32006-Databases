@@ -19,7 +19,7 @@ const typeDefs = gql`
   }
 
   extend type Mutation{
-    "Update the inventory of a product at a branch"
+    "Update the inventory of a product at a branch, adds product to inventory if it doesn't exist"
     updateInventory(
         BranchID: ID!
         ProductID: ID!
