@@ -1,15 +1,18 @@
 import Head from 'next/head'
+import {useState} from 'react'
 import styles from '../../styles/staff/Inventory.module.scss'
 import Navigation from '../../components/navigation'
 import withApollo from "../../libraries/apollo";
-import { Container, Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap'
+import { Container, Dropdown, DropdownButton, ButtonGroup, Navbar, Nav, NavDropdown, Form, FormControl, Button } from 'react-bootstrap'
 import { GET_BRANCHES } from '../../queries/branch';
 import { useQuery } from '@apollo/client';
+import BranchDropdown from '../../components/BranchDropdown'
 
 
 
 const Inventory = () => {
   const { loading, error, data } = useQuery(GET_BRANCHES);
+  const [branch, set_branch] = useState (null)
   return (
     <div className={styles.container}>
       <Head>
@@ -21,19 +24,22 @@ const Inventory = () => {
         <Navigation />
         <Container>
 
-          <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-basic">
-              Branches
-  </Dropdown.Toggle>
+       
 
-            <Dropdown.Menu>
-              <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-              <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-              <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-
-        </Container>
+        
+        <Navbar bg="light" expand="lg">
+   <Navbar.Toggle aria-controls="basic-navbar-nav" />
+  <Navbar.Collapse id="basic-navbar-nav">
+        <Nav className="mr-auto">
+        <BranchDropdown branchSelected={branch} changeBranch={(newBranch)=>set_branch(newBranch)}/> 
+    </Nav>
+    <Form inline>
+      <FormControl type="text" placeholder="Search Products" className="mr-sm-2" />
+      <Button variant="outline-success">Search</Button>
+    </Form>
+  </Navbar.Collapse>
+</Navbar>
+</Container>
       </main>
     </div>
   )
