@@ -66,7 +66,7 @@ const CreateStaffMember = () => {
         wage: parseFloat(details.wage),
         position: details.position
       }})
-      router.reload();
+      // router.reload();
     }
   }
 
@@ -245,11 +245,11 @@ const StaffList = ({ branch }) => {
 
   const onAssign = member => {
     assignStaff({ variables: { branchId: branch.BranchID, staffId: member.StaffID } });
-    router.reload();
+    // router.reload();
   }
   const onUnAssign = member => {
     removeStaff({ variables: { branchId: branch.BranchID, staffId: member.StaffID } });
-    router.reload();
+    // router.reload();
 }
 
   if (loading || assignStaffResponse.loading || removeStaffResponse.loading) return <Spinner />;
