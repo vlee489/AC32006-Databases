@@ -1,18 +1,18 @@
 import { gql } from "@apollo/client";
 
-export const loginStaff = () => gql`
-    query {
-        getLoginStaff {
-            BranchID
-            Name
-            Address1
-            Address2
-            City
-            Region
-            Country
-            Postcode
+export const LOGIN_STAFF = gql`
+    query{
+        loginStaff {
+            StaffID
+            FirstName
+            LastName
             PhoneNumber
+            NINumber
+            Address
+            Wage
+            Position
             Email
         }
     }
 `;
+
