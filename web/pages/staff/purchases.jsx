@@ -15,7 +15,7 @@ import { useState } from 'react'
 
 const PurchasesPage = () => {
 
-    const [branchSelected, setBranchSelected] = useState({ BranchID: 1 })
+    const [branchSelected, setBranchSelected] = useState({Name: "Dundee", BranchID: 1 })
 
     const router = useRouter();
     const purchases = useQuery(GET_PURCHASES(branchSelected.BranchID))
