@@ -56,7 +56,14 @@ const typeDefs = gql`
       ShiftID: ID!,
       "Staff to assign to said shift. If not provided assigned the currently logged in user"
       StaffID:ID
-      ): Shift
+    ): Shift
+    "unassign staff to a shift. Returns the shift you've been unassigned from."
+    unassignShift(
+      "Shift to unassign"
+      ShiftID: ID!,
+      "Staff to unassign from said shift. If not provided assigned the currently logged in user"
+      StaffID:ID
+    ): Shift
   }
 `;
 // We don't define Branch here as it's already defined in the branch scheme file.
@@ -130,7 +137,7 @@ const resolvers = {
           }
           shiftQuery = await shiftQuery
           if (shiftQuery) {
-            
+
             staffReply = []
             staffOnShiftQuery = await StaffShifts.query().where('ShiftID', shiftQuery.ShiftID)
             for (const x in staffOnShiftQuery) {
@@ -219,12 +226,18 @@ const resolvers = {
 
 
         if (assignShift instanceof StaffShifts) {
+          staffReply = []
+          staffOnShiftQuery = await StaffShifts.query().where('ShiftID', shiftQuery.ShiftID)
+          for (const x in staffOnShiftQuery) {
+            staffReply.push(await Staff.query().findById(staffOnShiftQuery[x].StaffID))
+          }
           return {
             ShiftID: shiftQuery.ShiftID,
             Start: shiftQuery.Start.toISOString(),
             End: shiftQuery.End.toISOString(),
             StaffReq: shiftQuery.StaffReq,
-            Branch: (await Branch.query().findById(shiftQuery.BranchID))
+            Branch: (await Branch.query().findById(shiftQuery.BranchID)),
+            Staff: staffReply
           }
         }
         return null
@@ -234,8 +247,49 @@ const resolvers = {
           'Authentication token is invalid, please log in'
         )
       }
-    }
-  },
+    },
+    unassignShift: async (parent, arg, ctx, info) => {
+      if (ctx.auth) {
+        // Gets staff from query
+        if ('StaffID' in arg) {
+          staffQuery = await Staff.query().findById(arg.StaffID)
+        } else {
+          staffQuery = await Staff.query().findById(ctx.user.ID)
+        }
+        shiftQuery = await Shifts.query().findById(arg.ShiftID)
+        // Check if both staff and shift exist
+        if (!(shiftQuery instanceof Shifts) || !(staffQuery instanceof Staff)) {
+          throw new IdError(
+            'Shift or Staff does not exist', { invalidArgs: Object.keys(arg) }
+          )
+        }
+        if (!((await StaffShifts.query().findById([shiftQuery.ShiftID, staffQuery.StaffID])) instanceof StaffShifts)) {
+          throw new UserInputError( 'Staff not assigned to shift')
+        }
+        staffShiftDelete = await StaffShifts.query().deleteById([shiftQuery.ShiftID, staffQuery.StaffID])
+        if (staffShiftDelete != 0) {
+          staffReply = []
+          staffOnShiftQuery = await StaffShifts.query().where('ShiftID', shiftQuery.ShiftID)
+          for (const x in staffOnShiftQuery) {
+            staffReply.push(await Staff.query().findById(staffOnShiftQuery[x].StaffID))
+          }
+          return {
+            ShiftID: shiftQuery.ShiftID,
+            Start: shiftQuery.Start.toISOString(),
+            End: shiftQuery.End.toISOString(),
+            StaffReq: shiftQuery.StaffReq,
+            Branch: (await Branch.query().findById(shiftQuery.BranchID))
+          }
+        } else {
+          throw new Error("Internal error deleting staff from shift")
+        }
+      } else {
+        throw new ForbiddenError(
+          'Authentication token is invalid, please log in'
+        )
+      }
+    },
+  }
 };
 
 module.exports = {
