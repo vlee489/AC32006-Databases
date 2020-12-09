@@ -12,7 +12,7 @@ import BranchDropdown from '../../components/BranchDropdown'
 
 const Inventory = () => {
   const { loading, error, data } = useQuery(GET_BRANCHES);
-  const [branch, set_branch] = useState (null)
+  const [branch, setBranch] = useState (null)
   return (
     <div className={styles.container}>
       <Head>
@@ -31,7 +31,7 @@ const Inventory = () => {
    <Navbar.Toggle aria-controls="basic-navbar-nav" />
   <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-        <BranchDropdown branchSelected={branch} changeBranch={(newBranch)=>set_branch(newBranch)}/> 
+        <BranchDropdown branchSelected={branch} changeBranch={(newBranch)=>setBranch(newBranch)}/> 
     </Nav>
     <Form inline>
       <FormControl type="text" placeholder="Search Products" className="mr-sm-2" />
