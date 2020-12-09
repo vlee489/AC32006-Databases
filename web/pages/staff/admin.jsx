@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Head from 'next/head'
+import { useRouter } from 'next/router';
 import styles from '../../styles/staff/Admin.module.scss'
 import Navigation from '../../components/navigation'
 import BranchDropdown from '../../components/branchDropdown';
@@ -8,7 +9,6 @@ import { Accordion, Alert, Button, Card, Col, Container, Dropdown, DropdownButto
 import { useQuery, useMutation } from '@apollo/client';
 import Spinner from '../../components/spinner';
 import positions from '../../positions';
-
 import { ADD_STAFF, ASSIGN_STAFF_TO_BRANCH, REMOVE_STAFF_FROM_BRANCH } from '../../mutations/staff';
 import { GET_STAFF } from '../../queries/staff';
 import { GET_BRANCH_STAFF } from '../../queries/branchStaff';
@@ -35,20 +35,19 @@ const Admin = () => {
 }
 
 const CreateStaffMember = () => {
-  let submitAttempted = false;
   const defaultWage = 4.55;
   const [details, setDetails] = useState({ wage: defaultWage });
   const [validationError, setValidationError] = useState(null);
   const [addStaff, staffResponse] = useMutation(ADD_STAFF);
+  const router = useRouter();
 
   const submit = e => {
     e.preventDefault();
-    submitAttempted = true;
 
     if (!details.firstName) setValidationError("We need a first name");
     else if (!details.lastName) setValidationError("We need a last name");
     else if (!details.phoneNumber) setValidationError("We need a phone number");
-    else if (!details.niNumber) setValidationError("We need a National Insurance number");
+    else if (!details.niNumber) setValidationError("We need a National Insurance number of 9 characters long");
     else if (!details.email) setValidationError("We need a email");
     else if (!details.password) setValidationError("We need a password");
     else if (!details.address) setValidationError("We need an address");
@@ -67,6 +66,7 @@ const CreateStaffMember = () => {
         wage: parseFloat(details.wage),
         position: details.position
       }})
+      router.reload();
     }
   }
 
@@ -241,9 +241,16 @@ const StaffList = ({ branch }) => {
   const { loading, error, data } = useQuery(GET_STAFF);
   const [assignStaff, assignStaffResponse] = useMutation(ASSIGN_STAFF_TO_BRANCH);
   const [removeStaff, removeStaffResponse] = useMutation(REMOVE_STAFF_FROM_BRANCH);
+  const router = useRouter();
 
-  const onAssign = member => assignStaff({ variables: { branchId: branch.BranchID, staffId: member.StaffID } });
-  const onUnAssign = member => removeStaff({ variables: { branchId: branch.BranchID, staffId: member.StaffID } });
+  const onAssign = member => {
+    assignStaff({ variables: { branchId: branch.BranchID, staffId: member.StaffID } });
+    router.reload();
+  }
+  const onUnAssign = member => {
+    removeStaff({ variables: { branchId: branch.BranchID, staffId: member.StaffID } });
+    router.reload();
+}
 
   if (loading || assignStaffResponse.loading || removeStaffResponse.loading) return <Spinner />;
 
