@@ -104,17 +104,17 @@ const resolvers = {
                         'Staff does not exist', { invalidArgs: Object.keys(arg) }
                     )
                 }
-                // Check permission levels
-                if (staffQuery.Position < ctx.user.Position) {
-                    throw new ForbiddenError(
-                        'Can not add staff to branch staff member at a high position'
-                    )
-                }
-                if ((staffQuery.Position == ctx.user.Position) && (staffQuery.StaffID != ctx.user.ID)) {
-                    throw new ForbiddenError(
-                        'Can not add staff to branch staff member at same level'
-                    )
-                }
+                // // Check permission levels
+                // if (staffQuery.Position < ctx.user.Position) {
+                //     throw new ForbiddenError(
+                //         'Can not add staff to branch staff member at a high position'
+                //     )
+                // }
+                // if ((staffQuery.Position == ctx.user.Position) && (staffQuery.StaffID != ctx.user.ID)) {
+                //     throw new ForbiddenError(
+                //         'Can not add staff to for branch staff member at same level'
+                //     )
+                // }
                 //Check staff isn't assigned to branch already
                 branchStaffQuery = await BranchStaff.query().findById([arg.BranchID, arg.StaffID])
                 if (branchStaffQuery instanceof BranchStaff) {
@@ -159,17 +159,17 @@ const resolvers = {
                         'Staff does not exist', { invalidArgs: Object.keys(arg) }
                     )
                 }
-                // Check permission levels
-                if (staffQuery.Position < ctx.user.Position) {
-                    throw new ForbiddenError(
-                        'Can not remove staff from branch for staff member at a high position'
-                    )
-                }
-                if ((staffQuery.Position == ctx.user.Position) && (staffQuery.StaffID != ctx.user.ID)) {
-                    throw new ForbiddenError(
-                        'Can not remove staff from branch for staff member at same level'
-                    )
-                }
+                // // Check permission levels
+                // if (staffQuery.Position < ctx.user.Position) {
+                //     throw new ForbiddenError(
+                //         'Can not remove staff from branch for staff member at a high position'
+                //     )
+                // }
+                // if ((staffQuery.Position == ctx.user.Position) && (staffQuery.StaffID != ctx.user.ID)) {
+                //     throw new ForbiddenError(
+                //         'Can not remove staff from branch for staff member at same level'
+                //     )
+                // }
                 // Check if staff is member of branch
                 branchStaffQuery = await BranchStaff.query().findById([arg.BranchID, arg.StaffID])
                 if (!(branchStaffQuery instanceof BranchStaff)) {
