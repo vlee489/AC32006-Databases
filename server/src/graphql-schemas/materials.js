@@ -22,17 +22,21 @@ const typeDefs = gql`
         ): [Material]
     }
 
+    input materialDetails{
+        Name: String! @constraint(minLength: 1, maxLength: 45)
+        PartType: String! @constraint(minLength: 1, maxLength: 45)
+        Price: Float!
+        SKU: String! @constraint(minLength: 1, maxLength: 45)
+        Description: String!
+        Weight: Float!
+        "ID of the suppliers supply the material"
+        Suppliers: [Int]!
+    }
+
     extend type Mutation{
         "Add a Material to the materials database"
         addMaterial(
-            Name: String!
-            PartType: String!
-            Price: Float!
-            SKU: String!
-            Description: String!
-            Weight: Float!
-            "ID of the suppliers supply the material"
-            Suppliers: [Int]!
+            Details: materialDetails!
         ): Material
     }
 `
@@ -78,25 +82,25 @@ const resolvers = {
                 // Check if Supplies exist
                 supplierStore = []  // Used to build the return message
                 supplierInsert = []  // Used to insert suppliers into DB
-                for (const i in arg.Suppliers) {
-                    supplierQuery = await Suppliers.query().findById(arg.Suppliers[i])
+                for (const i in arg.Details.Suppliers) {
+                    supplierQuery = await Suppliers.query().findById(arg.Details.Suppliers[i])
                     if (supplierQuery instanceof Suppliers) {
                         supplierStore.push(supplierQuery)
                         supplierInsert.push({
-                            SupplierID: arg.Suppliers[i]
+                            SupplierID: arg.Details.Suppliers[i]
                         })
                     } else {
-                        throw new ValidationError(`Supplier ${arg.Suppliers[i]} does not exist`)
+                        throw new ValidationError(`Supplier ${arg.Details.Suppliers[i]} does not exist`)
                     }
                 }
                 // Graph Insert
                 materialInsert = await MaterialsCatalogue.query().insertGraphAndFetch({
-                    Name: arg.Name,
-                    PartType: arg.PartType,
-                    Price: arg.Price,
-                    SKU: arg.SKU,
-                    Description: arg.Description,
-                    Weight: arg.Weight,
+                    Name: arg.Details.Name,
+                    PartType: arg.Details.PartType,
+                    Price: arg.Details.Price,
+                    SKU: arg.Details.SKU,
+                    Description: arg.Details.Description,
+                    Weight: arg.Details.Weight,
                     supplierCatalogue: supplierInsert // Insert relation to supplier via graph insert
                 })
                 return {
