@@ -40,7 +40,7 @@ const CreateStaffMember = () => {
   const defaultWage = 4.55;
   const [details, setDetails] = useState({ wage: defaultWage });
   const [validationError, setValidationError] = useState(null);
-  const [mutationData, setMutationData] = useState(null);
+  const [addStaff, staffResponse] = useMutation(ADD_STAFF);
 
   const submit = e => {
     e.preventDefault();
@@ -56,8 +56,18 @@ const CreateStaffMember = () => {
     else if (!details.wage) setValidationError("We need a wage level");
     else if (!details.position) setValidationError("We need a position");
     else {
-      const [addStaff, { data }] = useMutation(ADD_STAFF(details));
-      setMutationData(data);
+      setValidationError(null);
+      addStaff({variables: {
+        firstName: details.firstName,
+        lastName: details.lastName,
+        phoneNumber: details.phoneNumber,
+        niNumber: details.niNumber,
+        email: details.email,
+        password: details.password,
+        address: details.address,
+        wage: parseFloat(details.wage),
+        position: details.position
+      }})
     }
   }
 
@@ -71,7 +81,7 @@ const CreateStaffMember = () => {
     )
   }
 
-  const handlePositionChange = (num, field) => {
+  const handlePositionChange = num => {
     setDetails(
       details => {
         const newDetails = JSON.parse(JSON.stringify(details));
@@ -81,12 +91,17 @@ const CreateStaffMember = () => {
     )
   }
 
-  const CreateStaffMemberFooter = ({ mutationData, validationError }) => {
+  const CreateStaffMemberFooter = ({ staffResponse, validationError }) => {
     if (validationError) {
       return <Alert variant="danger">{validationError}</Alert>;
     }
-    if (mutationData) {
-      return <Alert variant="success">{`User ${mutationData.FirstName} ${mutationData.LastName} has been added as a staff member`}</Alert>;
+
+    const {loading, error, data} = staffResponse;
+    if (loading) return <Spinner />
+    if (error) <p>{JSON.stringify(error)}</p>
+    if (data) {
+      const staff = data.addStaff;
+      return <Alert className="mt-3" variant="success">{`User ${staff.FirstName} ${staff.LastName} has been added as a staff member`}</Alert>;
     }
     else return null;
   }
@@ -138,18 +153,13 @@ const CreateStaffMember = () => {
                 <Form.Label>Wage (£)</Form.Label>
                 <Form.Control type="number" step="0.1" defaultValue={defaultWage} onChange={e => handleChange(e, "wage")} placeholder="Enter wage" />
               </Form.Group>
-              {/* <Form.Group as={Col} controlId="formPosition">
-                <Form.Label>Position</Form.Label>
-                <Form.Control type="number" onChange={e => handleChange(e, "position")} placeholder="Enter position" />
-              </Form.Group> */}
               <Form.Group as={Col} controlId="formPosition">
                 <Form.Label>Position</Form.Label>
                 <PositionDropdown position={details.position} onPositionChange={num => handlePositionChange(num)}/>
               </Form.Group>
             </Form.Row>
-
             <Button variant="primary" onClick={e => submit(e)}>Submit</Button>
-            <CreateStaffMemberFooter mutationData={mutationData} validationError={validationError} />
+            <CreateStaffMemberFooter staffResponse={staffResponse} validationError={validationError} />
           </Form>
         </Card.Body>
       </Accordion.Collapse>
