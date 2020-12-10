@@ -133,6 +133,7 @@ const PurchasesPage = () => {
 
             <main className={styles.main}>
                 <Navigation />
+                <h1>Purchases per branch</h1>
                 <Container>
                     <Row className="align-items-center justify-content-center mt-2 mb-4">
                         <Col>

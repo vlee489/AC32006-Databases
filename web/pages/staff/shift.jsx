@@ -99,6 +99,7 @@ const ShiftsPage = () => {
       <main className={styles.main}>
         <Navigation />
         <Container>
+          <h1>Shifts</h1>
           <BranchDropdown branchSelected={branchSelected} changeBranch={changeBranch}/>
           <Table striped bordered hover>
             <thead>
