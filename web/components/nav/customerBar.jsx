@@ -32,8 +32,12 @@ const CustomerBar = () => (
             </Nav>
             <Nav className="nav-basket">
                 <NavDropdown alignRight title={<FaShoppingBasket />} id="dropdown-basket">
-                    <NavLink title="Basket" route={routes.basket} />
-                    <NavLink title="Checkout" route={routes.checkout} />
+                    <Link href={routes.basket} passHref>
+                        <NavDropdown.Item>Basket</NavDropdown.Item>
+                    </Link>
+                    <Link href={routes.checkout} passHref>
+                        <NavDropdown.Item>Checkout</NavDropdown.Item>
+                    </Link>
                 </NavDropdown>
             </Nav>
         </Navbar.Collapse>
