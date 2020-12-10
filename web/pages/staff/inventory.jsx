@@ -55,7 +55,7 @@ const InventoryPage = () => {
       const searchFiltered = inventoryData.filter(
         product => {
           if (!searchText) return true;
-          else if (product.Name.toLowerCase().includes(searchText.toLowerCase())) return true;
+          else if (product.Product.Name.toLowerCase().includes(searchText.toLowerCase())) return true;
         }
       );
       return (
@@ -99,7 +99,6 @@ const InventoryPage = () => {
               </Nav>
               <Form inline>
                 <FormControl type="text" placeholder="Search Products" className="mr-sm-2" onChange={e => setSearchText(e.target.value)} />
-                <Button variant="outline-success">Search</Button>
               </Form>
             </Navbar.Collapse>
           </Navbar>
