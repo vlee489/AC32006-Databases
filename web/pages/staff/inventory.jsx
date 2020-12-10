@@ -18,7 +18,7 @@ import BranchDropdown from '../../components/branchDropdown'
 import { useState } from 'react'
 
 const InventoryPage = () => {
-
+  const [searchText, setSearchText] = useState("");
   const [branchSelected, setBranchSelected] = useState({Name: "Dundee", BranchID: 1})
 
   const router = useRouter();
@@ -51,10 +51,16 @@ const InventoryPage = () => {
     if (inventory.loading) return <Spinner />;
     if (inventory.error) return <p>{`${shifts.error}`}</p>;
     if (inventory.data) {
-      
+      const inventoryData = inventory.data.getInventory;
+      const searchFiltered = inventoryData.filter(
+        product => {
+          if (!searchText) return true;
+          else if (product.Name.toLowerCase().includes(searchText.toLowerCase())) return true;
+        }
+      );
       return (
         <tbody>
-          {inventory.data.getInventory.map(
+          {searchFiltered.map(
             (Inventory, i) => <tr key={i}>
                                 <td>{Inventory.Product.ProductID}</td>
                                 <td>{Inventory.Product.Name}</td>
@@ -92,7 +98,7 @@ const InventoryPage = () => {
                 <BranchDropdown branchSelected={branchSelected} changeBranch={changeBranch}/>
               </Nav>
               <Form inline>
-                <FormControl type="text" placeholder="Search Products" className="mr-sm-2" />
+                <FormControl type="text" placeholder="Search Products" className="mr-sm-2" onChange={e => setSearchText(e.target.value)} />
                 <Button variant="outline-success">Search</Button>
               </Form>
             </Navbar.Collapse>
