@@ -1,12 +1,14 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import Head from 'next/head';
 import { Alert, Button, Container, Card, Form, Row, Col } from "react-bootstrap";
 import Navigation from '../../components/navigation';
 import Spinner from '../../components/spinner';
-import BranchDropdown from '../../components/branchDropdown';
+import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import { CREATE_PURCHASE } from '../../mutations/purchase';
 import { useMutation } from '@apollo/client';
+import { GET_BRANCHES } from '../../queries/branch';
+import { GET_BRANCHES_IN_STOCK } from '../../queries/inventory';
 import BasketContext from '../../contexts/basket';
 import basketActions from "../../basketActions";
 import styles from '../../styles/customer/Checkout.module.scss';
@@ -21,6 +23,11 @@ const Checkout = () => {
   const [validationError, setValidationError] = useState("");
   const [checkoutMutation, { loading, error, data }] = useMutation(CREATE_PURCHASE);
   const [orderComplete, setOrderComplete] = useState(false);
+  let productOrders = setProductOrders(basket);
+
+  useEffect(() => {
+    productOrders = setProductOrders(basket);
+  }, [basket])
 
   const handleDeliveryAddress = (address, field) => {
     setDeliveryAddress(
@@ -42,19 +49,13 @@ const Checkout = () => {
     );
   }
 
-  const checkout = () => {
+  const checkout = (productOrders) => {
     if (firstName.length < 1 || firstName.length > 45) setValidationError("Please enter a first name between 1 and 45 characters");
     else if (lastName.length < 1 || lastName.length > 45) setValidationError("Please enter a last name between 1 and 45 characters");
     else if (deliveryAddress.length < 1 || deliveryAddress[0] === "") setValidationError("Please enter a delivery address");
     else if (billingAddress.length < 1 || billingAddress[0] === "") setValidationError("Please enter a billing address");
     else {
       setValidationError("");
-      const productOrders = basket.items.map(item => {
-        return {
-          ProductID: item.ProductID,
-          Qty: item.Quantity
-        }
-      });
       checkoutMutation({
         variables: {
           branch: branch.BranchID,
@@ -66,63 +67,6 @@ const Checkout = () => {
         }
       });
     }
-  }
-
-  const OrderScreen = ({ loading, error, data, orderComplete, onOrderComplete }) => {
-    if (orderComplete) {
-      const purchase = data.createPurchase;
-      return (
-        <Row>
-          <Col>
-            <Card>
-              <Card.Header>{`Purchase No.${purchase.PurchaseID}`}</Card.Header>
-              <Card.Body>
-                <Card.Subtitle>Ordered By:</Card.Subtitle>
-                <Card.Text>{`${purchase.CustomerFirstName} ${purchase.CustomerLastName}`}</Card.Text>
-                <Card.Subtitle>Billing Address:</Card.Subtitle>
-                <Card.Text>{purchase.BillingAddress}</Card.Text>
-                <Card.Subtitle>Delivery Address:</Card.Subtitle>
-                <Card.Text>{purchase.DeliveryAddress}</Card.Text>
-                <Card.Subtitle>Paid?:</Card.Subtitle>
-                <Card.Text>{purchase.Paid == 1 ? "Yes" : "Pending"}</Card.Text>
-                <Card.Subtitle>Total Order Price:</Card.Subtitle>
-                <Card.Text>{`£${purchase.TotalPrice}`}</Card.Text>
-                <Card.Title>Products Ordered</Card.Title>
-                <Table striped bordered hover>
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Price</th>
-                      <th>Colour</th>
-                      <th>Weight</th>
-                      <th>Dimensions</th>
-                      <th>Qty Ordered</th>
-                    </tr>
-                  </thead>
-                  {purchase.Products.map(
-                    (item, i) => <tr key={i}>
-                      <td>{item.Product.Name}</td>
-                      <td>{`£${item.Product.Price}`}</td>
-                      <td>{item.Product.Colour}</td>
-                      <td>{item.Product.Weight}</td>
-                      <td>{item.Product.Dimensions}</td>
-                      <td>{item.Qty}</td>
-                    </tr>
-                  )}
-                </Table>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      )
-    }
-    if (loading) return <Spinner />;
-    if (error) return <pre>{JSON.stringify(error, null, 2)}</pre>
-    if (data) {
-      onOrderComplete();
-      dispatch({ type: basketActions.clearBasket })
-    }
-    return null;
   }
 
   return (
@@ -169,7 +113,7 @@ const Checkout = () => {
                       </Form.Group>
                       <Form.Group>
                         <Form.Label>Dispatch Branch</Form.Label>
-                        <BranchDropdown branchSelected={branch} changeBranch={b => setBranch(b)} />
+                        <BranchFilteredDropdown branchSelected={branch} changeBranch={b => setBranch(b)} productOrders={productOrders} />
                       </Form.Group>
                       <Form.Group controlId="formAddress">
                         <Form.Label>Billing Address</Form.Label>
@@ -180,7 +124,7 @@ const Checkout = () => {
                         <Form.Control type="addressLine4" placeholder="EX1 EX1" onChange={e => handleBillingAddress(e.target.value, 3)} />
                       </Form.Group>
                     </Form>
-                    <Button variant="primary" onClick={checkout}>Credit/Debit card Checkout</Button>
+                    <Button variant="primary" onClick={() => checkout(productOrders)}>Credit/Debit card Checkout</Button>
                   </div>
                 }
 
@@ -201,6 +145,102 @@ const Checkout = () => {
       </main>
     </div>
   )
+}
+
+const setProductOrders = basket => {
+  return basket.items.map(item => {
+    return {
+      ProductID: item.ProductID,
+      Qty: item.Quantity
+    }
+  });
+}
+
+const OrderScreen = ({ loading, error, data, orderComplete, onOrderComplete }) => {
+  if (orderComplete) {
+    const purchase = data.createPurchase;
+    return (
+      <Row>
+        <Col>
+          <Card>
+            <Card.Header>{`Purchase No.${purchase.PurchaseID}`}</Card.Header>
+            <Card.Body>
+              <Card.Subtitle>Ordered By:</Card.Subtitle>
+              <Card.Text>{`${purchase.CustomerFirstName} ${purchase.CustomerLastName}`}</Card.Text>
+              <Card.Subtitle>Billing Address:</Card.Subtitle>
+              <Card.Text>{purchase.BillingAddress}</Card.Text>
+              <Card.Subtitle>Delivery Address:</Card.Subtitle>
+              <Card.Text>{purchase.DeliveryAddress}</Card.Text>
+              <Card.Subtitle>Paid?:</Card.Subtitle>
+              <Card.Text>{purchase.Paid == 1 ? "Yes" : "Pending"}</Card.Text>
+              <Card.Subtitle>Total Order Price:</Card.Subtitle>
+              <Card.Text>{`£${purchase.TotalPrice}`}</Card.Text>
+              <Card.Title>Products Ordered</Card.Title>
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Colour</th>
+                    <th>Weight</th>
+                    <th>Dimensions</th>
+                    <th>Qty Ordered</th>
+                  </tr>
+                </thead>
+                {purchase.Products.map(
+                  (item, i) => <tr key={i}>
+                    <td>{item.Product.Name}</td>
+                    <td>{`£${item.Product.Price}`}</td>
+                    <td>{item.Product.Colour}</td>
+                    <td>{item.Product.Weight}</td>
+                    <td>{item.Product.Dimensions}</td>
+                    <td>{item.Qty}</td>
+                  </tr>
+                )}
+              </Table>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    )
+  }
+  if (loading) return <Spinner />;
+  if (error) return <pre>{JSON.stringify(error, null, 2)}</pre>
+  if (data) {
+    onOrderComplete();
+    dispatch({ type: basketActions.clearBasket })
+  }
+  return null;
+}
+
+const BranchItem = ({ branch, changeBranch, inStockBranches }) => {
+  const inStock = inStockBranches.includes(branch);
+  if (inStock) return <Dropdown.Item key={branch.BranchID} onClick={() => changeBranch(branch)}>{branch.Name}</Dropdown.Item>;
+  return <Dropdown.Item key={branch.BranchID} disabled>{branch.Name}</Dropdown.Item>;
+}
+
+const BranchFilteredDropdown = ({ branchSelected, changeBranch, productOrders }) => {
+  const branchesQuery = useQuery(GET_BRANCHES);
+  debugger;
+  const inStockBranchesQuery = useQuery(GET_BRANCHES_IN_STOCK(productOrders));
+
+  if (branchesQuery.loading || inStockBranchesQuery.loading) return <Spinner />;
+  if (branchesQuery.error) return <pre>{JSON.stringify(branchesQuery.error, null, 2)}</pre>;
+  if (inStockBranchesQuery.error) return <pre>{JSON.stringify(inStockBranchesQuery.error, null, 2)}</pre>;
+
+  if (branchesQuery.data && inStockBranchesQuery.data) {
+    const branches = branchesQuery.data.getBranches;
+    const inStockBranches = inStockBranchesQuery.data.getBranchesInStock;
+
+    return (
+      <DropdownButton id="dropdown-basic-button" title={branchSelected.Name}>
+        {
+          branches.map(branch => <BranchItem branch={branch} changeBranch={changeBranch} inStockBranches={inStockBranches}/>)
+        }
+      </DropdownButton>
+    )
+  }
+  return null;
 }
 
 export default withApollo({ ssr: false })(Checkout);

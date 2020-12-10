@@ -34,7 +34,7 @@ export const GET_INVENTORY = (branchId) => gql`
 
 export const GET_BRANCHES_IN_STOCK = productOrder => gql`
   query {
-    getBranchesInStock(Product: ${productOrder}) {
+    getBranchesInStock(Products: ${productOrder}) {
       Branch {
         BranchID
         Name
