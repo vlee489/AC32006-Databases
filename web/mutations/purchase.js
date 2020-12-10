@@ -21,7 +21,7 @@ export const CREATE_PURCHASE = gql`
                 Branch: $branch,
                 CustomerFirstName: $customerFirstName,
                 CustomerLastName: $customerLastName,
-                BillingAddress: $billingAddres,
+                BillingAddress: $billingAddress,
                 DeliveryAddress: $deliveryAddress,
                 Products: $products
             }
