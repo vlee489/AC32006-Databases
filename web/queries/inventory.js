@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
-export const GET_INVENTORY = (branchId, productId) => gql`
+export const GET_INVENTORY = (branchId) => gql`
   query {
-    getInventory(BranchID: ${branchId}, ProductID: ${productId}) {
+    getInventory(BranchID: ${branchId}) {
         InventoryID
         QTY
         Branch {
