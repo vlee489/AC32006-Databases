@@ -11,6 +11,7 @@ import { GET_INVENTORY } from '../../queries/inventory';
 import { UPDATE_INVENTORY } from '../../mutations/updateInventory';
 import routes from '../../routes'
 
+import categories from '../../categories'
 import styles from '../../styles/staff/Shift.module.scss'
 import Navigation from '../../components/navigation'
 import Spinner from '../../components/spinner';
@@ -70,9 +71,9 @@ const InventoryPage = () => {
             (Inventory, i) => <tr key={i}>
                                 <td>{Inventory.Product.ProductID}</td>
                                 <td>{Inventory.Product.Name}</td>
-                                <td>{Inventory.Product.Category}</td>
-                                <td>{Inventory.Product.Price}</td>
-                                <td>{Inventory.Product.Weight}</td>
+                                <td>{categories[Inventory.Product.Category].name}</td>
+                                <td>£{Inventory.Product.Price}</td>
+                                <td>{Inventory.Product.Weight}kg</td>
                                 <td>{Inventory.Product.Colour}</td>
                                 <td>{Inventory.Product.Dimensions}</td>
                                 <td>{Inventory.QTY}</td>
@@ -111,14 +112,14 @@ const InventoryPage = () => {
           <Table striped bordered hover>
             <thead>
               <tr>
-                <th>Product ID</th>
+                <th>ID</th>
                 <th>Name</th>
                 <th>Category</th>
                 <th>Price</th>
                 <th>Weight</th>
                 <th>Colour</th>
-                <th>Dimensions</th>
-                <th>Quantity in stock</th>
+                <th>Dimensions (cm)</th>
+                <th>Quantity</th>
                 <th>Update quantity</th>
               </tr>
             </thead>
