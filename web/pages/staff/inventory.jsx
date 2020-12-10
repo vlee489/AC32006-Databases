@@ -15,7 +15,7 @@ import styles from '../../styles/staff/Shift.module.scss'
 import Navigation from '../../components/navigation'
 import Spinner from '../../components/spinner';
 import BranchDropdown from '../../components/branchDropdown'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 const InventoryPage = () => {
   const [searchText, setSearchText] = useState("");
@@ -30,17 +30,23 @@ const InventoryPage = () => {
   }
 
   const QuantityButton = ({inventory}) => {
+    const [qText, setQtext] = useState("");
+    const qTextRef = useRef (null)
     const [updateInventory, {loading, error, data}] = useMutation(UPDATE_INVENTORY)
   
+    useEffect (()=>{
+    if (qTextRef) qTextRef.current.focus()
+    }, [qText])
+
     const onUpdateInventory= () => {
-      updateInventory({variables: {BranchID: inventory.Branch.BranchID, ProductID: inventory.Product.ProductID, QTY: inventory.QTY}}).then(
+      updateInventory({variables: {BranchID: inventory.Branch.BranchID, ProductID: inventory.Product.ProductID, Qty: parseInt(qText)}}).then(
         result => router.reload()
       )
         
     }
     return(
       <Form inline>
-        <FormControl type="text" placeholder="Quantity" className="mr-sm-2" />
+        <FormControl ref={qTextRef} type="text" placeholder="Quantity" className="mr-sm-2" value={qText} onChange={e => setQtext(e.target.value)} />
         <Button variant="primary" onClick={onUpdateInventory}>Update</Button>
       </Form>
       
