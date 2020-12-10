@@ -31,3 +31,23 @@ export const GET_INVENTORY = (branchId, productId) => gql`
     }
   } 
 `;
+
+export const GET_BRANCH_WITH_PRODUCT = (productId) => gql`
+  query{
+    getBranchesContainingProduct(ProductID: ${productId}){
+      QTY
+      Branch {
+            BranchID
+            Name
+            Address1
+            Address2
+            City
+            Region
+            Country
+            Postcode
+            PhoneNumber
+            Email
+        }
+    }
+  }
+`;

@@ -40,8 +40,8 @@ const typeDefs = gql`
     input purchaseDetails{
         "Branch you want to order from"
         Branch: ID!
-        CustomerFirstName: String! @constraint(minLength: 1, maxLength: 45)
-        CustomerLastName: String! @constraint(minLength: 1, maxLength: 45)
+        CustomerFirstName: String!
+        CustomerLastName: String!
         BillingAddress: String!
         DeliveryAddress: String!
         Products: [
