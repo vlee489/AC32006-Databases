@@ -15,10 +15,10 @@ import styles from '../../styles/staff/Shift.module.scss'
 import Navigation from '../../components/navigation'
 import Spinner from '../../components/spinner';
 import BranchDropdown from '../../components/branchDropdown'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 const InventoryPage = () => {
-
+  const [searchText, setSearchText] = useState("");
   const [branchSelected, setBranchSelected] = useState({Name: "Dundee", BranchID: 1})
 
   const router = useRouter();
@@ -30,17 +30,23 @@ const InventoryPage = () => {
   }
 
   const QuantityButton = ({inventory}) => {
+    const [qText, setQtext] = useState("");
+    const qTextRef = useRef (null)
     const [updateInventory, {loading, error, data}] = useMutation(UPDATE_INVENTORY)
   
+    useEffect (()=>{
+    if (qTextRef) qTextRef.current.focus()
+    }, [qText])
+
     const onUpdateInventory= () => {
-      updateInventory({variables: {BranchID: inventory.Branch.BranchID, ProductID: inventory.Product.ProductID, QTY: inventory.QTY}}).then(
+      updateInventory({variables: {BranchID: inventory.Branch.BranchID, ProductID: inventory.Product.ProductID, Qty: parseInt(qText)}}).then(
         result => router.reload()
       )
         
     }
     return(
       <Form inline>
-        <FormControl type="text" placeholder="Quantity" className="mr-sm-2" />
+        <FormControl ref={qTextRef} type="text" placeholder="Quantity" className="mr-sm-2" value={qText} onChange={e => setQtext(e.target.value)} />
         <Button variant="primary" onClick={onUpdateInventory}>Update</Button>
       </Form>
       
@@ -51,10 +57,16 @@ const InventoryPage = () => {
     if (inventory.loading) return <Spinner />;
     if (inventory.error) return <p>{`${shifts.error}`}</p>;
     if (inventory.data) {
-      
+      const inventoryData = inventory.data.getInventory;
+      const searchFiltered = inventoryData.filter(
+        product => {
+          if (!searchText) return true;
+          else if (product.Product.Name.toLowerCase().includes(searchText.toLowerCase())) return true;
+        }
+      );
       return (
         <tbody>
-          {inventory.data.getInventory.map(
+          {searchFiltered.map(
             (Inventory, i) => <tr key={i}>
                                 <td>{Inventory.Product.ProductID}</td>
                                 <td>{Inventory.Product.Name}</td>
@@ -92,8 +104,7 @@ const InventoryPage = () => {
                 <BranchDropdown branchSelected={branchSelected} changeBranch={changeBranch}/>
               </Nav>
               <Form inline>
-                <FormControl type="text" placeholder="Search Products" className="mr-sm-2" />
-                <Button variant="outline-success">Search</Button>
+                <FormControl type="text" placeholder="Search Products" className="mr-sm-2" onChange={e => setSearchText(e.target.value)} />
               </Form>
             </Navbar.Collapse>
           </Navbar>
