@@ -8,6 +8,7 @@ import { useQuery, useMutation } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import { GET_BRANCHES } from '../../queries/branch';
 import { GET_INVENTORY } from '../../queries/inventory';
+import { UPDATE_INVENTORY } from '../../mutations/updateInventory';
 import routes from '../../routes'
 
 import styles from '../../styles/staff/Shift.module.scss'
@@ -28,6 +29,24 @@ const InventoryPage = () => {
     setBranchSelected(newBranch)
   }
 
+  const QuantityButton = ({inventory}) => {
+    const [updateInventory, {loading, error, data}] = useMutation(UPDATE_INVENTORY)
+  
+    const onUpdateInventory= () => {
+      updateInventory({variables: {BranchID: inventory.Branch.BranchID, ProductID: inventory.Product.ProductID, QTY: inventory.QTY}}).then(
+        result => router.reload()
+      )
+        
+    }
+    return(
+      <Form inline>
+        <FormControl type="text" placeholder="Quantity" className="mr-sm-2" />
+        <Button variant="primary" onClick={onUpdateInventory}>Update</Button>
+      </Form>
+      
+    )
+  }
+  
   const InventoryTable = () => {
     if (inventory.loading) return <Spinner />;
     if (inventory.error) return <p>{`${shifts.error}`}</p>;
@@ -45,7 +64,7 @@ const InventoryPage = () => {
                                 <td>{Inventory.Product.Colour}</td>
                                 <td>{Inventory.Product.Dimensions}</td>
                                 <td>{Inventory.QTY}</td>
-                                <td>update quantity fam</td>
+                                <td><QuantityButton inventory={Inventory}/></td>
                               </tr>
             )
           }
