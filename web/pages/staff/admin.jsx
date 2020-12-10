@@ -244,13 +244,15 @@ const StaffList = ({ branch }) => {
   const router = useRouter();
 
   const onAssign = member => {
-    assignStaff({ variables: { branchId: branch.BranchID, staffId: member.StaffID } });
-    // router.reload();
+    assignStaff({ variables: { branchId: branch.BranchID, staffId: member.StaffID } }).then(
+      result => router.reload()
+    )
   }
   const onUnAssign = member => {
-    removeStaff({ variables: { branchId: branch.BranchID, staffId: member.StaffID } });
-    // router.reload();
-}
+    removeStaff({ variables: { branchId: branch.BranchID, staffId: member.StaffID } }).then(
+      result => router.reload()
+    )
+  }
 
   if (loading || assignStaffResponse.loading || removeStaffResponse.loading) return <Spinner />;
 
@@ -263,7 +265,7 @@ const StaffList = ({ branch }) => {
 }
 
 const AssignStaffMember = () => {
-  const [branchSelected, setBranchSelected] = useState(null);
+  const [branchSelected, setBranchSelected] = useState({ BranchID: 1, Name: "Dundee" });
 
   return (
     <Card>
