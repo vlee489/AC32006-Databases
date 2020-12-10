@@ -19,7 +19,11 @@ const BasketPage = () => {
 
   const getProductFromBasket = product => (
 		basket.items.find(item => item.ProductID === product.ProductID)
-	)
+  )
+  
+  const addToBasket = product => {
+		dispatch({ type: basketActions.addProduct, product: product });
+	}
 
   const removeOneFromBasket = product => {
     dispatch({ type: basketActions.removeProduct, product: product });
@@ -34,7 +38,10 @@ const BasketPage = () => {
       <div>
         <Row>
 					<Col>
-						<Button variant="primary" onClick={() => removeAllFromBasket(item)}>X</Button>
+						{/* <Button variant="outline-danger" onClick={() => removeAllFromBasket(item)}>X</Button> */}
+            <Button variant="outline-success" onClick={() => addToBasket(item)}>+</Button>
+            <Button variant="outline-danger" onClick={() => removeOneFromBasket(item)}>-</Button>
+
 					</Col>
           <Col>
             <p>
@@ -86,7 +93,12 @@ const BasketPage = () => {
             <Card.Body>
               <Card.Title className="text-center">Basket</Card.Title>
               <BasketGroup basket={basket}/>
-
+              <Row>
+                Total cost: £{basket.totalCost}
+              </Row>
+              <Row>
+                <Button variant="primary" onClick={<Link href= {routes.checkout} passHref />}>Advance To Checkout</Button>
+              </Row>
             </Card.Body>
           </Card>
         </Container>
