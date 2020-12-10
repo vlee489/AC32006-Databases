@@ -15,7 +15,6 @@ export const basketInit = () => {
 
 export const basketReducer = (state, action) => {
     let basket = state;
-    debugger;
     switch (action.type) {
         case basketActions.addProduct:
             basket = addProduct(state, action);
