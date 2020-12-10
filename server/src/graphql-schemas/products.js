@@ -7,6 +7,8 @@ const { getStorageItem } = require('../func/storageHelper');
 const { ProductMaterials } = require('../models/productMaterials');
 const { IdError } = require('../func/errors');
 const { Storage } = require('../models/storage');
+const { Inventory } = require('../models/inventory');
+const { Branch } = require('../models/branch');
 
 // A schema is a collection of type definitions (hence "typeDefs")
 // that together define the "shape" of queries that are executed against
@@ -37,6 +39,11 @@ const typeDefs = gql`
     Components: [ProductMaterials]
   }
 
+  type BranchQty{
+    Branch: Branch,
+    Qty: Int
+  }
+
   extend type Query{
     "Get a list of products"
     getProducts(ProductID: ID, Category: Int): [Product]
@@ -44,6 +51,10 @@ const typeDefs = gql`
     getProductsFromCatergories(Category: [Int]!): [Product]
     "Get the materials used for a product"
     getProductMaterials(ProductID: ID!): ProductComponents
+    "Get Branchs that stock a product"
+    getBranchesContainingProduct(
+      ProductID: ID!
+    ):[BranchQty]
   }
 
   input QtyStorage{
@@ -63,6 +74,22 @@ const typeDefs = gql`
 // Resolvers define the technique for fetching the types defined in the Schema above
 const resolvers = {
   Query: {
+    getBranchesContainingProduct: async (parent, arg, ctx, info) => {
+      productQuery = await Products.query().findById(arg.ProductID);
+      if (!(productQuery instanceof Products)) {
+        throw new IdError(`No Product with ProductID:${arg.ProductID}`)
+      }
+      reply = []
+      var inventoryQuery = await Inventory.query().where('ProductID', arg.ProductID)
+      for(const i in inventoryQuery){
+        reply.push({
+          Branch: (await Branch.query().findById(inventoryQuery[i].BranchID)),
+          Qty: inventoryQuery[i].QTY
+        })
+      }
+      return reply
+    },
+
     getProducts: async (parent, arg, ctx, info) => {
       dbQuery = Products.query();
       if ('ProductID' in arg) {
@@ -119,16 +146,16 @@ const resolvers = {
           throw new IdError(`No Product with ProductID:${arg.ProductID}`)
         }
         // Check every storageID exists
-        for(const i in arg.Materials){
+        for (const i in arg.Materials) {
           storageQuery = await Storage.query().findById(arg.Materials[i].StorageID)
-          if(!(storageQuery instanceof Storage)){
+          if (!(storageQuery instanceof Storage)) {
             throw new IdError(`No Storage with StorageID:${arg.Materials[i].StorageID}`)
           }
         }
         //Insert each relation to storage
-        try{
+        try {
           productMaterialTrans = await ProductMaterials.transaction(async trx => {
-            for(const i in arg.Materials){
+            for (const i in arg.Materials) {
               productMaterialInsert = await ProductMaterials.query(trx).insert({
                 StorageID: arg.Materials[i].StorageID,
                 ProductID: arg.ProductID,
@@ -150,7 +177,7 @@ const resolvers = {
             Product: productQuery,
             Components: ProductMaterialsReply
           }
-        }catch (err) {
+        } catch (err) {
           console.log(err)
           // Catches error from transaction
           throw new Error("Internal Error")

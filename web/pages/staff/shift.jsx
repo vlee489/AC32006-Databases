@@ -21,7 +21,7 @@ import { useState } from 'react'
 
 const ShiftsPage = () => {
 
-  const [branchSelected, setBranchSelected] = useState({BranchID:1})
+  const [branchSelected, setBranchSelected] = useState({Name: "Dundee", BranchID: 1})
 
   const router = useRouter();
   const { userToken, setUserToken } = useContext(UserContext);
@@ -39,13 +39,16 @@ const ShiftsPage = () => {
     const [unassignShift, {loading2, error2, data2}] = useMutation(UNASSIGN_SHIFT)
 
     const onAssignShift = () => {
-      assignShift({variables: {ShiftID: shift.ShiftID, StaffID: loggedInStaff.data.loginStaff.StaffID}})
-      // router.reload()
+      assignShift({variables: {ShiftID: shift.ShiftID, StaffID: loggedInStaff.data.loginStaff.StaffID}}).then(
+        result => router.reload()
+      )
+      
     }
 
     const onUnassignShift = () => {
-      unassignShift({variables: {ShiftID: shift.ShiftID, StaffID: loggedInStaff.data.loginStaff.StaffID}})
-      // router.reload()
+      unassignShift({variables: {ShiftID: shift.ShiftID, StaffID: loggedInStaff.data.loginStaff.StaffID}}).then(
+        result => router.reload()
+      )
     }
 
     // debugger;
@@ -96,6 +99,7 @@ const ShiftsPage = () => {
       <main className={styles.main}>
         <Navigation />
         <Container>
+          <h1>Shifts</h1>
           <BranchDropdown branchSelected={branchSelected} changeBranch={changeBranch}/>
           <Table striped bordered hover>
             <thead>
