@@ -1,7 +1,7 @@
 /*
 Defines all the Scheme for Shifts related GraphQL functions
 */
-const { gql, ForbiddenError, UserInputError } = require('apollo-server-express');
+const { gql, ForbiddenError, UserInputError, ValidationError } = require('apollo-server-express');
 const { IdError, PermissionsError } = require('../func/errors');
 const { Branch } = require('../models/branch');
 const { Shifts } = require('../models/shifts')
@@ -63,6 +63,13 @@ const typeDefs = gql`
       ShiftID: ID!,
       "Staff to unassign from said shift. If not provided assigned the currently logged in user"
       StaffID:ID
+    ): Shift
+    "Create a Shift"
+    createShift(
+      Start: String!
+      End: String!
+      BranchID: ID!
+      StaffReq: Int!
     ): Shift
   }
 `;
@@ -185,6 +192,45 @@ const resolvers = {
     },
   },
   Mutation: {
+    createShift: async (parent, arg, ctx, info) => {
+      if (ctx.auth) {
+        try {
+          const startDate = Date(arg.Start)
+          const endDate = Date(arg.End)
+        } catch (err) {
+          throw new ValidationError("Invalid date string passed")
+        }
+        branchQuery = await Branch.query().findById(arg.BranchID)
+        if (!(branchQuery instanceof Branch)) {
+          throw new IdError(
+            'Branch does not exist', { invalidArgs: Object.keys(arg) }
+          )
+        }
+        shiftInsert = await Shifts.query().insertAndFetch({
+          Start: startDate,
+          End: endDate,
+          StaffReq: arg.StaffReq,
+          BranchID: arg.BranchID
+        })
+        if(shiftInsert instanceof Shifts){
+          return {
+            ShiftID: shiftInsert.ShiftID,
+            Start: shiftInsert.Start.toISOString(),
+            End: shiftInsert.End.toISOString(),
+            StaffReq: shiftInsert.StaffReq,
+            Branch: branchQuery,
+            Staff: []
+          }  
+        }else{
+          throw new Error("Internal error inserting shift")
+        }
+      } else {
+        throw new ForbiddenError(
+          'Authentication token is invalid, please log in'
+        )
+      }
+    },
+
     assignShift: async (parent, arg, ctx, info) => {
       if (ctx.auth) {
         // Gets staff from query
@@ -264,7 +310,7 @@ const resolvers = {
           )
         }
         if (!((await StaffShifts.query().findById([shiftQuery.ShiftID, staffQuery.StaffID])) instanceof StaffShifts)) {
-          throw new UserInputError( 'Staff not assigned to shift')
+          throw new UserInputError('Staff not assigned to shift')
         }
         staffShiftDelete = await StaffShifts.query().deleteById([shiftQuery.ShiftID, staffQuery.StaffID])
         if (staffShiftDelete != 0) {
