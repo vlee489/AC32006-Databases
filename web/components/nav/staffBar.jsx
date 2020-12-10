@@ -37,6 +37,9 @@ const CustomerBar = () => {
                     <Link href={routes.shift} passHref>
                         <Nav.Link>Shift</Nav.Link>
                     </Link>
+                    <Link href={routes.purchases} passHref>
+                        <Nav.Link>Purchases</Nav.Link>
+                    </Link>
                 </Nav>
                 <Nav>
                     <Nav.Link onClick={logout}>Logout</Nav.Link>
