@@ -111,7 +111,7 @@ const Catalogue = () => {
 	return (
 		<div className={styles.container}>
 			<Head>
-				<title>GFFC Catalogue</title>
+				<title>Catalogue</title>
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 
