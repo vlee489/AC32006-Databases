@@ -194,25 +194,25 @@ const resolvers = {
   Mutation: {
     createShift: async (parent, arg, ctx, info) => {
       if (ctx.auth) {
-        try {
-          const startDate = Date(arg.Start)
-          const endDate = Date(arg.End)
-        } catch (err) {
-          throw new ValidationError("Invalid date string passed")
-        }
+        var b = arg.Start.split(/\D+/)
+        var e = arg.End.split(/\D+/)
+        startDate = new Date(Date.UTC(b[0], --b[1], b[2], b[3], b[4], b[5], b[6]))
+        endDate = new Date(Date.UTC(e[0], --e[1], e[2], e[3], e[4], e[5], e[6]))
         branchQuery = await Branch.query().findById(arg.BranchID)
         if (!(branchQuery instanceof Branch)) {
           throw new IdError(
             'Branch does not exist', { invalidArgs: Object.keys(arg) }
           )
         }
+        console.log(startDate)
+        console.log(endDate)
         shiftInsert = await Shifts.query().insertAndFetch({
           Start: startDate,
           End: endDate,
           StaffReq: arg.StaffReq,
           BranchID: arg.BranchID
         })
-        if(shiftInsert instanceof Shifts){
+        if (shiftInsert instanceof Shifts) {
           return {
             ShiftID: shiftInsert.ShiftID,
             Start: shiftInsert.Start.toISOString(),
@@ -220,8 +220,8 @@ const resolvers = {
             StaffReq: shiftInsert.StaffReq,
             Branch: branchQuery,
             Staff: []
-          }  
-        }else{
+          }
+        } else {
           throw new Error("Internal error inserting shift")
         }
       } else {
@@ -295,6 +295,7 @@ const resolvers = {
       }
     },
     unassignShift: async (parent, arg, ctx, info) => {
+      console.log(arg)
       if (ctx.auth) {
         // Gets staff from query
         if ('StaffID' in arg) {
