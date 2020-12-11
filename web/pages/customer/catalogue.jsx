@@ -60,14 +60,8 @@ const Catalogue = () => {
 		if (data) {
 			const products = data.getProducts;
 			const activeCategories = categories.filter(category => category.active);
-			const categoryFiltered = products.filter(
-				product => {
-					for (const category of activeCategories) {
-						if (category.number === product.Category) return true;
-					}
-					return false;
-				}
-			);
+			
+			const categoryFiltered = getCategoryFiltered(activeCategories, products);
 			const searchFiltered = categoryFiltered.filter(
 				product => {
 					if (!searchText) return true;
@@ -83,6 +77,20 @@ const Catalogue = () => {
 			)
 		}
 		return <p>{`${data}`}</p>;
+	}
+
+	const getCategoryFiltered = (activeCategories, products) => {
+		if (activeCategories.length > 0) {
+			return products.filter(
+				product => {
+					for (const category of activeCategories) {
+						if (category.number === product.Category) return true;
+					}
+					return false;
+				}
+			);
+		}
+		else return products;
 	}
 
 	const CategoryToggles = () => {
