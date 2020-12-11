@@ -43,6 +43,8 @@ export const basketReducer = (state, action) => {
 }
 
 const addProduct = (state, action) => {
+    debugger;
+
     if (!action.product) {
         console.error("You need to pass a product to add");
         return state;
@@ -52,16 +54,13 @@ const addProduct = (state, action) => {
     const newProduct = JSON.parse(JSON.stringify(action.product));
     const newItems = JSON.parse(JSON.stringify(state.items));
 
-    const currentProduct = newItems.find(item => item.ProductID === action.product.ProductID);
-
-    let quantity = 1;
-    if (action.product.Quantity) quantity = action.product.quantity;
+    const currentProduct = newItems.find(item => item.ProductID === newProduct.ProductID);
 
     if (!currentProduct) {
-        newProduct.Quantity = quantity;
+        newProduct.Quantity = 1;
         newItems.push(newProduct);
     }
-    else currentProduct.Quantity += quantity;
+    else currentProduct.Quantity++;
 
     return {
         items: newItems,

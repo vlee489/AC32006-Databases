@@ -52,7 +52,7 @@ const BasketPage = () => {
             <p>{item.Name}</p>
           </Col>
           <Col>
-            <p>{item.Quantity}</p>
+            <p>{getProductFromBasket(item).Quantity}</p>
           </Col>
           <Col>
             <p>{item.Dimensions}</p>
@@ -103,7 +103,7 @@ const BasketPage = () => {
           </Card>
         </Container>
         
-        <pre>{JSON.stringify(basket, null, 2)}</pre>;
+        {/* <pre>{JSON.stringify(basket, null, 2)}</pre>; */}
       </main>
     </div>
   )
