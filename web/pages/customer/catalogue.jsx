@@ -1,67 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-
-import { Container, Row, Col, Card, Form, FormControl, InputGroup, Nav } from 'react-bootstrap';
-import Navigation from '../../components/navigation';
-import Spinner from '../../components/spinner';
+import { useRouter } from 'next/router';
 
 import { useQuery } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import GET_PRODUCTS from '../../queries/products';
-
-import categories from '../../categories';
-import priceRanges from '../../priceRanges';
 import routes from '../../routes';
+import categoriesJSON from '../../categoriesJSON.json';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { Container, Row, Col, Card, FormControl, InputGroup } from 'react-bootstrap';
+import Navigation from '../../components/navigation';
+import Sidebar from '../../components/sidebar';
+import Spinner from '../../components/spinner';
+import ToggleToken from '../../components/toggleToken';
+import { FaSearch } from 'react-icons/fa';
 import styles from '../../styles/customer/Catalogue.module.scss';
 
 const Catalogue = () => {
 	const [searchText, setSearchText] = useState("");
-
+	const [categories, setCategories] = useState([]);
+	const router = useRouter();
+	const { categoryDefault } = router.query;
 	const { loading, error, data } = useQuery(GET_PRODUCTS);
 
-	const CategoryGroup = () => {
-		let jsx = [];
-		let i = 0;
+	useEffect(() => {
+		let categories = [];
 
-		for (const category in categories) {
-			if (categories.hasOwnProperty(category)) {
-				jsx.push(<Form.Check key={i} type="checkbox" label={categories[category].name} />);
-				i++;
+		categoriesJSON.forEach(cat => {
+			const category = {
+				name: cat.name,
+				number: cat.number,
+				active: cat.name === categoryDefault
 			}
-		}
-
-		return jsx;
-	}
-
-	const PriceGroup = () => (
-		priceRanges.map((range, i) => {
-			<Form.Check key={i} type="checkbox" label={priceRanges[range].upper} />
+			categories.push(category);
 		})
-	)
 
-	const Sidebar = () => (
-		<Nav defaultActiveKey="/home" className="flex-column">
-			<Form>
-				<Form.Label>Categories:</Form.Label>
-				<Form.Group controlId="categoriesCheckbox">
-					<CategoryGroup />
-				</Form.Group>
-				<Form.Group controlId="categoriesCheckbox">
-					{/* <PriceGroup /> */}
-				</Form.Group>
-			</Form>
-		</Nav>
-	)
+		setCategories(categories);
+	}, [categoryDefault])
 
 	const Product = ({ productId, name, image, price, dimensions }) => (
 		<Col>
 			<Link href={`${routes.product}/${encodeURIComponent(productId)}`}>
 				<Card className={`${styles.product} my-4`}>
-					<Card.Img variant="top" width="100%" src="https://picsum.photos/360/200" />
+					<Card.Img variant="top" width="100%" src={image} />
 					<Card.Body>
 						<Card.Title>{name}</Card.Title>
 						<Card.Text>{`£${price}`}</Card.Text>
@@ -77,7 +59,10 @@ const Catalogue = () => {
 		if (error) return <p>{`${error}`}</p>;
 		if (data) {
 			const products = data.getProducts;
-			const filteredProducts = products.filter(
+			const activeCategories = categories.filter(category => category.active);
+			
+			const categoryFiltered = getCategoryFiltered(activeCategories, products);
+			const searchFiltered = categoryFiltered.filter(
 				product => {
 					if (!searchText) return true;
 					else if (product.Name.toLowerCase().includes(searchText.toLowerCase())) return true;
@@ -85,8 +70,8 @@ const Catalogue = () => {
 			);
 			return (
 				<Row>
-					{filteredProducts.map(
-						(p, i) => <Product key={i} productId={p.ProductID} name={p.Name} image={p.Image} price={p.Price} dimensions={p.Dimensions} />
+					{searchFiltered.map(
+						(p, i) => <Product key={i} productId={p.ProductID} name={p.Name} image={p.ImageURL} price={p.Price} dimensions={p.Dimensions} />
 					)}
 				</Row>
 			)
@@ -94,10 +79,47 @@ const Catalogue = () => {
 		return <p>{`${data}`}</p>;
 	}
 
+	const getCategoryFiltered = (activeCategories, products) => {
+		if (activeCategories.length > 0) {
+			return products.filter(
+				product => {
+					for (const category of activeCategories) {
+						if (category.number === product.Category) return true;
+					}
+					return false;
+				}
+			);
+		}
+		else return products;
+	}
+
+	const CategoryToggles = () => {
+		let jsx = [];
+
+		categories.forEach(category => {
+			jsx.push(<ToggleToken
+				key={category.number}
+				name={category.name}
+				number={category.number}
+				active={category.active}
+				toggle={() => setCategories(
+					categoriesStore => {
+						const newStore = JSON.parse(JSON.stringify(categoriesStore));
+						const cat = newStore[category.number - 1];
+						cat.active = !cat.active;
+						return newStore;
+					}
+				)}
+			/>)
+		})
+
+		return jsx;
+	}
+
 	return (
 		<div className={styles.container}>
 			<Head>
-				<title>GFFC Catalogue</title>
+				<title>Catalogue</title>
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 
@@ -110,7 +132,7 @@ const Catalogue = () => {
 							<InputGroup className="mb-3 pt-5">
 								<InputGroup.Prepend>
 									<InputGroup.Text>
-										<FontAwesomeIcon className="form-control-feedback" icon={faSearch} />
+										<FaSearch />
 									</InputGroup.Text>
 								</InputGroup.Prepend>
 								<FormControl
@@ -122,6 +144,9 @@ const Catalogue = () => {
 							</InputGroup>
 						</Col>
 					</Row>
+					<div className="flexWrap">
+						<CategoryToggles />
+					</div>
 					<Row>
 						<Col>
 							<ProductsGroup />

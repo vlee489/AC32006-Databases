@@ -29,18 +29,22 @@ const typeDefs = gql`
     loginStaff: Staff
   }
 
+  input newStaff{
+    FirstName: String! @constraint(minLength: 1, maxLength: 45)
+    LastName: String! @constraint(minLength: 1, maxLength: 45)
+    PhoneNumber: String! @constraint(maxLength: 12)
+    NINumber: String! @constraint(minLength: 9, maxLength: 9)
+    Address: String!
+    Wage: Float!
+    Position: Int! @constraint(min: 1, max: 3)
+    Email: String! @constraint(minLength: 5, format: "email", maxLength: 45)
+    Password: String!
+  }
+
   extend type Mutation{
     "Add a new staff member"
     addStaff(
-      FirstName: String!
-      LastName: String!
-      PhoneNumber: String!
-      NINumber: String!
-      Address: String!
-      Wage: Float!
-      Position: Int!
-      Email: String!
-      Password: String!
+      Staff: newStaff!
     ): Staff
   }
 `;
@@ -79,20 +83,18 @@ const resolvers = {
           'Authentication token is invalid, please log in'
         )
       }
-      const hashPass = await bcrypt.hash(arg.Password, 12)
+      const hashPass = await bcrypt.hash(arg.Staff.Password, 12)
       if (hashPass) {
-        console.log(hashPass)
-
         const newStaff = await Staff.query().insertAndFetch(
           {
-            FirstName: arg.FirstName,
-            LastName: arg.LastName,
-            PhoneNumber: arg.PhoneNumber,
-            NINumber: arg.NINumber,
-            Address: arg.Address,
-            Wage: arg.Wage,
-            Position: arg.Position,
-            Email: arg.Email,
+            FirstName: arg.Staff.FirstName,
+            LastName: arg.Staff.LastName,
+            PhoneNumber: arg.Staff.PhoneNumber,
+            NINumber: arg.Staff.NINumber,
+            Address: arg.Staff.Address,
+            Wage: arg.Staff.Wage,
+            Position: arg.Staff.Position,
+            Email: arg.Staff.Email,
             Password: hashPass
           }
         )

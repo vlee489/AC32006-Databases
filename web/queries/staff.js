@@ -6,8 +6,8 @@ export const GET_STAFF = gql`
       StaffID
       Address
       Email
-      Firstname
-      Lastname
+      FirstName
+      LastName
       NINumber
     }
   } 

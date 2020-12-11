@@ -8,10 +8,11 @@ class MaterialsCatalogue extends Model {
   }
   // Set id column
   static get idColumn() {
-    return 'MaterialsCatalogueID';
+    return 'MaterialID';
   }
   static get relationMappings() {
     const { SuppliersCatalogue } = require('./suppliersCatalogue');
+    const { Storage } = require('../models/storage');
     return {
       // This is a one to one relationship \/
       storage: {

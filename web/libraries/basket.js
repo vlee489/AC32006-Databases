@@ -1,27 +1,45 @@
 import basketActions from "../basketActions";
+import Cookies from 'js-cookie';
 
-export const basketInit = { items: [], totalCost: 0 };
+const basketEmpty = { items: [], totalCost: 0 }
+
+export const basketInit = () => { 
+    const cookies = Cookies.get();
+    try {
+        if (!cookies || !cookies.basket) throw new Error();
+        return JSON.parse(cookies.basket);
+    } catch (error) {
+        return basketEmpty;
+    }
+};
 
 export const basketReducer = (state, action) => {
+    let basket = state;
     switch (action.type) {
         case basketActions.addProduct:
-            return addProduct(state, action);
+            basket = addProduct(state, action);
+            break;
 
         case basketActions.removeProduct:
-            return removeProduct(state, action);
+            basket = removeProduct(state, action);
+            break;
 
         case basketActions.removeAllProduct:
-            return removeAllProduct(state, action);
+            basket = removeAllProduct(state, action);
+            break;
 
         case basketActions.clearBasket:
-            return basketInit();
+            basket = basketEmpty;
+            break;
 
         default:
             const msg = `Basket Action ${action.type} is not a thing
             Look at the basketActions.js file to choose a correct action`;
             console.error(msg);
-            return state;
     }
+
+    Cookies.set('basket', basket);
+    return basket;
 }
 
 const addProduct = (state, action) => {

@@ -1,7 +1,8 @@
-import React, { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
 
 import { useQuery } from '@apollo/client';
 import withApollo from "../../../libraries/apollo";
@@ -23,22 +24,22 @@ const Product = () => {
 	const { productId } = router.query;
 	const { loading, error, data } = useQuery(GET_PRODUCT(productId));
 	const { basket, dispatch } = useContext(BasketContext);
-
-	const addToBasket = product => { 
-		dispatch({ type: basketActions.addProduct, product: product }); 
+	
+	const addToBasket = product => {
+		dispatch({ type: basketActions.addProduct, product: product });
 	}
 
-	const removeOneFromBasket = product => { 
+	const removeOneFromBasket = product => {
 		dispatch({ type: basketActions.removeProduct, product: product });
 	}
 
-	const getProductFromBasket = product => ( 
-		basket.items.find(item => item.ProductID === product.ProductID) 
+	const getProductFromBasket = product => (
+		basket.items.find(item => item.ProductID === product.ProductID)
 	)
 
-	const isInBasket = product => { 
-		if (getProductFromBasket(product)) return true; 
-		return false; 
+	const isInBasket = product => {
+		if (getProductFromBasket(product)) return true;
+		return false;
 	}
 
 	const BasketModifier = ({ product }) => {
@@ -64,7 +65,7 @@ const Product = () => {
 		<Row>
 			<Col>
 				<Card className={`${styles.card} my-4`}>
-					<Card.Img className={styles.cardImage} variant="top" src="https://picsum.photos/720/400" />
+					<Card.Img className={styles.cardImage} variant="top" src={product.ImageURL} />
 				</Card>
 			</Col>
 			<Col>
@@ -84,7 +85,7 @@ const Product = () => {
 		<Row>
 			<Col>
 				<Card className={`${styles.card} my-4`}>
-					<Card.Img className={styles.cardImage} variant="top" src="https://picsum.photos/720/400" />
+					<Card.Img className={styles.cardImage} variant="top" src={product.ImageURL} />
 					<Card.Body>
 						<Card.Title>{product.Name}</Card.Title>
 						<Card.Text>{`£${product.Price}`}</Card.Text>
@@ -98,13 +99,13 @@ const Product = () => {
 
 	const ProductInfo = ({ product }) => {
 		if (loading) return <Spinner />;
-		if (error) return <p>{error}</p>;
+		if (error) return null;
 		return useMediaQuery({ query: '(min-width: 900px)' }) ? <SplitProductInfo product={product} /> : <UnifiedProductInfo product={product} />;
 	}
 
 	const ProductGroup = () => {
 		if (loading) return <Spinner />;
-		if (error) return <p>{error}</p>;
+		if (error) return <pre>{JSON.stringify(error)}</pre>;
 		if (data) {
 			const product = data.getProducts[0];
 
@@ -123,11 +124,19 @@ const Product = () => {
 					</Row>
 					<Container>
 						<ProductInfo product={product} />
+						<Description product={product} />
 					</Container>
 				</>
 			)
 		}
 		return <p>{`${data}`}</p>;
+	}
+
+	const Description = ({ product }) => {
+		if (loading) return <Spinner />;
+		if (error) return null;
+		if (data) return <p>{product.Description}</p>;
+		return null;
 	}
 
 	return (
@@ -140,7 +149,6 @@ const Product = () => {
 			<main className={styles.main}>
 				<Navigation />
 				<ProductGroup />
-				<pre>{JSON.stringify(basket, null, 2)}</pre>;
 			</main>
 		</div>
 	)

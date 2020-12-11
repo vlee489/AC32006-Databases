@@ -1,116 +1,19 @@
-import React, { useContext } from 'react';
-
-import Link from 'next/link';
-import routes from '../routes';
-
-import BasketContext from '../contexts/basket';
+import { useEffect, useContext } from 'react';
+import Cookies from 'js-cookie';
 import UserContext from '../contexts/user';
+import CustomerBar from './nav/customerBar';
+import StaffBar from './nav/staffBar';
 
-import { Button, Form, FormControl, Nav, Navbar, NavDropdown, Row, Col } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons';
-import styles from "../styles/navigation.module.scss";
-
-const Navigation = props => {
-    const { basket, dispatch } = useContext(BasketContext);
+const Navigation = () => {
     const { userToken, setUserToken } = useContext(UserContext);
 
-    // const product = {
-    //     ProductID: 0,
-    //     Name: "Shelf",
-    //     Category: "Shelves",
-    //     Price: 5,
-    //     Dimensions: "2x2cm",
-    //     Quantity: 1
-    //   }
+    useEffect(() => {
+        const cookies = Cookies.get();
+        if (cookies && cookies.userToken) setUserToken(JSON.parse(cookies.userToken));
+    }, [])
 
-    // let basketProducts = [];
-
-    // basketProducts.push(product);
-
-    // const BasketDropdowns = () => {
-    //     return (
-    //         // basketProducts.map((p, i) => {
-    //             <Link href="" passHref>
-    //                 <NavDropdown.Item className="product-item">
-    //                     <Row>
-    //                         <Col>
-    //                             <img />
-    //                         </Col>
-    //                         <Col>
-    //                             Product
-    //                         </Col>
-    //                         <Col>
-    //                             Price
-    //                         </Col>
-    //                         <Col>
-    //                             Quantity
-    //                         </Col>
-    //                         <Col>
-    //                             <button>X</button>
-    //                         </Col>
-    //                     </Row>
-    //                 </NavDropdown.Item>
-    //             </Link>
-    //         // })
-    //     )
-    // }
-
-    return (
-        <>
-            <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-                <Link href={routes.index} passHref>
-                    <Navbar.Brand>
-                        Generic Flatpack Furniture
-                    </Navbar.Brand>
-                </Link>
-                <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-                <Navbar.Collapse id="responsive-navbar-nav">
-                    <Nav className="mr-auto">
-                        <Link href={routes.index} passHref>
-                            <Nav.Link>Home</Nav.Link>
-                        </Link>
-
-                        <Link href={routes.catalogue} passHref>
-                            <Nav.Link>Catalogue</Nav.Link>
-                        </Link>
-                        <Link href={routes.checkout} passHref>
-                            <Nav.Link>Checkout</Nav.Link>
-                        </Link>
-                        <NavDropdown title="Staff" id="staffDropdown">
-                            <Link href={routes.login} passHref>
-                                <NavDropdown.Item>Login</NavDropdown.Item>
-                            </Link>
-                            <Link href={routes.admin} passHref>
-                                <NavDropdown.Item>Admin</NavDropdown.Item>
-                            </Link>
-                            <Link href={routes.inventory} passHref>
-                                <NavDropdown.Item>Inventory</NavDropdown.Item>
-                            </Link>
-                            <Link href={routes.shift} passHref>
-                                <NavDropdown.Item>Shift</NavDropdown.Item>
-                            </Link>
-                        </NavDropdown>
-                    </Nav>
-                    <Nav className="nav-basket">
-                        <NavDropdown alignRight className={styles.basketDropdown} title={<FontAwesomeIcon className="form-control-feedback" icon={faShoppingBasket} />} id="basket">
-                            {/* <BasketDropdowns /> */}
-                            <Link href={routes.basket} passHref>
-                                <NavDropdown.Item>Basket</NavDropdown.Item>
-                            </Link>
-                            <Link href={routes.checkout} passHref>
-                                <NavDropdown.Item>Checkout</NavDropdown.Item>
-                            </Link>
-                        </NavDropdown>
-                    </Nav>
-                    {/* <Form inline>
-                        <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-                        <Button variant="outline-info">Search</Button>
-                    </Form> */}
-                </Navbar.Collapse>
-            </Navbar>
-        </>
-    )
+    if (userToken) return <StaffBar />;
+    return <CustomerBar />;
 }
 
 export default Navigation;

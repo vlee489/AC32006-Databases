@@ -1,13 +1,18 @@
 /*
 Runs all the code for the API
 */
+// Server related imports
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
-
-const { ApolloServer, AuthenticationError } = require('apollo-server-express');
+// Deals with HTTPS
+const fs = require('fs')
+const https = require('https')
+const os = require('os')
+// Apollo & GraphQL related imports
+const { ApolloServer } = require('apollo-server-express');
 const schema = require('./schema');
-
+// Login and security imports
 const { Staff } = require('./models/staff')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -19,6 +24,7 @@ const SESSION_SECRECT = 'wOdLXkh*WNINd#k2qA8j%tF%mED8c1ho';
 
 // Express App
 const app = express();
+// Tell express to use bodyparses and cross-origin
 app.use(bodyParser.json())
 app.use(cors())
 
@@ -30,7 +36,6 @@ const context = ({ req }) => {
   Can not use async!
   */
   const token = req.headers.authorization || ''
-  const splitToken = token.split(' ')[1]
   try {
     var decoded = jwt.verify(token, SESSION_SECRECT);
     if (decoded) {
@@ -56,10 +61,14 @@ const server = new ApolloServer({
   context: context
 });
 
+//Tell Apollo to use Express.js as a middlewhere to handle requests
 server.applyMiddleware({ app });
 
 // Login page
 app.post('/login', async (req, res) => {
+  /*
+  This function handles the Staff login procedure
+  */
   // Check if body has email and password
   if (('email' in req.body) && ('password' in req.body)) {
     const { email, password } = req.body
@@ -109,3 +118,20 @@ app.post('/login', async (req, res) => {
 app.listen({ port: PORT }, () => {
   console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
 });
+
+// Only launch the HTTPS server if we are on the deployment system
+if (os.hostname() == 'Uni-DB') {
+  // Start server with HTTPS
+  https
+    .createServer(
+      {
+        key: fs.readFileSync('/etc/letsencrypt/live/ac32006api.vlee.me.uk/privkey.pem'),
+        cert: fs.readFileSync('/etc/letsencrypt/live/ac32006api.vlee.me.uk/cert.pem'),
+        ca: fs.readFileSync('/etc/letsencrypt/live/ac32006api.vlee.me.uk/chain.pem'),
+      },
+      app
+    )
+    .listen(443, () => {
+      console.log(`🚀 Server ready at https://localhost${server.graphqlPath}`)
+    })
+}
