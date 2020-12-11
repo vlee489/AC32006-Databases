@@ -99,13 +99,13 @@ const Product = () => {
 
 	const ProductInfo = ({ product }) => {
 		if (loading) return <Spinner />;
-		if (error) return <p>{error}</p>;
+		if (error) return null;
 		return useMediaQuery({ query: '(min-width: 900px)' }) ? <SplitProductInfo product={product} /> : <UnifiedProductInfo product={product} />;
 	}
 
 	const ProductGroup = () => {
 		if (loading) return <Spinner />;
-		if (error) return <p>{error}</p>;
+		if (error) return <pre>{JSON.stringify(error)}</pre>;
 		if (data) {
 			const product = data.getProducts[0];
 
@@ -124,11 +124,19 @@ const Product = () => {
 					</Row>
 					<Container>
 						<ProductInfo product={product} />
+						<Description product={product} />
 					</Container>
 				</>
 			)
 		}
 		return <p>{`${data}`}</p>;
+	}
+
+	const Description = ({ product }) => {
+		if (loading) return <Spinner />;
+		if (error) return null;
+		if (data) return <p>{product.Description}</p>;
+		return null;
 	}
 
 	return (
