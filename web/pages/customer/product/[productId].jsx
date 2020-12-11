@@ -85,7 +85,7 @@ const Product = () => {
 		<Row>
 			<Col>
 				<Card className={`${styles.card} my-4`}>
-					<Card.Img className={styles.cardImage} variant="top" src="https://picsum.photos/720/400" />
+					<Card.Img className={styles.cardImage} variant="top" src={product.ImageURL} />
 					<Card.Body>
 						<Card.Title>{product.Name}</Card.Title>
 						<Card.Text>{`£${product.Price}`}</Card.Text>
@@ -141,7 +141,6 @@ const Product = () => {
 			<main className={styles.main}>
 				<Navigation />
 				<ProductGroup />
-				<pre>{JSON.stringify(basket, null, 2)}</pre>;
 			</main>
 		</div>
 	)

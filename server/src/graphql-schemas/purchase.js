@@ -37,18 +37,22 @@ const typeDefs = gql`
         ): [Purchase]
     }
 
+    input purchaseDetails{
+        "Branch you want to order from"
+        Branch: ID!
+        CustomerFirstName: String!
+        CustomerLastName: String!
+        BillingAddress: String!
+        DeliveryAddress: String!
+        Products: [
+            ProductOrder
+        ]!
+    }
+
     extend type Mutation{
         "Add an order to the system as a customer"
         createPurchase(
-            "Branch you want to order from"
-            Branch: ID!
-            CustomerFirstName: String!
-            CustomerLastName: String!
-            BillingAddress: String!
-            DeliveryAddress: String!
-            Products: [
-                ProductOrder
-            ]!
+            Details: purchaseDetails!
         ): Purchase
         "Set dispatch of a Purchase"
         dispatchPurchase(
@@ -159,7 +163,7 @@ const resolvers = {
             We haven't added and logic or fields for said infomation here.
             */
             // Check if branch exists in system
-            branchQuery = await Branch.query().findById(arg.Branch)
+            branchQuery = await Branch.query().findById(arg.Details.Branch)
             if (!(branchQuery instanceof Branch)) {
                 throw new IdError(
                     'Branch does not exist', { invalidArgs: Object.keys(arg) }
@@ -168,38 +172,38 @@ const resolvers = {
             // Check product and stock of product in branch &  tabulate order cost
             purchaseProductStore = [] // Place to store products
             purchaseTotalCost = 0.0 // Stores total cost
-            for (const item in arg.Products) {
-                productQuery = await Products.query().findById(arg.Products[item].ProductID)
+            for (const item in arg.Details.Products) {
+                productQuery = await Products.query().findById(arg.Details.Products[item].ProductID)
                 if (productQuery instanceof Products) {
                     // Check Inventory and stock exist for branch
-                    inventoryQuery = await Inventory.query().where('BranchID', arg.Branch).where('ProductID', productQuery.ProductID)
+                    inventoryQuery = await Inventory.query().where('BranchID', arg.Details.Branch).where('ProductID', productQuery.ProductID)
                     if (inventoryQuery.length > 1) {
                         throw new Error(
-                            `Internal Error on Product: ${arg.Products[item].ProductID} Branch: ${arg.Branch}`
+                            `Internal Error on Product: ${arg.Details.Products[item].ProductID} Branch: ${arg.Details.Branch}`
                         )
                     } else if (inventoryQuery.length == 1) {
                         // check if inventory of branch is enough to process order
-                        if (inventoryQuery[0].QTY >= arg.Products[item].Qty) {
+                        if (inventoryQuery[0].QTY >= arg.Details.Products[item].Qty) {
                             // We add the product to the array if we have enough product to proces the order
                             purchaseProductStore.push({
                                 InventoryID: inventoryQuery[0].InventoryID,
-                                QTY: arg.Products[item].Qty
+                                QTY: arg.Details.Products[item].Qty
                             })
                             // Add item to total cost of purchase
-                            purchaseTotalCost = purchaseTotalCost + (productQuery.Price * arg.Products[item].Qty)
+                            purchaseTotalCost = purchaseTotalCost + (productQuery.Price * arg.Details.Products[item].Qty)
                         } else {
                             throw new UserInputError(
-                                `Branch does not have enough stock of ${arg.Products[item].ProductID}`, { invalidArgs: Object.keys(arg) }
+                                `Branch does not have enough stock of ${arg.Details.Products[item].ProductID}`, { invalidArgs: Object.keys(arg) }
                             )
                         }
                     } else {
                         throw new UserInputError(
-                            `Product: ${arg.Products[item].ProductID} not stocked by branch`, { invalidArgs: Object.keys(arg) }
+                            `Product: ${arg.Details.Products[item].ProductID} not stocked by branch`, { invalidArgs: Object.keys(arg) }
                         )
                     }
                 } else {
                     throw new IdError(
-                        `Product: ${arg.Products[item].ProductID} does not exist`, { invalidArgs: Object.keys(arg) }
+                        `Product: ${arg.Details.Products[item].ProductID} does not exist`, { invalidArgs: Object.keys(arg) }
                     )
                 }
             }
@@ -207,13 +211,13 @@ const resolvers = {
             try {
                 purchaseTrans = await Purchases.transaction(async trx => {
                     purchaseInsert = await Purchases.query(trx).insertGraphAndFetch({
-                        CustomerFirstName: arg.CustomerFirstName,
-                        CustomerLastName: arg.CustomerLastName,
-                        BillingAddress: arg.BillingAddress,
-                        DeliveryAddress: arg.DeliveryAddress,
+                        CustomerFirstName: arg.Details.CustomerFirstName,
+                        CustomerLastName: arg.Details.CustomerLastName,
+                        BillingAddress: arg.Details.BillingAddress,
+                        DeliveryAddress: arg.Details.DeliveryAddress,
                         Paid: true,
                         TotalPrice: purchaseTotalCost,
-                        BranchID: arg.Branch,
+                        BranchID: arg.Details.Branch,
                         Dispatched: false,
                         // This create the entries in the productPurchases as a nested insert with relationships we specified in DB models
                         productPurchases: purchaseProductStore

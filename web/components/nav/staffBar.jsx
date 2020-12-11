@@ -1,13 +1,13 @@
 import { useContext } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
-import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
-import Cookies from 'js-cookie';
+import { Nav, Navbar } from 'react-bootstrap';
 import routes from '../../routes';
 import UserContext from '../../contexts/user';
+import { Brand, NavLink } from './sharedNav';
+import Cookies from 'js-cookie';
 
 const CustomerBar = () => {
-    const { userToken, setUserToken } = useContext(UserContext);
+    const { _, setUserToken } = useContext(UserContext);
     const router = useRouter();
 
     const logout = () => {
@@ -20,23 +20,14 @@ const CustomerBar = () => {
 
     return (
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-            <Link href={routes.index} passHref>
-                <Navbar.Brand>
-                    Generic Flatpack Furniture
-                </Navbar.Brand>
-            </Link>
+            <Brand />
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
                 <Nav className="mr-auto">
-                    <Link href={routes.admin} passHref>
-                        <Nav.Link>Admin</Nav.Link>
-                    </Link>
-                    <Link href={routes.inventory} passHref>
-                        <Nav.Link>Inventory</Nav.Link>
-                    </Link>
-                    <Link href={routes.shift} passHref>
-                        <Nav.Link>Shift</Nav.Link>
-                    </Link>
+                    <NavLink title="Admin" route={routes.admin} /> 
+                    <NavLink title="Inventory" route={routes.inventory} /> 
+                    <NavLink title="Shift" route={routes.shift} /> 
+                    <NavLink title="Purchases" route={routes.purchases} /> 
                 </Nav>
                 <Nav>
                     <Nav.Link onClick={logout}>Logout</Nav.Link>

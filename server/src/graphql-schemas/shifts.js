@@ -1,7 +1,7 @@
 /*
 Defines all the Scheme for Shifts related GraphQL functions
 */
-const { gql, ForbiddenError, UserInputError } = require('apollo-server-express');
+const { gql, ForbiddenError, UserInputError, ValidationError } = require('apollo-server-express');
 const { IdError, PermissionsError } = require('../func/errors');
 const { Branch } = require('../models/branch');
 const { Shifts } = require('../models/shifts')
@@ -21,7 +21,9 @@ const typeDefs = gql`
       End: String
       StaffReq: Int
       "Branch the shift is taking place at"
-      Branch: Branch 
+      Branch: Branch
+      "Staff on this shift"
+      Staff: [Staff]
   }
 
   extend type Query{
@@ -54,7 +56,21 @@ const typeDefs = gql`
       ShiftID: ID!,
       "Staff to assign to said shift. If not provided assigned the currently logged in user"
       StaffID:ID
-      ): Shift
+    ): Shift
+    "unassign staff to a shift. Returns the shift you've been unassigned from."
+    unassignShift(
+      "Shift to unassign"
+      ShiftID: ID!,
+      "Staff to unassign from said shift. If not provided assigned the currently logged in user"
+      StaffID:ID
+    ): Shift
+    "Create a Shift"
+    createShift(
+      Start: String!
+      End: String!
+      BranchID: ID!
+      StaffReq: Int!
+    ): Shift
   }
 `;
 // We don't define Branch here as it's already defined in the branch scheme file.
@@ -84,6 +100,11 @@ const resolvers = {
         var reply = []  // Holds item for reply
         // Builds the reply
         for (const item in ShiftQuery) {//For items in array
+          staffReply = []
+          staffShiftQuery = await StaffShifts.query().where('ShiftID', ShiftQuery[item].ShiftID)
+          for (const x in staffShiftQuery) {
+            staffReply.push(await Staff.query().findById(staffShiftQuery[x].StaffID))
+          }
           // add an item to the reply with the fields
           reply.push(
             {
@@ -91,7 +112,8 @@ const resolvers = {
               End: (ShiftQuery[item].End).toISOString(), // Turns date into ISO format
               Start: (ShiftQuery[item].Start).toISOString(),
               StaffReq: ShiftQuery[item].StaffReq,
-              Branch: BranchQuery[0] //As we only ever query shifts for a single branch, we can use the first item returned
+              Branch: BranchQuery[0], //As we only ever query shifts for a single branch, we can use the first item returned
+              Staff: staffReply
             }
           )
         }
@@ -122,12 +144,20 @@ const resolvers = {
           }
           shiftQuery = await shiftQuery
           if (shiftQuery) {
+
+            staffReply = []
+            staffOnShiftQuery = await StaffShifts.query().where('ShiftID', shiftQuery.ShiftID)
+            for (const x in staffOnShiftQuery) {
+              staffReply.push(await Staff.query().findById(staffOnShiftQuery[x].StaffID))
+            }
+
             reply.push({
               ShiftID: shiftQuery.ShiftID,
               End: shiftQuery.End.toISOString(), // Turns date into ISO format
               Start: shiftQuery.Start.toISOString(),
               StaffReq: shiftQuery.StaffReq,
-              Branch: (await Branch.query().findById(shiftQuery.BranchID))
+              Branch: (await Branch.query().findById(shiftQuery.BranchID)),
+              Staff: staffReply
             })
           }
         }
@@ -162,6 +192,45 @@ const resolvers = {
     },
   },
   Mutation: {
+    createShift: async (parent, arg, ctx, info) => {
+      if (ctx.auth) {
+        try {
+          const startDate = Date(arg.Start)
+          const endDate = Date(arg.End)
+        } catch (err) {
+          throw new ValidationError("Invalid date string passed")
+        }
+        branchQuery = await Branch.query().findById(arg.BranchID)
+        if (!(branchQuery instanceof Branch)) {
+          throw new IdError(
+            'Branch does not exist', { invalidArgs: Object.keys(arg) }
+          )
+        }
+        shiftInsert = await Shifts.query().insertAndFetch({
+          Start: startDate,
+          End: endDate,
+          StaffReq: arg.StaffReq,
+          BranchID: arg.BranchID
+        })
+        if(shiftInsert instanceof Shifts){
+          return {
+            ShiftID: shiftInsert.ShiftID,
+            Start: shiftInsert.Start.toISOString(),
+            End: shiftInsert.End.toISOString(),
+            StaffReq: shiftInsert.StaffReq,
+            Branch: branchQuery,
+            Staff: []
+          }  
+        }else{
+          throw new Error("Internal error inserting shift")
+        }
+      } else {
+        throw new ForbiddenError(
+          'Authentication token is invalid, please log in'
+        )
+      }
+    },
+
     assignShift: async (parent, arg, ctx, info) => {
       if (ctx.auth) {
         // Gets staff from query
@@ -169,16 +238,16 @@ const resolvers = {
           staffQuery = await Staff.query().findById(arg.StaffID)
           // We check if the Staff member isn't in a high or same position of the 
           // person issuing the shift assignement, if they are throw an error
-          if (staffQuery.Position < ctx.user.Position) {
-            throw new PermissionsError(
-              'Can not assign shift for staff member at a high position'
-            )
-          }
-          if ((staffQuery.Position == ctx.user.Position) && (staffQuery.StaffID != ctx.user.ID)) {
-            throw new PermissionsError(
-              'Can not assign shift for staff member at same level'
-            )
-          }
+          // if (staffQuery.Position < ctx.user.Position) {
+          //   throw new PermissionsError(
+          //     'Can not assign shift for staff member at a high position'
+          //   )
+          // }
+          // if ((staffQuery.Position == ctx.user.Position) && (staffQuery.StaffID != ctx.user.ID)) {
+          //   throw new PermissionsError(
+          //     'Can not assign shift for staff member at same level'
+          //   )
+          // }
         } else {
           staffQuery = await Staff.query().findById(ctx.user.ID)
         }
@@ -203,12 +272,18 @@ const resolvers = {
 
 
         if (assignShift instanceof StaffShifts) {
+          staffReply = []
+          staffOnShiftQuery = await StaffShifts.query().where('ShiftID', shiftQuery.ShiftID)
+          for (const x in staffOnShiftQuery) {
+            staffReply.push(await Staff.query().findById(staffOnShiftQuery[x].StaffID))
+          }
           return {
             ShiftID: shiftQuery.ShiftID,
             Start: shiftQuery.Start.toISOString(),
             End: shiftQuery.End.toISOString(),
             StaffReq: shiftQuery.StaffReq,
-            Branch: (await Branch.query().findById(shiftQuery.BranchID))
+            Branch: (await Branch.query().findById(shiftQuery.BranchID)),
+            Staff: staffReply
           }
         }
         return null
@@ -218,8 +293,49 @@ const resolvers = {
           'Authentication token is invalid, please log in'
         )
       }
-    }
-  },
+    },
+    unassignShift: async (parent, arg, ctx, info) => {
+      if (ctx.auth) {
+        // Gets staff from query
+        if ('StaffID' in arg) {
+          staffQuery = await Staff.query().findById(arg.StaffID)
+        } else {
+          staffQuery = await Staff.query().findById(ctx.user.ID)
+        }
+        shiftQuery = await Shifts.query().findById(arg.ShiftID)
+        // Check if both staff and shift exist
+        if (!(shiftQuery instanceof Shifts) || !(staffQuery instanceof Staff)) {
+          throw new IdError(
+            'Shift or Staff does not exist', { invalidArgs: Object.keys(arg) }
+          )
+        }
+        if (!((await StaffShifts.query().findById([shiftQuery.ShiftID, staffQuery.StaffID])) instanceof StaffShifts)) {
+          throw new UserInputError('Staff not assigned to shift')
+        }
+        staffShiftDelete = await StaffShifts.query().deleteById([shiftQuery.ShiftID, staffQuery.StaffID])
+        if (staffShiftDelete != 0) {
+          staffReply = []
+          staffOnShiftQuery = await StaffShifts.query().where('ShiftID', shiftQuery.ShiftID)
+          for (const x in staffOnShiftQuery) {
+            staffReply.push(await Staff.query().findById(staffOnShiftQuery[x].StaffID))
+          }
+          return {
+            ShiftID: shiftQuery.ShiftID,
+            Start: shiftQuery.Start.toISOString(),
+            End: shiftQuery.End.toISOString(),
+            StaffReq: shiftQuery.StaffReq,
+            Branch: (await Branch.query().findById(shiftQuery.BranchID))
+          }
+        } else {
+          throw new Error("Internal error deleting staff from shift")
+        }
+      } else {
+        throw new ForbiddenError(
+          'Authentication token is invalid, please log in'
+        )
+      }
+    },
+  }
 };
 
 module.exports = {

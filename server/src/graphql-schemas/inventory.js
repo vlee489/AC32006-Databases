@@ -16,10 +16,13 @@ const typeDefs = gql`
   extend type Query{
     "Get inventory of a store"
     getInventory(BranchID: ID!, ProductID: ID): [Inventory]
+    getBranchesInStock(
+        Products: [ProductOrder]!
+    ): [Branch]
   }
 
   extend type Mutation{
-    "Update the inventory of a product at a branch"
+    "Update the inventory of a product at a branch, adds product to inventory if it doesn't exist"
     updateInventory(
         BranchID: ID!
         ProductID: ID!
@@ -44,6 +47,34 @@ const resolvers = {
                     Branch: branchQuery,
                     Product: (await Products.query().findById(inventoryQuery[item].ProductID)),
                 })
+            }
+            return reply
+        },
+
+        getBranchesInStock: async (parent, arg, ctx, info) => {
+            branchQuery = await Branch.query()
+            for (const i in arg.Products) {
+                productQuery = await Products.query().findById(arg.Products[i].ProductID)
+                if (!productQuery instanceof Products) {
+                    throw new IdError( `Product: ${arg.Details.Products[item].ProductID} does not exist`, { invalidArgs: Object.keys(arg) })
+                }
+            }
+            reply = []
+            for(const b in branchQuery){
+                var itemCount = 0
+                for (const i in arg.Products) {
+                    inventoryQuery = await Inventory.query().where('ProductID', arg.Products[i].ProductID).where('BranchID', branchQuery[b].BranchID)
+                    if(inventoryQuery.length == 1){
+                        if(inventoryQuery[0].QTY >= arg.Products[i].Qty){
+                            itemCount++
+                        }
+                    }else if(inventoryQuery.length > 1){
+                        throw new Error("Internal error, found more then one product in a branch")
+                    }
+                }
+                if(itemCount >= (arg.Products).length){
+                    reply.push(branchQuery[b])
+                }
             }
             return reply
         }
@@ -72,7 +103,7 @@ const resolvers = {
                         "More then one entry for branch and product, contact admin!"
                     )
                 }else{
-                    inventoryQuery = await Inventory.query().patchAndFetchById(inventoryQuery[0].ProductID, {QTY: arg.Qty})
+                    inventoryQuery = await Inventory.query().patchAndFetchById(inventoryQuery[0].InventoryID, {QTY: arg.Qty})
                 }
                 return {
                     InventoryID: inventoryQuery.InventoryID,
