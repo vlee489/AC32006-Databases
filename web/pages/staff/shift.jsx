@@ -1,15 +1,15 @@
 import Head from 'next/head'
-import { Container, Table, Button } from 'react-bootstrap'
+import { Container, Form, Table, Button, Card } from 'react-bootstrap'
 import { useContext } from 'react'
 import { useRouter } from 'next/router'
-
 import UserContext from '../../contexts/user'
 import { useQuery, useMutation } from '@apollo/client';
 import withApollo from "../../libraries/apollo";
 import { GET_BRANCHES } from '../../queries/branch';
 import { GET_SHIFTS, GET_STAFF_ON_SHIFT } from '../../queries/shifts';
 import { ASSIGN_SHIFT } from '../../mutations/assignShift';
-import { UNASSIGN_SHIFT } from '../../mutations/unassignShift'
+import { UNASSIGN_SHIFT } from '../../mutations/unassignShift';
+import CREATE_SHIFT from '../../mutations/createShift';
 import { LOGIN_STAFF } from '../../queries/loginStaff';
 import routes from '../../routes'
 
@@ -89,6 +89,48 @@ const ShiftsPage = () => {
     return null
   }
 
+  const AddShiftTable = ({ branch }) => {
+    const [startTime, setStartTime] = useState(null);
+    const [endTime, setEndTime] = useState(null);
+    const [staffRequired, setStaffRequired] = useState(1);
+    const [createShift, _] = useMutation(CREATE_SHIFT);
+
+    const submit = () => {
+      const startTimeObj = new Date(startTime);
+      const endTimeObj = new Date(endTime);
+      createShift({
+        variables: { Start: startTimeObj.toISOString(), End: endTimeObj.toISOString(), BranchID: branch.BranchID, StaffReq: staffRequired }
+      }).then(
+        () => router.reload()
+      )
+    }
+
+    return (
+      <Card className="mt-4 mb-5">
+        <Card.Header>
+          <h5 className="text-center">Add Shift</h5>
+        </Card.Header>
+        <Card.Body>
+          <Form>
+            <Form.Group controlId="formStartTime">
+              <Form.Label>Start Time</Form.Label>
+              <Form.Control value={startTime} type="datetime-local" onChange={e => setStartTime(e.target.value)} />
+            </Form.Group>
+            <Form.Group controlId="formEndTime">
+              <Form.Label>End Time</Form.Label>
+              <Form.Control value={endTime} type="datetime-local" onChange={e => setEndTime(e.target.value)} />
+            </Form.Group>
+            <Form.Group controlId="formStaffRequired">
+              <Form.Label>Staff Required</Form.Label>
+              <Form.Control value={staffRequired} type="number" onChange={e => setStaffRequired(parseInt(e.target.value))} />
+            </Form.Group>
+            <Button variant="primary" onClick={submit}>Submit</Button>
+          </Form>
+        </Card.Body>
+      </Card>
+    )
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -114,6 +156,7 @@ const ShiftsPage = () => {
             </thead>
             <ShiftsTable />
           </Table>
+          <AddShiftTable branch={branchSelected} />
         </Container>
       </main>
     </div>
