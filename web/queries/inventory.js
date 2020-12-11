@@ -37,6 +37,14 @@ export const GET_BRANCHES_IN_STOCK = gql`
     getBranchesInStock(Products: $productOrders) {
       BranchID
       Name
+      Address1
+      Address2
+      City
+      Region
+      Country
+      Postcode
+      PhoneNumber
+      Email
     }
   }
 `;

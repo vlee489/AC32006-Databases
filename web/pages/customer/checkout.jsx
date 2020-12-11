@@ -221,14 +221,14 @@ const OrderScreen = ({ loading, error, data, orderComplete, onOrderComplete, dis
 }
 
 const BranchItem = ({ branch, changeBranch, inStockBranches }) => {
-  const inStock = inStockBranches.includes(branch);
-  if (inStock) return <Dropdown.Item key={branch.BranchID} onClick={() => changeBranch(branch)}>{branch.Name}</Dropdown.Item>;
+  debugger;
+  const inStock = inStockBranches.filter(b => b.BranchID === branch.BranchID);
+  if (inStock.length > 0) return <Dropdown.Item key={branch.BranchID} onClick={() => changeBranch(branch)}>{branch.Name}</Dropdown.Item>;
   return <Dropdown.Item key={branch.BranchID} disabled>{branch.Name}</Dropdown.Item>;
 }
 
 const BranchFilteredDropdown = ({ branchSelected, changeBranch, productOrders }) => {
   const branchesQuery = useQuery(GET_BRANCHES);
-  debugger;
   const inStockBranchesQuery = useQuery(GET_BRANCHES_IN_STOCK, { 
     variables: { productOrders: productOrders }
   });
