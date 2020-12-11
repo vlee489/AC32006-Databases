@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import Head from 'next/head';
-import { Alert, Button, Container, Card, Form, Row, Col } from "react-bootstrap";
+import { Alert, Button, Container, Card, Dropdown, DropdownButton, Form, Row, Col } from "react-bootstrap";
 import Navigation from '../../components/navigation';
 import Spinner from '../../components/spinner';
 import { useQuery } from '@apollo/client';
@@ -139,7 +139,14 @@ const Checkout = () => {
           }
           {
             (loading || error || data) &&
-            <OrderScreen loading={loading} error={error} data={data} orderComplete={orderComplete} onOrderComplete={() => setOrderComplete(true)} />
+            <OrderScreen 
+              loading={loading} 
+              error={error} 
+              data={data} 
+              orderComplete={orderComplete} 
+              onOrderComplete={() => setOrderComplete(true)} 
+              dispatch={dispatch} 
+            />
           }
         </Container>
       </main>
@@ -156,7 +163,7 @@ const setProductOrders = basket => {
   });
 }
 
-const OrderScreen = ({ loading, error, data, orderComplete, onOrderComplete }) => {
+const OrderScreen = ({ loading, error, data, orderComplete, onOrderComplete, dispatch }) => {
   if (orderComplete) {
     const purchase = data.createPurchase;
     return (
@@ -222,7 +229,9 @@ const BranchItem = ({ branch, changeBranch, inStockBranches }) => {
 const BranchFilteredDropdown = ({ branchSelected, changeBranch, productOrders }) => {
   const branchesQuery = useQuery(GET_BRANCHES);
   debugger;
-  const inStockBranchesQuery = useQuery(GET_BRANCHES_IN_STOCK(productOrders));
+  const inStockBranchesQuery = useQuery(GET_BRANCHES_IN_STOCK, { 
+    variables: { productOrders: productOrders }
+  });
 
   if (branchesQuery.loading || inStockBranchesQuery.loading) return <Spinner />;
   if (branchesQuery.error) return <pre>{JSON.stringify(branchesQuery.error, null, 2)}</pre>;
