@@ -53,6 +53,13 @@ const Login = () => {
     return null;
   }
 
+  const checkEnterKey = (e) => {
+      if(e.key === "Enter"){ 
+      sendCredentials()
+    ;
+    }
+ }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -64,7 +71,7 @@ const Login = () => {
 
       <main>
         <Container className={styles.container}>
-          <Card className={styles.loginCard}>
+          <Card className={styles.loginCard} onKeyPress={checkEnterKey}>
             <Card.Body>
               <Card.Title className="text-center">Staff Login</Card.Title>
               <Form>
@@ -77,7 +84,7 @@ const Login = () => {
                 </Form.Group>
                 <Form.Group controlId="formBasicPassword">
                   <Form.Label>Password</Form.Label>
-                  <Form.Control type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
+                  <Form.Control type="password" placeholder="Password" onChange={e => setPassword(e.target.value)}/>
                 </Form.Group>
               </Form>
               <Button variant="primary" onClick={sendCredentials}>Sign in</Button>
