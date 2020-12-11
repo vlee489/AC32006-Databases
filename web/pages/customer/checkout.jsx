@@ -15,15 +15,22 @@ import styles from '../../styles/customer/Checkout.module.scss';
 
 const Checkout = () => {
   const { basket, dispatch } = useContext(BasketContext);
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState([]);
   const [billingAddress, setBillingAddress] = useState([]);
   const [branch, setBranch] = useState({ BranchID: 1, Name: "Dundee" });
   const [validationError, setValidationError] = useState("");
-  const [checkoutMutation, { loading, error, data }] = useMutation(CREATE_PURCHASE);
   const [orderComplete, setOrderComplete] = useState(false);
+  const [noBranchInStock, setNoBranchInStock] = useState(false);
+
+  const [checkoutMutation, { loading, error, data }] = useMutation(CREATE_PURCHASE);
+
   let productOrders = setProductOrders(basket);
+  const inStockBranchesQuery = useQuery(GET_BRANCHES_IN_STOCK, { 
+    variables: { productOrders: productOrders }
+  });
 
   useEffect(() => {
     productOrders = setProductOrders(basket);
@@ -86,11 +93,23 @@ const Checkout = () => {
               <Card.Body>
                 <Card.Title className="text-center">Checkout</Card.Title>
                 {
-                  (!orderComplete && basket.items.length < 1) &&
-                  <h4 className="mt-4">You need to add some items to the cart before you can checkout</h4>
+                  inStockBranchesQuery.loading && 
+                    <Spinner />
                 }
                 {
-                  (!orderComplete && basket.items.length > 0) &&
+                  inStockBranchesQuery.error && 
+                    <pre>{JSON.stringify(inStockBranchesQuery.error, null, 2)}</pre> 
+                }
+                {
+                  noBranchInStock && 
+                    <h4 className="text-center mt-4">We're sorry but no branch has your items in stock</h4>
+                }
+                {
+                  (!orderComplete && basket.items.length < 1) &&
+                    <h4 className="text-center mt-4">You need to add some items to the cart before you can checkout</h4>
+                }
+                {
+                  (inStockBranchesQuery.data && !orderComplete && !noBranchInStock && basket.items.length > 0) &&
                   <div>
                     <Form>
                       <Form.Group controlId="formFirstName">
@@ -113,7 +132,13 @@ const Checkout = () => {
                       </Form.Group>
                       <Form.Group>
                         <Form.Label>Dispatch Branch</Form.Label>
-                        <BranchFilteredDropdown branchSelected={branch} changeBranch={b => setBranch(b)} productOrders={productOrders} />
+                        <Form.Text className="text-muted">Not all branches will have all the items in your basket in stock</Form.Text>
+                        <BranchFilteredDropdown 
+                          branchSelected={branch}
+                          inStockBranches={inStockBranchesQuery.data.getBranchesInStock}
+                          changeBranch={b => setBranch(b)}
+                          noBranchInStock={() => setNoBranchInStock(true)}
+                        />
                       </Form.Group>
                       <Form.Group controlId="formAddress">
                         <Form.Label>Billing Address</Form.Label>
@@ -220,31 +245,25 @@ const OrderScreen = ({ loading, error, data, orderComplete, onOrderComplete, dis
   return null;
 }
 
-const BranchItem = ({ branch, changeBranch, inStockBranches }) => {
-  debugger;
+const BranchItem = ({ branch, inStockBranches, changeBranch }) => {
   const inStock = inStockBranches.filter(b => b.BranchID === branch.BranchID);
   if (inStock.length > 0) return <Dropdown.Item key={branch.BranchID} onClick={() => changeBranch(branch)}>{branch.Name}</Dropdown.Item>;
   return <Dropdown.Item key={branch.BranchID} disabled>{branch.Name}</Dropdown.Item>;
 }
 
-const BranchFilteredDropdown = ({ branchSelected, changeBranch, productOrders }) => {
+const BranchFilteredDropdown = ({ branchSelected, inStockBranches, changeBranch, noBranchInStock }) => {
   const branchesQuery = useQuery(GET_BRANCHES);
-  const inStockBranchesQuery = useQuery(GET_BRANCHES_IN_STOCK, { 
-    variables: { productOrders: productOrders }
-  });
-
-  if (branchesQuery.loading || inStockBranchesQuery.loading) return <Spinner />;
+  if (branchesQuery.loading) return <Spinner />;
   if (branchesQuery.error) return <pre>{JSON.stringify(branchesQuery.error, null, 2)}</pre>;
-  if (inStockBranchesQuery.error) return <pre>{JSON.stringify(inStockBranchesQuery.error, null, 2)}</pre>;
 
-  if (branchesQuery.data && inStockBranchesQuery.data) {
+  if (branchesQuery.data) {
     const branches = branchesQuery.data.getBranches;
-    const inStockBranches = inStockBranchesQuery.data.getBranchesInStock;
+    if (inStockBranches.length < 1) noBranchInStock();
 
     return (
       <DropdownButton id="dropdown-basic-button" title={branchSelected.Name}>
         {
-          branches.map(branch => <BranchItem branch={branch} changeBranch={changeBranch} inStockBranches={inStockBranches}/>)
+          branches.map(branch => <BranchItem key={branch.BranchID} branch={branch} inStockBranches={inStockBranches} changeBranch={changeBranch}  noBranchInStock={noBranchInStock} />)
         }
       </DropdownButton>
     )
