@@ -21,7 +21,7 @@ import { useState } from 'react'
 
 const ShiftsPage = () => {
 
-  const [branchSelected, setBranchSelected] = useState({Name: "Dundee", BranchID: 1})
+  const [branchSelected, setBranchSelected] = useState({ Name: "Dundee", BranchID: 1 })
 
   const router = useRouter();
   const { userToken, setUserToken } = useContext(UserContext);
@@ -34,54 +34,54 @@ const ShiftsPage = () => {
   }
 
 
-  const ShiftButton = ({shift, loggedInStaff}) => {
-    const [assignShift, {loading, error, data}] = useMutation(ASSIGN_SHIFT)
-    const [unassignShift, {loading2, error2, data2}] = useMutation(UNASSIGN_SHIFT)
+  const ShiftButton = ({ shift, loggedInStaff }) => {
+    const [assignShift, { loading, error, data }] = useMutation(ASSIGN_SHIFT)
+    const [unassignShift, { loading2, error2, data2 }] = useMutation(UNASSIGN_SHIFT)
 
     const onAssignShift = () => {
-      assignShift({variables: {ShiftID: shift.ShiftID, StaffID: loggedInStaff.data.loginStaff.StaffID}}).then(
+      assignShift({ variables: { ShiftID: shift.ShiftID, StaffID: loggedInStaff.data.loginStaff.StaffID } }).then(
         result => router.reload()
       )
-      
+
     }
 
     const onUnassignShift = () => {
-      unassignShift({variables: {ShiftID: shift.ShiftID, StaffID: loggedInStaff.data.loginStaff.StaffID}}).then(
+      unassignShift({ variables: { ShiftID: shift.ShiftID, StaffID: loggedInStaff.data.loginStaff.StaffID } }).then(
         result => router.reload()
       )
     }
 
     // debugger;
     const isOnShift = shift.Staff.filter(member => member.StaffID === loggedInStaff.data.loginStaff.StaffID)
-    if (isOnShift.length > 0){
-      return(
+    if (isOnShift.length > 0) {
+      return (
         <Button variant="danger" onClick={onUnassignShift}>Leave shift</Button>
       )
     }
-    
-    return(
+
+    return (
       <Button variant="primary" onClick={onAssignShift}>Join shift</Button>
     )
-      
+
   }
 
   const ShiftsTable = () => {
     if (shifts.loading || loggedInStaff.loading) return <Spinner />;
     if (shifts.error || loggedInStaff.error) return <p>{`${shifts.error}`}</p>;
     if (shifts.data && loggedInStaff.data) {
-      
+
       return (
         <tbody>
           {shifts.data.getShifts.map(
             (Shift, i) => <tr key={i}>
-                            <td>{new Date(Shift.Start).toLocaleDateString("ja-JP")}</td>
-                            <td>{new Date(Shift.Start).toLocaleTimeString('en-UK')}</td>
-                            <td>{new Date(Shift.End).toLocaleTimeString('en-UK')}</td>
-                            <td>{Shift.StaffReq - Shift.Staff.length}</td>
-                            <td>{Shift.StaffReq}</td>
-                            <td><ShiftButton shift={Shift} loggedInStaff={loggedInStaff}/></td>
-                          </tr>
-            )
+              <td>{new Date(Shift.Start).toLocaleDateString("ja-JP")}</td>
+              <td>{new Date(Shift.Start).toLocaleTimeString('en-UK')}</td>
+              <td>{new Date(Shift.End).toLocaleTimeString('en-UK')}</td>
+              <td>{Shift.StaffReq - Shift.Staff.length}</td>
+              <td>{Shift.StaffReq}</td>
+              <td><ShiftButton shift={Shift} loggedInStaff={loggedInStaff} /></td>
+            </tr>
+          )
           }
         </tbody>
       )
@@ -99,9 +99,9 @@ const ShiftsPage = () => {
       <main className={styles.main}>
         <Navigation />
         <Container>
-          <h1>Shifts</h1>
-          <BranchDropdown branchSelected={branchSelected} changeBranch={changeBranch}/>
-          <Table striped bordered hover>
+          <h1 className="text-center pt-5 mb-3">Shifts</h1>
+          <BranchDropdown branchSelected={branchSelected} changeBranch={changeBranch} />
+          <Table className="mt-3" striped bordered hover>
             <thead>
               <tr>
                 <th>Date</th>
