@@ -1,6 +1,5 @@
 import { useContext } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import BasketContext from '../../contexts/basket';
@@ -16,6 +15,7 @@ import routes from '../../routes';
 
 const BasketPage = () => {
   const { basket, dispatch } = useContext(BasketContext);
+  const router = useRouter();
 
   const getProductFromBasket = product => (
 		basket.items.find(item => item.ProductID === product.ProductID)
@@ -97,7 +97,7 @@ const BasketPage = () => {
                 Total cost: £{basket.totalCost}
               </Row>
               <Row>
-                <Button variant="primary" onClick={<Link href= {routes.checkout} passHref />}>Advance To Checkout</Button>
+                <Button variant="primary" onClick={() => router.push(routes.checkout)}>Advance To Checkout</Button>
               </Row>
             </Card.Body>
           </Card>

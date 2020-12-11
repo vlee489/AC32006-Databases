@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import Head from 'next/head';
-import { Alert, Button, Container, Card, Dropdown, DropdownButton, Form, Row, Col } from "react-bootstrap";
+import { useRouter } from 'next/router';
+import { Alert, Button, Container, Card, Dropdown, DropdownButton, Form, Table, Row, Col } from "react-bootstrap";
 import Navigation from '../../components/navigation';
 import Spinner from '../../components/spinner';
 import { useQuery } from '@apollo/client';
@@ -11,6 +12,7 @@ import { GET_BRANCHES } from '../../queries/branch';
 import { GET_BRANCHES_IN_STOCK } from '../../queries/inventory';
 import BasketContext from '../../contexts/basket';
 import basketActions from "../../basketActions";
+import routes from '../../routes';
 import styles from '../../styles/customer/Checkout.module.scss';
 
 const Checkout = () => {
@@ -22,7 +24,6 @@ const Checkout = () => {
   const [billingAddress, setBillingAddress] = useState([]);
   const [branch, setBranch] = useState({ BranchID: 1, Name: "Dundee" });
   const [validationError, setValidationError] = useState("");
-  const [orderComplete, setOrderComplete] = useState(false);
   const [noBranchInStock, setNoBranchInStock] = useState(false);
 
   const [checkoutMutation, { loading, error, data }] = useMutation(CREATE_PURCHASE);
@@ -105,11 +106,11 @@ const Checkout = () => {
                     <h4 className="text-center mt-4">We're sorry but no branch has your items in stock</h4>
                 }
                 {
-                  (!orderComplete && basket.items.length < 1) &&
+                  (!data && basket.items.length < 1) &&
                     <h4 className="text-center mt-4">You need to add some items to the cart before you can checkout</h4>
                 }
                 {
-                  (inStockBranchesQuery.data && !orderComplete && !noBranchInStock && basket.items.length > 0) &&
+                  (inStockBranchesQuery.data && !data && !noBranchInStock && basket.items.length > 0) &&
                   <div>
                     <Form>
                       <Form.Group controlId="formFirstName">
@@ -166,10 +167,8 @@ const Checkout = () => {
             (loading || error || data) &&
             <OrderScreen 
               loading={loading} 
-              error={error} 
-              data={data} 
-              orderComplete={orderComplete} 
-              onOrderComplete={() => setOrderComplete(true)} 
+              error={error}
+              data={data}
               dispatch={dispatch} 
             />
           }
@@ -188,61 +187,61 @@ const setProductOrders = basket => {
   });
 }
 
-const OrderScreen = ({ loading, error, data, orderComplete, onOrderComplete, dispatch }) => {
-  if (orderComplete) {
-    const purchase = data.createPurchase;
-    return (
-      <Row>
-        <Col>
-          <Card>
-            <Card.Header>{`Purchase No.${purchase.PurchaseID}`}</Card.Header>
-            <Card.Body>
-              <Card.Subtitle>Ordered By:</Card.Subtitle>
-              <Card.Text>{`${purchase.CustomerFirstName} ${purchase.CustomerLastName}`}</Card.Text>
-              <Card.Subtitle>Billing Address:</Card.Subtitle>
-              <Card.Text>{purchase.BillingAddress}</Card.Text>
-              <Card.Subtitle>Delivery Address:</Card.Subtitle>
-              <Card.Text>{purchase.DeliveryAddress}</Card.Text>
-              <Card.Subtitle>Paid?:</Card.Subtitle>
-              <Card.Text>{purchase.Paid == 1 ? "Yes" : "Pending"}</Card.Text>
-              <Card.Subtitle>Total Order Price:</Card.Subtitle>
-              <Card.Text>{`£${purchase.TotalPrice}`}</Card.Text>
-              <Card.Title>Products Ordered</Card.Title>
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Colour</th>
-                    <th>Weight</th>
-                    <th>Dimensions</th>
-                    <th>Qty Ordered</th>
-                  </tr>
-                </thead>
-                {purchase.Products.map(
-                  (item, i) => <tr key={i}>
-                    <td>{item.Product.Name}</td>
-                    <td>{`£${item.Product.Price}`}</td>
-                    <td>{item.Product.Colour}</td>
-                    <td>{item.Product.Weight}</td>
-                    <td>{item.Product.Dimensions}</td>
-                    <td>{item.Qty}</td>
-                  </tr>
-                )}
-              </Table>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    )
-  }
+const OrderScreen = ({ loading, error, data, dispatch }) => {
+  const router = useRouter();
   if (loading) return <Spinner />;
   if (error) return <pre>{JSON.stringify(error, null, 2)}</pre>
   if (data) {
-    onOrderComplete();
     dispatch({ type: basketActions.clearBasket })
   }
-  return null;
+  const purchase = data.createPurchase;
+  return (
+    <Row>
+      <Col>
+        <Card className="mt-5">
+          <Card.Header>{`Purchase No.${purchase.PurchaseID}`}</Card.Header>
+          <Card.Body>
+            <Card.Subtitle>Ordered By:</Card.Subtitle>
+            <Card.Text>{`${purchase.CustomerFirstName} ${purchase.CustomerLastName}`}</Card.Text>
+            <Card.Subtitle>Billing Address:</Card.Subtitle>
+            <Card.Text>{purchase.BillingAddress}</Card.Text>
+            <Card.Subtitle>Delivery Address:</Card.Subtitle>
+            <Card.Text>{purchase.DeliveryAddress}</Card.Text>
+            <Card.Subtitle>Paid?:</Card.Subtitle>
+            <Card.Text>{purchase.Paid == 1 ? "Yes" : "Pending"}</Card.Text>
+            <Card.Subtitle>Total Order Price:</Card.Subtitle>
+            <Card.Text>{`£${purchase.TotalPrice}`}</Card.Text>
+            <Card.Title>Products Ordered</Card.Title>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Colour</th>
+                  <th>Weight</th>
+                  <th>Dimensions</th>
+                  <th>Qty Ordered</th>
+                </tr>
+              </thead>
+              {purchase.Products.map(
+                (item, i) => <tr key={i}>
+                  <td>{item.Product.Name}</td>
+                  <td>{`£${item.Product.Price}`}</td>
+                  <td>{item.Product.Colour}</td>
+                  <td>{item.Product.Weight}</td>
+                  <td>{item.Product.Dimensions}</td>
+                  <td>{item.Qty}</td>
+                </tr>
+              )}
+            </Table>
+          </Card.Body>
+          <Card.Footer>
+            <Button onClick={() => router.push(routes.index)}>Back to Home</Button>
+          </Card.Footer>
+        </Card>
+      </Col>
+    </Row>
+  )
 }
 
 const BranchItem = ({ branch, inStockBranches, changeBranch }) => {

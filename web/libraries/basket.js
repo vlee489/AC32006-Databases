@@ -43,8 +43,6 @@ export const basketReducer = (state, action) => {
 }
 
 const addProduct = (state, action) => {
-    debugger;
-
     if (!action.product) {
         console.error("You need to pass a product to add");
         return state;
