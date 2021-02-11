@@ -1,40 +1,32 @@
-# AC32006-Databases
-AC32006/AC52001 Database Systems Assignment 2
+# AC32006-Databases / GraphQL API Example
 
+This is a project made for University of Dundee AC32006 Databases module. This repo is split into 2 components, `web` and `server`. These components form a modern [Jam Stack](https://jamstack.org/). Each component contains its own readme file documenting how to use it and basic configuration needed.  
 
+Documents made for this assignment such as the MySQL Workbench files can be found in the `Documents` folder.
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+### Technology used for web frontend
+- React
+- Next.js
+- React Bootstrap
+- Axios
+- Apollo Client
 
-## Getting Started
-Install NodeJS
-Run the command: 
-```bash
-npm install
-```
+### Technology used for server
+- GraphQL
+- Apollo server
+- Objection.js
+- MySQL
+- Express
 
-First, run the development server:
+The GraphQL server is implemented using [Apollo Server](https://www.apollographql.com/), and NodeJS GraphQL implementation.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+Each set of scheme and accompanying resolvers are split into their own files and then there's a schema.js file that imports and form the final gql scheme used for the API. Schemas can be split into as many files as needed and one scheme can use/access types defined in another file, regardless of order in which schemas are imported into the final schema.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+*A version of this system also exists implements pure MongoDB in place of a MySQL & Objection.js ORM  [Here](https://github.com/maxwillkelly/Agile-Coursework) (This was for another module, hence end product is different)*
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+**Note for Dundee Students:** Please do not reuse this code for the databases assignment, This technology stack was not taught by the University and was used by this group due to our better familiarity with NodeJS and GraphQL over the intended bare php server provided. If you are wanting to learn this stack, here's some recommended reading first before you look at the code, along with knowing basic JavaScript.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- [Into to GraphQL](https://graphql.org/learn/)
+- [Apollo Server Documenation](https://www.apollographql.com/docs/apollo-server/)
+- [Creating a Next.js app](https://nextjs.org/learn/basics/create-nextjs-app?utm_source=next-site&utm_medium=homepage-cta&utm_campaign=next-website)
+- [Getting Started with React](https://reactjs.org/docs/getting-started.html)
